@@ -1,10 +1,28 @@
 {
-  "_nota": "Contenido PROVISIONAL de la ronda de inversión. Reemplazar por el contenido aprobado por la profe. «personaje» es el SVG de public/assets/personajes (ST1 = laura, ST2 = andres, ST3 = klaus).",
+  "_nota": "Contenido de la ronda de inversión. Cada partida usa una versión (A o B) al azar y «Repetir» cambia a la otra. «inversionista» debe coincidir con «nombre» en inversionistas. «personaje» es el SVG de public/assets/personajes (ST1 = laura, ST2 = andres, ST3 = klaus).",
   "pitch": {
     "titulo": "Infusión de cascarilla de cacao",
     "descripcion": "El residuo de la planta se vuelve producto.",
     "pides": "COP 600 M · 10 %"
   },
+  "datosPitch": [
+    {
+      "valor": "+12 %",
+      "etiqueta": "Ventas"
+    },
+    {
+      "valor": "–18 %",
+      "etiqueta": "Energía / t"
+    },
+    {
+      "valor": "70 %",
+      "etiqueta": "Residuos usados"
+    },
+    {
+      "valor": "95 %",
+      "etiqueta": "Familias capacitadas"
+    }
+  ],
   "interesInicial": 40,
   "umbrales": {
     "invierte": 60,
@@ -27,67 +45,164 @@
       "personaje": "klaus"
     }
   ],
-  "preguntas": [
+  "versiones": [
     {
-      "inversionista": 0,
-      "pregunta": "¿Cómo sé que esto ayuda de verdad a las familias?",
-      "respuestas": [
+      "version": "A",
+      "preguntas": [
         {
-          "texto": "Les compramos la cascarilla y medimos su ingreso extra cada año.",
-          "interes": 30,
-          "reaccion": "Eso es medible. Me interesa."
+          "inversionista": "Laura",
+          "pregunta": "Pides 600 millones. ¿Cómo garantizas que este nuevo producto realmente mejore la vida en el Pacífico colombiano?",
+          "evalua": "Metas e indicadores (ODS 8, 10 y 12).",
+          "respuestas": [
+            {
+              "texto": "Capacitamos al 95 % de nuestras 120 familias productoras y compraremos su cascarilla, sumando ingresos extra.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Excelente. Los datos sociales claros y medibles son mi lenguaje."
+            },
+            {
+              "texto": "Trabajaremos de la mano con las comunidades locales para asegurar que todos ganemos con esta infusión.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "Suena bien, pero sin cifras claras es solo una promesa."
+            },
+            {
+              "texto": "Somos el corazón del Pacífico. Esta infusión está llena de sonrisas y amor por nuestra tierra.",
+              "tipo": "greenwashing",
+              "interes": -15,
+              "reaccion": "¿Sonrisas? Necesito métricas de impacto real, no poesía corporativa."
+            }
+          ]
         },
         {
-          "texto": "Somos una empresa muy comprometida con lo social.",
-          "interes": -10,
-          "reaccion": "Eso lo dicen todos. ¿Y los datos?"
+          "inversionista": "Andrés",
+          "pregunta": "El margen es clave. ¿Qué cifras respaldan que esta infusión no será un gasto inútil para la planta?",
+          "evalua": "Presupuesto verde y rentabilidad.",
+          "respuestas": [
+            {
+              "texto": "Expandiremos nuestro mercado aprovechando la tendencia de bebidas saludables para mantener las finanzas de la empresa sanas.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "La tendencia existe, pero necesito saber cómo impacta nuestra rentabilidad."
+            },
+            {
+              "texto": "Cerramos 2030 con ventas arriba del 12 % y aprovechamos el 70 % de residuos a costo cero.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Así me gusta. Rentabilizar los residuos reduce el riesgo operativo."
+            },
+            {
+              "texto": "El dinero no importa cuando estamos salvando el planeta. Las ventas llegarán solas porque somos muy sostenibles.",
+              "tipo": "greenwashing",
+              "interes": -15,
+              "reaccion": "Si el dinero no te importa, el mío tampoco."
+            }
+          ]
         },
         {
-          "texto": "Las familias se van a sentir orgullosas.",
-          "interes": 0,
-          "reaccion": "Bonito, pero no me convence."
+          "inversionista": "Klaus",
+          "pregunta": "Europa exige cero deforestación. ¿Cómo me demuestras el origen de la cascarilla de esta infusión?",
+          "evalua": "Trazabilidad y cadena de valor (ODS 12 y 15).",
+          "respuestas": [
+            {
+              "texto": "Nuestro empaque verde y el sello cien por ciento natural garantizan que no tocamos ni un árbol.",
+              "tipo": "greenwashing",
+              "interes": -15,
+              "reaccion": "Un empaque verde no pasa ninguna aduana europea. Inaceptable."
+            },
+            {
+              "texto": "Tenemos un equipo de abastecimiento que visita la zona y vigila que nuestros proveedores cuiden el bosque.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "Vigilar es un buen paso, pero necesito auditorías y registros."
+            },
+            {
+              "texto": "Integramos la trazabilidad lote a lote desde las 120 familias, cumpliendo el reglamento europeo con auditorías.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Perfecto. La trazabilidad rigurosa es innegociable para entrar a Europa."
+            }
+          ]
         }
       ]
     },
     {
-      "inversionista": 1,
-      "pregunta": "Tus ventas crecieron 12 %. ¿Por qué invertiría en algo nuevo?",
-      "respuestas": [
+      "version": "B",
+      "preguntas": [
         {
-          "texto": "Porque está de moda lo saludable.",
-          "interes": 0,
-          "reaccion": "La moda pasa."
+          "inversionista": "Laura",
+          "pregunta": "Me interesa la inversión social. ¿Qué impacto real dejaron estos 4 años en sus proveedores de cacao?",
+          "evalua": "Reporte de indicadores (ODS 8, 10 y 12).",
+          "respuestas": [
+            {
+              "texto": "Pasamos de proveedores a aliados; ya el 95 % de las 120 familias están capacitadas técnicamente.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Ese 95 % me convence. Así se construye impacto real."
+            },
+            {
+              "texto": "Hicimos varias reuniones en la zona para enseñarles mejores prácticas y mejorar nuestra relación comunitaria.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "Reuniones no equivalen a desarrollo. Falta estructura en su reporte."
+            },
+            {
+              "texto": "¡Transformamos el mundo! Ahora todos en el campo son mucho más felices trabajando con nuestra marca.",
+              "tipo": "greenwashing",
+              "interes": -10,
+              "reaccion": "La felicidad no se audita. Esto es pura fachada comercial."
+            }
+          ]
         },
         {
-          "texto": "Usa un residuo que hoy no cuesta nada: el margen es alto.",
-          "interes": 30,
-          "reaccion": "Ahora hablamos el mismo idioma."
+          "inversionista": "Andrés",
+          "pregunta": "Necesito eficiencia operativa para soltar 600 millones. ¿Cómo optimizaron sus procesos en la planta de Cali?",
+          "evalua": "Eficiencia operativa y control ESG (ODS 7).",
+          "respuestas": [
+            {
+              "texto": "Invertimos en maquinaria moderna para producir más rápido y evitar cuellos de botella en la planta.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "Producir más rápido está bien, pero no me hablas de márgenes."
+            },
+            {
+              "texto": "Nuestra planta respira aire puro, tenemos la mejor energía vibracional para que el chocolate salga perfecto.",
+              "tipo": "greenwashing",
+              "interes": -15,
+              "reaccion": "¿Energía vibracional? Yo mido el retorno de inversión, no vibras."
+            },
+            {
+              "texto": "Redujimos la energía por tonelada un 18 % y procesaremos la cascarilla con esa misma eficiencia instalada.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Reducir costos de energía mejora el margen. Me interesa."
+            }
+          ]
         },
         {
-          "texto": "Porque vamos a ser los más verdes del país.",
-          "interes": -15,
-          "reaccion": "Eso suena a greenwashing…"
-        }
-      ]
-    },
-    {
-      "inversionista": 2,
-      "pregunta": "¿Puedes probar que nada viene de zonas deforestadas?",
-      "respuestas": [
-        {
-          "texto": "Confiamos en nuestros proveedores.",
-          "interes": -10,
-          "reaccion": "Confiar no es probar."
-        },
-        {
-          "texto": "Lo estamos revisando.",
-          "interes": 0,
-          "reaccion": "Vuelve cuando lo tengas."
-        },
-        {
-          "texto": "Sí: cada lote está georreferenciado y documentado.",
-          "interes": 30,
-          "reaccion": "Con eso puedo vender en Europa."
+          "inversionista": "Klaus",
+          "pregunta": "La infusión suena bien, pero ¿qué cifras respaldan su avance real hacia una economía circular?",
+          "evalua": "Gestión ambiental y economía circular (ODS 12).",
+          "respuestas": [
+            {
+              "texto": "Aprovechamos el 70 % de residuos; la infusión usará [DATO POR CONFIRMAR] toneladas de cascarilla recuperada.",
+              "tipo": "correcta",
+              "interes": 30,
+              "reaccion": "Esas métricas aseguran el cumplimiento ambiental que mis clientes exigen."
+            },
+            {
+              "texto": "¡Somos totalmente ecológicos! Toda la naturaleza fluye a través de nuestra infusión mágica de cascarilla.",
+              "tipo": "greenwashing",
+              "interes": -10,
+              "reaccion": "Mis reguladores en Europa no compran magia, compran datos verificables."
+            },
+            {
+              "texto": "Implementamos un programa de reciclaje interno y estamos evaluando cómo reutilizar más materiales en la planta.",
+              "tipo": "neutra",
+              "interes": 0,
+              "reaccion": "Evaluar es solo el principio. Necesito resultados ejecutados para comprarles."
+            }
+          ]
         }
       ]
     }

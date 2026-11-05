@@ -1,18 +1,19 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProgressService } from '../../core/services/progress.service';
 import { GameHeader } from '../../shared/game-header';
 import { Mood, Personaje, Who } from '../../shared/personaje';
 import DATA from './shark-tank.json';
 
-interface Respuesta { texto: string; interes: number; reaccion: string }
+interface Respuesta { texto: string; tipo: 'correcta' | 'neutra' | 'greenwashing'; interes: number; reaccion: string }
+interface Pregunta { inversionista: string; pregunta: string; evalua: string; respuestas: Respuesta[] }
 const ST = DATA as {
   pitch: { titulo: string; descripcion: string; pides: string };
   interesInicial: number;
   umbrales: { invierte: number; seRetira: number };
   /** personaje = nombre del SVG en public/assets/personajes (laura, andres, klaus). */
   inversionistas: { nombre: string; tipo: string; personaje: Who }[];
-  preguntas: { inversionista: number; pregunta: string; respuestas: Respuesta[] }[];
+  datosPitch: { valor: string; etiqueta: string }[];
+  versiones: { version: string; preguntas: Pregunta[] }[];
   final: { conTrato: string; sinTrato: string };
 };
 
@@ -90,7 +91,10 @@ const ST = DATA as {
           }
           @if (phase() === 'react') {
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap">
-              <span [style.color]="deltaC()" style="font-size: 18px; font-weight: 700">{{ deltaText() }}</span>
+              <div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 320px">
+                <span [style.color]="deltaC()" style="font-size: 18px; font-weight: 700">{{ deltaText() }}</span>
+                <span style="font-size: 14px; color: #C9B8A6"><strong style="color: #FFD3C9">Evalúa:</strong> {{ cur().evalua }}</span>
+              </div>
               <button type="button" class="gbtn glow" (click)="next()" style="min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 10px">▶ {{ i() < total - 1 ? 'SIGUIENTE' : 'VER LA OFERTA' }}</span></button>
             </div>
           }
@@ -135,15 +139,21 @@ const ST = DATA as {
   `,
 })
 export class InversionPage {
-  private progress = inject(ProgressService);
   readonly pitch = ST.pitch;
   readonly final = ST.final;
-  readonly total = ST.preguntas.length;
+  /** Versión de las preguntas (A o B): al azar en cada partida; «Repetir» pasa a la otra. */
+  version = signal(Math.floor(Math.random() * ST.versiones.length));
+  preguntas = computed(() => ST.versiones[this.version()].preguntas);
+  get total() {
+    return this.preguntas().length;
+  }
   i = signal(0);
   phase = signal<'ask' | 'react' | 'end'>('ask');
   interest = signal(ST.inversionistas.map(() => ST.interesInicial));
-  last = signal<{ r: string; d: number } | null>(null);
-  cur = computed(() => ST.preguntas[Math.min(this.i(), this.total - 1)]);
+  last = signal<{ r: string; d: number; tipo: Respuesta['tipo'] } | null>(null);
+  cur = computed(() => this.preguntas()[Math.min(this.i(), this.preguntas().length - 1)]);
+  /** Índice del inversionista que pregunta (se busca por su nombre). */
+  who = computed(() => Math.max(0, ST.inversionistas.findIndex((x) => x.nombre === this.cur().inversionista)));
   deals = computed(() => this.interest().filter((v) => v >= ST.umbrales.invierte).length);
   dealTitle = computed(() => {
     const n = ST.inversionistas.length;
@@ -152,8 +162,8 @@ export class InversionPage {
   deltaText = computed(() => {
     const l = this.last();
     if (!l) return '';
-    const name = ST.inversionistas[this.cur().inversionista].nombre;
-    return l.d > 0 ? '▲ ' + name + ' se interesa.' : l.d < 0 ? '▼ ' + name + ' pierde interés. Sin datos, suena a Brillo.' : '■ ' + name + ' no se mueve.';
+    const name = ST.inversionistas[this.who()].nombre;
+    return l.tipo === 'greenwashing' || l.d < 0 ? '▼ ' + name + ' pierde interés. Sin datos, suena a Brillo.' : l.d > 0 ? '▲ ' + name + ' se interesa.' : '■ ' + name + ' no se mueve. Faltan cifras.';
   });
   deltaC = computed(() => (!this.last() ? '#FBF5EC' : this.last()!.d > 0 ? '#56C02B' : this.last()!.d < 0 ? '#FF836C' : '#FBF5EC'));
 
@@ -163,7 +173,7 @@ export class InversionPage {
       const { invierte, seRetira } = ST.umbrales;
       const mood: Mood = v >= invierte ? 'happy' : v <= seRetira ? 'sad' : 'mid';
       const ended = this.phase() === 'end';
-      const talk = k === this.cur().inversionista && !ended;
+      const talk = k === this.who() && !ended;
       const state = v >= invierte ? 'INVIERTE' : v <= seRetira ? 'SE RETIRA' : 'LO PIENSA';
       const filled = Math.round(v / 20);
       return {
@@ -178,24 +188,13 @@ export class InversionPage {
     }),
   );
 
-  /** «Tu pitch son tus datos»: salen de tus metas (1.4) y de tu presupuesto verde (2.5). */
-  data = computed(() => {
-    this.progress.moduleStats();
-    const metas = this.progress.lastAnswers<Record<string, { meta: number }>>('m1-metas');
-    const verde = this.progress.lastAnswers<string[]>('m2-presupuesto-verde') ?? [];
-    const m = (k: string) => metas?.[k]?.meta;
-    return [
-      { l: 'Ventas', v: m('ventas') != null ? '+' + m('ventas') + ' %' : '+12 %' },
-      { l: 'Energía / t', v: m('energia') != null ? '–' + m('energia') + ' %' : '–18 %' },
-      { l: 'Residuos usados', v: verde.includes('c') ? '70 %' : '44 %' },
-      { l: 'Familias capacitadas', v: m('familias') != null ? m('familias') + ' %' : '95 %' },
-    ];
-  });
+  /** Datos del pitch (shark-tank.json): son los que citan las respuestas correctas. */
+  readonly data = () => ST.datosPitch.map((d) => ({ l: d.etiqueta, v: d.valor }));
 
   answer(a: Respuesta) {
-    const w = this.cur().inversionista;
+    const w = this.who();
     this.interest.update((v) => v.map((x, k) => (k === w ? Math.max(0, Math.min(100, x + a.interes)) : x)));
-    this.last.set({ r: a.reaccion, d: a.interes });
+    this.last.set({ r: a.reaccion, d: a.interes, tipo: a.tipo });
     this.phase.set('react');
   }
   next() {
@@ -205,6 +204,7 @@ export class InversionPage {
     } else this.phase.set('end');
   }
   restart() {
+    this.version.update((v) => (v + 1) % ST.versiones.length);
     this.i.set(0);
     this.phase.set('ask');
     this.interest.set(ST.inversionistas.map(() => ST.interesInicial));
