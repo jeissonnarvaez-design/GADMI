@@ -48,7 +48,7 @@ type Rol = 'docente' | 'estudiante';
           <p style="margin: 0; font-size: 16px; color: #5C4A4D">Usa tu correo institucional de la UAO.</p>
 
           @if (registro()) {
-            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 700">Nombre completo
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 700">Nombre y apellidos completos
               <input type="text" name="nombre" autocomplete="name" [(ngModel)]="nombre" style="min-height: 52px; border-radius: 14px; border: 1.5px solid #D9CBBB; padding: 0 16px; font-size: 16px; background: #FFFFFF">
             </label>
           }
@@ -141,6 +141,7 @@ export class LoginPage {
       if (!this.codigoRegistro.trim()) return 'Escribe el código de registro docente.';
     } else if (this.registro()) {
       if (!this.nombre.trim() || !this.codigo.trim() || !this.grupo.trim()) return 'Completa nombre, código y grupo.';
+      if (this.nombre.trim().split(/\s+/).filter((p) => p.length >= 2).length < 2) return 'Escribe tu nombre y tus apellidos completos: así aparecerán en el certificado.';
       if (this.password.length < 6) return 'La contraseña debe tener al menos 6 caracteres.';
     } else if (!this.password) return 'Escribe tu contraseña.';
     return '';

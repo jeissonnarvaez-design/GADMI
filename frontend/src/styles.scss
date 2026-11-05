@@ -42,9 +42,46 @@
 html {
   font-size: 16px;
 }
+/* Texto grande: los tamaños están escritos en cada pantalla (estilos en línea), así que se
+   agrandan aquí: +25 % hasta 20 px y +15 % de 21 a 40 px. Los títulos gigantes no cambian. */
 html.texto-grande {
-  font-size: 19px;
+  font-size: 20px;
 }
+html.texto-grande body { font-size: 1.25em; }
+html.texto-grande [style*="font-size: 7px"] { font-size: 9px !important; }
+html.texto-grande [style*="font-size: 8px"] { font-size: 10px !important; }
+html.texto-grande [style*="font-size: 9px"] { font-size: 11px !important; }
+html.texto-grande [style*="font-size: 10px"] { font-size: 12px !important; }
+html.texto-grande [style*="font-size: 11px"] { font-size: 14px !important; }
+html.texto-grande [style*="font-size: 12px"] { font-size: 15px !important; }
+html.texto-grande [style*="font-size: 13px"] { font-size: 16px !important; }
+html.texto-grande [style*="font-size: 14px"] { font-size: 18px !important; }
+html.texto-grande [style*="font-size: 15px"] { font-size: 19px !important; }
+html.texto-grande [style*="font-size: 16px"] { font-size: 20px !important; }
+html.texto-grande [style*="font-size: 17px"] { font-size: 21px !important; }
+html.texto-grande [style*="font-size: 18px"] { font-size: 22px !important; }
+html.texto-grande [style*="font-size: 19px"] { font-size: 24px !important; }
+html.texto-grande [style*="font-size: 20px"] { font-size: 25px !important; }
+html.texto-grande [style*="font-size: 21px"] { font-size: 24px !important; }
+html.texto-grande [style*="font-size: 22px"] { font-size: 25px !important; }
+html.texto-grande [style*="font-size: 23px"] { font-size: 26px !important; }
+html.texto-grande [style*="font-size: 24px"] { font-size: 28px !important; }
+html.texto-grande [style*="font-size: 25px"] { font-size: 29px !important; }
+html.texto-grande [style*="font-size: 26px"] { font-size: 30px !important; }
+html.texto-grande [style*="font-size: 27px"] { font-size: 31px !important; }
+html.texto-grande [style*="font-size: 28px"] { font-size: 32px !important; }
+html.texto-grande [style*="font-size: 29px"] { font-size: 33px !important; }
+html.texto-grande [style*="font-size: 30px"] { font-size: 34px !important; }
+html.texto-grande [style*="font-size: 31px"] { font-size: 36px !important; }
+html.texto-grande [style*="font-size: 32px"] { font-size: 37px !important; }
+html.texto-grande [style*="font-size: 33px"] { font-size: 38px !important; }
+html.texto-grande [style*="font-size: 34px"] { font-size: 39px !important; }
+html.texto-grande [style*="font-size: 35px"] { font-size: 40px !important; }
+html.texto-grande [style*="font-size: 36px"] { font-size: 41px !important; }
+html.texto-grande [style*="font-size: 37px"] { font-size: 43px !important; }
+html.texto-grande [style*="font-size: 38px"] { font-size: 44px !important; }
+html.texto-grande [style*="font-size: 39px"] { font-size: 45px !important; }
+html.texto-grande [style*="font-size: 40px"] { font-size: 46px !important; }
 html.menos-movimiento *,
 html.menos-movimiento *::before,
 html.menos-movimiento *::after {
@@ -493,13 +530,13 @@ html.alto-contraste .small {
 @keyframes pj-foco { 0%, 100% { opacity: 0.35; } 20% { opacity: 0.9; } 23% { opacity: 0.4; } 26% { opacity: 0.95; } 60% { opacity: 0.6; } }
 @keyframes pj-hablar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
 
-/* Teo: el guía tranquilo. Flota, parpadea, mira a los lados y saluda con la mano. */
-.pj-teo .pj-cuerpo { animation: pj-flotar 3s ease-in-out infinite; }
-.pj-teo .pj-ojo { animation: pj-parpadeo 4.2s infinite; }
-.pj-teo .pj-pupila { animation: pj-mirar 4.2s infinite; }
-.pj-teo .pj-ceja { animation: pj-cejas-arriba 6s ease-in-out infinite; }
-.pj-teo .pj-brazo-der { animation: pj-saludar 5s ease-in-out infinite; }
-.pj-teo .pj-brazo-izq { animation: pj-brazo-suave 3s ease-in-out infinite; }
+/* Teo (con traje y sin traje): el guía tranquilo. Flota, parpadea, mira a los lados y saluda con la mano. */
+.pj-teo .pj-cuerpo, .pj-teo-casual .pj-cuerpo { animation: pj-flotar 3s ease-in-out infinite; }
+.pj-teo .pj-ojo, .pj-teo-casual .pj-ojo { animation: pj-parpadeo 4.2s infinite; }
+.pj-teo .pj-pupila, .pj-teo-casual .pj-pupila { animation: pj-mirar 4.2s infinite; }
+.pj-teo .pj-ceja, .pj-teo-casual .pj-ceja { animation: pj-cejas-arriba 6s ease-in-out infinite; }
+.pj-teo .pj-brazo-der, .pj-teo-casual .pj-brazo-der { animation: pj-saludar 5s ease-in-out infinite; }
+.pj-teo .pj-brazo-izq, .pj-teo-casual .pj-brazo-izq { animation: pj-brazo-suave 3s ease-in-out infinite; }
 
 /* Nibi: cálida, se mece; el lazo se mueve y las gafas destellan. */
 .pj-nibi .pj-cuerpo { animation: pj-mecer 4s ease-in-out infinite; transform-origin: 50% 100%; }

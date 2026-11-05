@@ -105,6 +105,14 @@ const fmt = (n: number) => n.toLocaleString('es-CO');
         </section>
 
         <aside style="flex: 0 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 14px; justify-content: center">
+          @if (!nombreOk()) {
+            <form class="gpanel" (submit)="$event.preventDefault(); guardarNombre()" style="background: #FBF5EC; color: #231417; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+              <span class="px" style="font-size: 10px; color: #AC0B32; margin-bottom: 4px">TU NOMBRE COMPLETO</span>
+              <label for="nombre-cert" style="font-size: 14px">El certificado lleva tu nombre y tus apellidos completos. Escríbelos como deben aparecer:</label>
+              <input id="nombre-cert" type="text" autocomplete="name" [value]="nuevoNombre()" (input)="nuevoNombre.set($any($event.target).value)" style="min-height: 44px; border-radius: 8px; border: 1.5px solid #D9CBBB; padding: 0 12px; font-size: 16px; font-family: inherit">
+              <button type="submit" class="gbtn" style="min-height: 44px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 15px; cursor: pointer">Guardar nombre</button>
+            </form>
+          }
           <div class="gpanel" style="background: #2A0B12; color: #FBF5EC; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; justify-content: center">
             <span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 6px">ENTRÉGALO EN MOODLE</span>
             @for (s of steps; track s[0]) {
@@ -150,6 +158,9 @@ export class BarraPage {
   overall = this.progress.overall;
 
   nombre = computed(() => this.auth.student()?.nombre ?? '');
+  /** Nombre y al menos un apellido (dos palabras). */
+  nombreOk = computed(() => this.nombre().trim().split(/\s+/).filter((p) => p.length >= 2).length >= 2);
+  nuevoNombre = signal(this.auth.student()?.nombre ?? '');
   code = computed(() => this.cert()?.codigo ?? '—');
   puntos = computed(() => this.cert()?.puntaje ?? this.overall().points);
   pct = computed(() => Math.round((this.puntos() / (this.overall().max || 1)) * 100));
@@ -195,6 +206,20 @@ export class BarraPage {
     this.qr.set(await toDataURL(this.verifyUrl(), { margin: 0, width: 192, errorCorrectionLevel: 'M', color: { dark: '#231417', light: '#FFFFFF' } }));
   }
 
+  /** Completa el nombre del estudiante (para cuentas creadas solo con el primer nombre). */
+  guardarNombre() {
+    const n = this.nuevoNombre().trim().replace(/\s+/g, ' ');
+    if (n.split(' ').filter((p) => p.length >= 2).length < 2) return this.msg.set('Escribe tu nombre y al menos un apellido.');
+    if (!this.auth.token()) {
+      this.auth.updateStudent({ nombre: n });
+      return;
+    }
+    this.api.cambiarNombre(n).subscribe({
+      next: (r) => { this.auth.updateStudent({ nombre: r.nombre }); this.msg.set('✓ Nombre guardado. Ya aparece en tu certificado.'); },
+      error: (e) => this.msg.set(apiError(e).message),
+    });
+  }
+
   async copy() {
     const c = this.cert();
     if (!c) return;
@@ -215,6 +240,10 @@ export class BarraPage {
     const c = this.cert();
     if (!c) {
       this.msg.set('El PDF lleva tu código de verificación: se genera al completar el módulo 4.');
+      return;
+    }
+    if (!this.nombreOk()) {
+      this.msg.set('Antes de descargar, escribe tu nombre y tus apellidos completos.');
       return;
     }
     this.busy.set(true);

@@ -18,7 +18,7 @@ const STEPS = ['Verificando tu cuenta', 'Cargando tu progreso', 'Preparando tu e
         <span style="background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><img src="/assets/logo-uao.png" alt="Universidad Autónoma de Occidente" style="height: 22px; width: auto"></span>
         <div style="position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center">
           <svg class="spin" width="200" height="200" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"></circle><path d="M50 4 a46 46 0 0 1 46 46" fill="none" stroke="#FF836C" stroke-width="3" stroke-linecap="round"></path></svg>
-          <app-personaje who="teo" [size]="140" />
+          <app-personaje who="teo-casual" [size]="140" />
         </div>
         <h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF">Conectando con Moodle…</h1>
 

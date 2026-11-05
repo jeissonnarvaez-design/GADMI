@@ -67,10 +67,18 @@ const SEEN_KEY = 'gadmi-sost-empresarial:insignias-vistas:';
       <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
         <section class="gpanel" style="background: #2A0B12; color: #FFFFFF; border-radius: 26px; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px">
           <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px"><span style="font-size: 28px; font-weight: 800">{{ overall().level.name }}</span><span style="font-size: 16px; color: #E9DCCF">{{ fmt(overall().points) }} / {{ fmt(overall().max) }} puntos</span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+            <span style="font-size: 16px; color: #E9DCCF">Nota final</span>
+            <strong style="font-size: 26px; line-height: 1">{{ nota() }}<span style="font-size: 16px; color: #C9B8A6; font-weight: 600"> / 5</span></strong>
+            @if (overall().completed) {
+              <span class="px" [style.background]="aprobado() ? '#3F7E44' : '#AC0B32'" style="font-size: 10px; padding: 6px 8px; border-radius: 4px; color: #FFFFFF">{{ aprobado() ? 'APROBADO' : 'AÚN NO APRUEBA' }}</span>
+            }
+          </div>
           <div style="position: relative; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.12)"><div style="height: 14px; border-radius: 999px; background: #FF836C" [style.width]="pct()"></div></div>
           <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); font-size: 12px; color: #C9B8A6">
             @for (t of thresholds(); track t.label; let last = $last) { <span [style.text-align]="last ? 'right' : 'left'">{{ t.label }} · {{ t.at }}</span> }
           </div>
+          <span style="font-size: 13px; color: #C9B8A6">Escala de 1 a 5: 1 es la nota más baja, 3 la mínima para aprobar y 5 la máxima.</span>
         </section>
         <div style="display: flex; flex-wrap: wrap; gap: 22px; align-items: stretch">
           <section aria-labelledby="ins" style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
@@ -150,6 +158,9 @@ export class LogrosPage implements OnDestroy {
   total = computed(() => this.all().length);
   selId = computed(() => this.sel() ?? (this.all().find((b) => b.isNew) ?? this.all().find((b) => b.on) ?? this.all()[0]).id);
   detail = computed(() => [this.all().find((b) => b.id === this.selId())!]);
+  /** Nota de 1 a 5 con una cifra decimal (coma decimal). */
+  nota = computed(() => (this.overall().completed ? this.overall().grade.toFixed(1).replace('.', ',') : '—'));
+  aprobado = computed(() => this.overall().grade >= 3);
   pct = computed(() => (this.overall().max ? (this.overall().points / this.overall().max) * 100 : 0) + '%');
   /** Umbrales del documento (0/500/700/850 de 1.000) llevados a los puntos del prototipo. */
   thresholds = computed(() => {

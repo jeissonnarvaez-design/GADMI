@@ -52,7 +52,7 @@
     <section aria-label="Matriz FODA" style="flex: 1.3 1 480px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
       @for (b of board(); track b.q.id) {
         <div class="gpanel" style="background: #2A0B12; padding: 12px; min-height: 230px; display: flex; flex-direction: column; gap: 8px">
-          <div style="display: flex; justify-content: space-between; align-items: center"><span class="px" style="font-size: 10px" [style.color]="b.q.board">{{ b.q.label.toUpperCase() }}</span><span style="font-size: 11px; color: #C9B8A6">{{ b.q.scope }}</span></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 2px 6px; justify-content: space-between; align-items: center; min-width: 0"><span class="px" style="font-size: 10px" [style.color]="b.q.board">{{ b.q.label.toUpperCase() }}</span><span style="font-size: 11px; color: #C9B8A6">{{ b.q.scope }}</span></div>
           @for (it of b.items; track it.t) {
             <span class="pop" style="font-size: 13px; font-weight: 600; line-height: 1.3; padding: 7px 9px; border-radius: 6px; color: #231417" [style.background]="it.ok ? '#FBF5EC' : '#FFE3DC'">{{ it.t }}</span>
           }

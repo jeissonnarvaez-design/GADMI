@@ -105,6 +105,12 @@ export async function createStudent({ nombre, codigo, correo, grupo, periodo, pa
   });
 }
 
+export async function updateStudentName(id, nombre) {
+  const s = await getStudent(id);
+  if (!s) throw new HttpError(404, 'Estudiante no encontrado.');
+  await est(id).update({ nombre });
+}
+
 /** Privacidad, preferencias y carta de la junta (las fechas solo se guardan la primera vez). */
 export async function updateOnboarding(id, { aceptaPrivacidad, preferencias, cartaFirmada, tourVisto }) {
   const s = await getStudent(id);

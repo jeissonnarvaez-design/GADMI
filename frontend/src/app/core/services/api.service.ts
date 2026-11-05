@@ -174,6 +174,9 @@ export class ApiService {
     return this.quiet(this.http.put(`${API_URL}/estudiante/insignias`, { insignias: badges }));
   }
 
+  cambiarNombre(nombre: string) {
+    return this.loud(this.http.put<{ ok: boolean; nombre: string }>(`${API_URL}/estudiante/nombre`, { nombre }));
+  }
   mensajes() {
     return this.quiet(this.http.get<BoardMessage[]>(`${API_URL}/estudiante/mensajes`));
   }

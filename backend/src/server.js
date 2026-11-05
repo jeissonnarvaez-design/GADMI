@@ -32,6 +32,11 @@ function publicStudent(r) {
  * Periodo académico actual («2026-2»). Se puede fijar con PERIODO_ACADEMICO en backend/.env;
  * si no, se calcula con la fecha (enero–junio = 1, julio–diciembre = 2).
  */
+/** Nombre sin espacios de más: «  laura   gómez » → «laura gómez». */
+const limpiarNombre = (n) => String(n ?? '').trim().replace(/\s+/g, ' ');
+/** Nombre completo = al menos nombre y un apellido (dos palabras de 2 letras o más). */
+const nombreCompleto = (n) => limpiarNombre(n).split(' ').filter((p) => p.length >= 2).length >= 2;
+
 /** Grupo en un formato único: «g 1», «1» o «G1» → «G1». */
 function normGrupo(g) {
   const t = String(g ?? '').trim().toUpperCase().replace(/\s+/g, '');
@@ -114,8 +119,9 @@ app.post('/api/auth/estudiante/registro', wrap(async (req, res) => {
   if (!nombre || !codigo || !grupo || !isUaoEmail(correo) || String(password ?? '').length < 6) {
     return res.status(400).json({ error: 'Datos incompletos, correo no institucional o contraseña de menos de 6 caracteres.' });
   }
+  if (!nombreCompleto(nombre)) return res.status(400).json({ error: 'Escribe tu nombre y tus apellidos completos: así aparecerán en el certificado.' });
   const s = await store.createStudent({
-    nombre: nombre.trim(), codigo: codigo.trim(), correo: correo.trim().toLowerCase(), grupo: normGrupo(grupo), periodo: periodoActual(), passwordHash: hashPassword(password),
+    nombre: limpiarNombre(nombre), codigo: codigo.trim(), correo: correo.trim().toLowerCase(), grupo: normGrupo(grupo), periodo: periodoActual(), passwordHash: hashPassword(password),
   });
   res.status(201).json({ token: createToken(s.id, 'estudiante'), estudiante: publicStudent(s) });
 }));
@@ -157,6 +163,14 @@ app.put('/api/estudiante/bitacoras', estudiante, wrap(async (req, res) => {
   if (!moduloId || !Array.isArray(respuestas)) return res.status(400).json({ error: 'Bitácora inválida.' });
   await store.saveReflection(req.userId, Number(moduloId), respuestas.map(String));
   res.json({ ok: true });
+}));
+
+/** Corregir el nombre (nombre y apellidos completos) para el certificado. */
+app.put('/api/estudiante/nombre', estudiante, wrap(async (req, res) => {
+  const nombre = limpiarNombre(req.body?.nombre);
+  if (!nombreCompleto(nombre)) return res.status(400).json({ error: 'Escribe tu nombre y tus apellidos completos.' });
+  await store.updateStudentName(req.userId, nombre);
+  res.json({ ok: true, nombre });
 }));
 
 /** Mensajes de la junta para el «!» de la Ruta (colección «mensajes» de Firestore). */
