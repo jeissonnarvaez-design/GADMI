@@ -46,7 +46,7 @@
         <button type="button" class="gbtn" (click)="check()" style="min-height: 50px; padding: 0 22px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">{{ attempts().length ? 'Revisar (2.º intento)' : 'Revisar' }}</button>
       }
       @if (checked()) {
-        <a class="gbtn glow pop" [routerLink]="after().link" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 11px">▶ {{ after().label }}</span></a>
+        <a class="gbtn glow pop" [routerLink]="after().link" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; background: #FBF5EC; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 11px">▶ {{ after().label }}</span></a>
       }
     </div>
   </main>

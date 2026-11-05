@@ -149,7 +149,7 @@ export const MODULES: ModuleMeta[] = [
         code: '2.4',
         title: 'Stakeholders',
         points: 50,
-        reason: 'Aparece en la tabla de puntos, pero el documento aún no tiene su descripción.',
+        reason: 'Aparece en la tabla de granos, pero el documento aún no tiene su descripción.',
       },
     ],
     reflections: [

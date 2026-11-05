@@ -98,7 +98,7 @@ export class PresupuestoVerdeExercise {
         points,
         max: 50,
         items,
-        summary: points === 50 ? 'Presupuesto verde en equilibrio: impacto ambiental, social y económico con datos.' : `Tu presupuesto obtiene ${points} de 50 PE.`,
+        summary: points === 50 ? 'Presupuesto verde en equilibrio: impacto ambiental, social y económico con datos.' : `Tu presupuesto obtiene ${points} de 50 granos.`,
         flags: { noCampana, todasLasMetas: points === 50 },
       },
       answers: this.selected(),

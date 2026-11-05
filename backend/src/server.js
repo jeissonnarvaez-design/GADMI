@@ -217,7 +217,7 @@ app.put('/api/docente/bitacoras/:estudianteId/:moduloId', docente, wrap(async (r
 /** Exportar notas en CSV (separador «;» para Excel en español). */
 app.get('/api/docente/export.csv', docente, wrap(async (req, res) => {
   const rows = await store.courseOverview(req.query.grupo);
-  const head = ['Código', 'Nombre', 'Correo', 'Grupo', 'Nota M1', 'Nota M2', 'Nota M3', 'Nota M4', 'PE totales', 'PE posibles', 'Nota global', 'Bitácoras completas'];
+  const head = ['Código', 'Nombre', 'Correo', 'Grupo', 'Nota M1', 'Nota M2', 'Nota M3', 'Nota M4', 'Granos totales', 'Granos posibles', 'Nota global', 'Bitácoras completas'];
   const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const num = (v) => (v === null || v === undefined ? '' : String(v).replace('.', ','));
   const lines = rows.map((r) => [r.codigo, r.nombre, r.correo, r.grupo, ...r.modulos.map((m) => num(m.nota)), num(r.puntos), num(r.puntosMax), num(r.nota), r.bitacoras].map(esc).join(';'));

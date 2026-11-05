@@ -1,45 +1,35 @@
 {
-  "id": "m1-brujula", "code": "1.1", "title": "La brújula", "template": "tarjetas", "max": 60,
-  "who": "teo",
-  "prompt": "Mis ideas están revueltas. ¿Dónde va cada una?",
-  "listen": "Mis ideas están revueltas. ¿Dónde va cada una? Misión, visión, objetivo, o no va.",
-  "endTitles": { "perfect": "¡Brújula clara!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "rounds": [
-    {
-      "zones": [
-        { "id": "m", "label": "Misión", "sub": "lo que hacemos hoy", "icon": "M4 21V4M4 4h12l-2 4 2 4H4" },
-        { "id": "v", "label": "Visión", "sub": "a dónde vamos", "icon": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" },
-        { "id": "o", "label": "Objetivo", "sub": "medible y con fecha", "icon": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01" },
-        { "id": "n", "label": "No va", "sub": "no orienta", "icon": "M6 6l12 12M18 6L6 18", "plain": true }
-      ],
-      "zoneHints": { "m": "¿Dice lo que la empresa hace hoy?", "v": "¿Habla de un futuro con fecha?", "o": "¿Se puede medir y tiene fecha?", "n": "¿De verdad orienta las decisiones?" },
-      "cards": [
-        { "id": "b1", "text": "Transformamos cacao fino del Pacífico en chocolates de origen, con pago justo a las familias y bajo impacto ambiental.", "answer": "m", "points": 4, "explanation": "Dice qué hace la empresa hoy, para quién y cómo." },
-        { "id": "b3", "text": "Reducir 20 % la energía por tonelada antes de diciembre de 2027.", "answer": "o", "points": 4, "explanation": "Es medible y tiene plazo." },
-        { "id": "b7", "text": "¡El sabor que te enamora!", "answer": "n", "points": 4, "explanation": "Es un eslogan: comunica, pero no orienta decisiones." },
-        { "id": "b2", "text": "En 2030 seremos la marca de chocolate de origen más reconocida del suroccidente por su trazabilidad.", "answer": "v", "points": 4, "explanation": "Describe un futuro deseado con fecha." },
-        { "id": "b4", "text": "Capacitar al 100 % de las 120 familias en buenas prácticas durante 2027.", "answer": "o", "points": 4, "explanation": "Es medible y tiene plazo." },
-        { "id": "b8", "text": "Honestidad", "answer": "n", "points": 4, "explanation": "Es un valor: acompaña la brújula, pero no es misión, visión ni objetivo." },
-        { "id": "b5", "text": "Aumentar 15 % las ventas nacionales en 2027.", "answer": "o", "points": 4, "explanation": "Es medible y tiene plazo." },
-        { "id": "b9", "text": "Comprar dos tostadoras nuevas la próxima semana.", "answer": "n", "points": 4, "explanation": "Es una acción operativa, no un objetivo." },
-        { "id": "b6", "text": "Adoptar código de ética y canal de denuncias, y publicar el primer informe de sostenibilidad antes de junio de 2027.", "answer": "o", "points": 4, "explanation": "Es verificable y tiene plazo." }
-      ]
-    },
-    {
-      "prompt": "Ahora, ¿a qué dimensión apunta cada objetivo?",
-      "zones": [
-        { "id": "ambiental", "label": "Ambiental", "sub": "planeta", "icon": "M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" },
-        { "id": "social", "label": "Social", "sub": "personas", "icon": "M9 7a3 3 0 1 0 0 .01M3 20v-1a6 6 0 0 1 12 0v1" },
-        { "id": "economica", "label": "Económica", "sub": "negocio", "icon": "M4 17l6-6 4 4 6-8M14 7h6v6" },
-        { "id": "gobernanza", "label": "Gobernanza", "sub": "reglas claras", "icon": "M12 3v18M5 7h14M5 7l-3 7h6zM19 7l-3 7h6z" }
-      ],
-      "zoneHints": { "ambiental": "Piensa en el efecto principal, no en los indirectos.", "social": "Piensa en el efecto principal, no en los indirectos.", "economica": "Piensa en el efecto principal, no en los indirectos.", "gobernanza": "Piensa en el efecto principal, no en los indirectos." },
-      "cards": [
-        { "id": "energia", "text": "Objetivo: reducir 20 % la energía por tonelada.", "answer": "ambiental", "points": 6, "explanation": "Ahorrar energía tiene efectos sociales indirectos, pero su efecto principal es ambiental: menos consumo y menos emisiones." },
-        { "id": "familias", "text": "Objetivo: capacitar al 100 % de las familias.", "answer": "social", "points": 6, "explanation": "Mejora las condiciones de las familias productoras." },
-        { "id": "ventas", "text": "Objetivo: +15 % de ventas nacionales.", "answer": "economica", "points": 6, "explanation": "Es un resultado económico." },
-        { "id": "gobernanza", "text": "Objetivo: código de ética, canal de denuncias e informe.", "answer": "gobernanza", "points": 6, "explanation": "Son reglas y transparencia: gobernanza." }
-      ]
-    }
-  ]
+  "_nota": "Contenido oficial de la profesora: no modificar textos, respuestas ni granos.",
+  "id": "m1-brujula",
+  "code": "1.1",
+  "template": "brujula",
+  "title": "La brújula",
+  "max": 60,
+  "puntos": { "fase1": 4, "fase2": 6 },
+  "zonas": [
+    ["m", "Misión", "lo que hacemos hoy", "M4 21V4M4 4h12l-2 4 2 4H4"],
+    ["v", "Visión", "a dónde vamos", "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"],
+    ["o", "Objetivo", "medible y con fecha", "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01"],
+    ["n", "No va", "no orienta", "M6 6l12 12M18 6L6 18"]
+  ],
+  "notas": [
+    ["Transformamos cacao fino del Pacífico en chocolates de origen, con pago justo a las familias y bajo impacto ambiental.", "m", "Dice qué hace la empresa hoy, para quién y cómo."],
+    ["Reducir 20 % la energía por tonelada antes de diciembre de 2027.", "o", "Es medible y tiene plazo."],
+    ["¡El sabor que te enamora!", "n", "Es un eslogan: comunica, pero no orienta decisiones."],
+    ["En 2030 seremos la marca de chocolate de origen más reconocida del suroccidente por su trazabilidad.", "v", "Describe un futuro deseado con fecha."],
+    ["Capacitar al 100 % de las 120 familias en buenas prácticas durante 2027.", "o", "Es medible y tiene plazo."],
+    ["Honestidad", "n", "Es un valor: acompaña la brújula, pero no es misión, visión ni objetivo."],
+    ["Aumentar 15 % las ventas nacionales en 2027.", "o", "Es medible y tiene plazo."],
+    ["Comprar dos tostadoras nuevas la próxima semana.", "n", "Es una acción operativa, no un objetivo."],
+    ["Adoptar código de ética y canal de denuncias, y publicar el primer informe de sostenibilidad antes de junio de 2027.", "o", "Es verificable y tiene plazo."]
+  ],
+  "pistas": { "m": "¿Dice lo que la empresa hace hoy?", "v": "¿Habla de un futuro con fecha?", "o": "¿Se puede medir y tiene fecha?", "n": "¿De verdad orienta las decisiones?" },
+  "objetivos": [[1, "ENERGÍA", "a"], [4, "FAMILIAS", "s"], [6, "VENTAS", "e"], [8, "GOBERNANZA", "g"]],
+  "dimensiones": {
+    "a": ["Ambiental", "M12 21v-8M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 13c4 0 6-3 6-7-4 0-6 3-6 7z"],
+    "s": ["Social", "M9 7a3 3 0 1 0 0 .1M3 20v-1a6 6 0 0 1 12 0v1M17 11a2.5 2.5 0 1 0 0-.1M15 20v-1a4 4 0 0 1 6-3.5"],
+    "e": ["Económica", "M4 17l6-6 4 4 6-8M14 7h6v6"],
+    "g": ["Gobernanza", "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"]
+  },
+  "ordenDimensiones": ["s", "g", "a", "e"]
 }

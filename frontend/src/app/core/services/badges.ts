@@ -28,10 +28,10 @@ export function computeBadges(p: ProgressService): Badge[] {
   });
 
   return [
-    { id: 'brujula-clara', name: 'Brújula clara', criterion: 'Módulo 1 con 200 PE o más (80 %).', earned: pct(1) >= 0.8 },
-    { id: 'arquitectura-verde', name: 'Arquitectura verde', criterion: 'Módulo 2 con 80 % o más de sus PE.', earned: pct(2) >= 0.8 },
-    { id: 'liderazgo-proposito', name: 'Liderazgo con propósito', criterion: 'Módulo 3 con 80 % o más de sus PE.', earned: pct(3) >= 0.8 },
-    { id: 'mirada-esg', name: 'Mirada ESG', criterion: 'Módulo 4 con 80 % o más de sus PE.', earned: pct(4) >= 0.8 },
+    { id: 'brujula-clara', name: 'Brújula clara', criterion: 'Módulo 1 con 200 granos o más (80 %).', earned: pct(1) >= 0.8 },
+    { id: 'arquitectura-verde', name: 'Arquitectura verde', criterion: 'Módulo 2 con 80 % o más de sus granos.', earned: pct(2) >= 0.8 },
+    { id: 'liderazgo-proposito', name: 'Liderazgo con propósito', criterion: 'Módulo 3 con 80 % o más de sus granos.', earned: pct(3) >= 0.8 },
+    { id: 'mirada-esg', name: 'Mirada ESG', criterion: 'Módulo 4 con 80 % o más de sus granos.', earned: pct(4) >= 0.8 },
     {
       id: 'detector-greenwashing',
       name: 'Detector/a de greenwashing',
@@ -63,7 +63,7 @@ export function computeBadges(p: ProgressService): Badge[] {
     {
       id: 'mejora-continua',
       name: 'Mejora continua',
-      criterion: 'Sube 20 PE o más en un ejercicio al reintentarlo.',
+      criterion: 'Sube 20 granos o más en un ejercicio al reintentarlo.',
       earned: anyImproved,
     },
     {

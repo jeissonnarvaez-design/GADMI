@@ -40,5 +40,5 @@ export class ObjetivoCurso {
   ok = output();
   full = signal(false);
   readonly phases = [['Planeación', '#AC0B32'], ['Organización', '#8A1428'], ['Dirección', '#9A5B2E'], ['Control', '#231417']];
-  readonly dims = [['Social', '#FF836C'], ['Económica', '#231417'], ['Ambiental', '#3F7E44'], ['Gobernanza', '#8A1428']];
+  readonly dims = [['Social', '#9A5B2E'], ['Económica', '#231417'], ['Ambiental', '#3F7E44'], ['Gobernanza', '#8A1428']];
 }

@@ -170,7 +170,8 @@ export class ProgressService {
         total: m.exercises.length,
         tier: moduleTier(points, max),
         done: completed === m.exercises.length,
-        firstTry: m.exercises.every((e) => this.attempts(e.id).length === 1),
+        // «A la primera»: un solo intento y sin segundos intentos dentro del reto (retos rediseñados).
+        firstTry: m.exercises.every((e) => this.attempts(e.id).length === 1 && !this.flag(e.id, 'segundoIntento')),
       };
     });
   });

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { LogoUao } from '../../shared/logo-uao';
 import { ApiService, PublicCertificate, apiError, normalizarCodigo } from '../../core/services/api.service';
 
 type Estado = 'valido' | 'anulado' | 'nada';
@@ -16,9 +17,10 @@ const fecha = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('e
  */
 @Component({
   selector: 'app-verificar',
+  imports: [LogoUao],
   template: `
     <div style="min-height: 100vh; background: #FBF5EC; display: flex; flex-direction: column; align-items: center; padding: 48px 32px; box-sizing: border-box; gap: 24px; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
-      <img src="/assets/logo-uao.png" alt="Universidad Autónoma de Occidente" style="height: 30px; width: auto">
+      <app-logo-uao size="lg" />
       <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; text-align: center">Verificar un certificado GADMI</h1>
       <form (submit)="$event.preventDefault(); check()" style="display: flex; gap: 10px; width: 100%; max-width: 520px">
         <label style="flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 700">Código del certificado
@@ -59,7 +61,7 @@ export class VerificarPage {
     if (!c || this.estado() === 'nada') return [];
     const base: [string, string][] = [['Estudiante', c.estudiante], ['Periodo y grupo', c.periodo + ' · ' + c.grupo]];
     if (c.estado === 'anulado') return [...base, ['Anulado', fecha(c.fechaAnulacion)]];
-    return [...base, ['Nivel', c.nivel], ['Puntos', c.puntos.toLocaleString('es-CO') + ' / ' + c.max.toLocaleString('es-CO')], ['Emitido', fecha(c.fecha)]];
+    return [...base, ['Nivel', c.nivel], ['Granos', c.puntos.toLocaleString('es-CO') + ' / ' + c.max.toLocaleString('es-CO')], ['Emitido', fecha(c.fecha)]];
   });
 
   ngOnInit() {

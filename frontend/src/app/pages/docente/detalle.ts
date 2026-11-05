@@ -3,17 +3,19 @@ import { RouterLink } from '@angular/router';
 import { MODULES, getModule } from '../../core/data/modules';
 import { ApiService, BitacoraRow, StudentDetail, apiError } from '../../core/services/api.service';
 import { Accesibilidad } from '../../shared/accesibilidad';
+import { LogoUao } from '../../shared/logo-uao';
 import { exportCsv } from './panel';
 
 /** Detalle del estudiante (DocenteDetalle.dc.html): detalle, bitácoras y exportar. */
 @Component({
   selector: 'app-detalle-docente',
-  imports: [RouterLink, Accesibilidad],
+  imports: [RouterLink, Accesibilidad, LogoUao],
   template: `
     <div style="min-height: 100vh; background: #FBF5EC; display: flex; flex-direction: column; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
       <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 32px; background: #FFFFFF; border-bottom: 1px solid #EADFD0">
         <div style="display: flex; align-items: center; gap: 14px">
           <a routerLink="/docente" aria-label="Volver al panel" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #EADFD0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#231417" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></a>
+          <app-logo-uao size="sm" class="logo-det" />
           <div style="display: flex; flex-direction: column"><span style="font-size: 13px; color: #5C4A4D">Vista docente</span><span style="font-size: 18px; font-weight: 800">{{ d()?.estudiante?.nombre ?? '…' }} · Grupo {{ d()?.estudiante?.grupo ?? '' }}</span></div>
         </div>
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
@@ -31,7 +33,7 @@ import { exportCsv } from './panel';
           @if (tab() === 0) {
             <div style="display: flex; flex-wrap: wrap; gap: 16px">
               <section style="flex: 1 1 340px; background: #FFFFFF; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
-                <span style="font-size: 17px; font-weight: 800">Puntaje por reto</span>
+                <span style="font-size: 17px; font-weight: 800">Granos por reto</span>
                 @for (r of retos(); track r.n) {
                   <div style="display: grid; grid-template-columns: 1fr 70px 80px; gap: 8px; align-items: center; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #F1E8DC"><span style="font-weight: 600">{{ r.n }}</span><span>{{ r.p }}</span><span style="color: #5C4A4D">{{ r.i }}</span></div>
                 }
@@ -74,7 +76,7 @@ import { exportCsv } from './panel';
           @if (tab() === 2) {
             <section style="background: #FFFFFF; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 14px; max-width: 640px">
               <span style="font-size: 20px; font-weight: 800">Exportar notas del grupo</span>
-              <span style="font-size: 15px; color: #3D2C2F">Un archivo con nombre, código, puntos por módulo, nivel y estado del certificado.</span>
+              <span style="font-size: 15px; color: #3D2C2F">Un archivo con nombre, código, granos por módulo, nivel y estado del certificado.</span>
               <button type="button" (click)="export()" style="align-self: flex-start; min-height: 50px; padding: 0 22px; border-radius: 999px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Descargar CSV</button>
               <span style="font-size: 14px; color: #5C4A4D; padding: 12px 14px; border-radius: 14px; background: #FBF5EC">A futuro: enviar las notas directo al libro de calificaciones de Moodle.</span>
             </section>

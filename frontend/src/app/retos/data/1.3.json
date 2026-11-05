@@ -1,38 +1,40 @@
 {
-  "id": "m1-foda", "code": "1.3", "title": "Mira tu entorno: FODA", "template": "cuadrantes", "max": 80,
-  "who": "teo",
-  "prompt": "Lo que la empresa controla es interno. Lo que pasa afuera es externo.",
-  "endTitles": { "perfect": "¡Entorno claro!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "quadrants": [
-    { "id": "F", "label": "Fortaleza", "bg": "#3F7E44", "board": "#56C02B", "scope": "Interno", "hint": "La empresa lo controla y le ayuda." },
-    { "id": "O", "label": "Oportunidad", "bg": "#1F6B8A", "board": "#7FC4E0", "scope": "Externo", "hint": "Pasa afuera y puede aprovecharse." },
-    { "id": "D", "label": "Debilidad", "bg": "#AC0B32", "board": "#FF836C", "scope": "Interno", "hint": "La empresa lo controla, pero le juega en contra." },
-    { "id": "A", "label": "Amenaza", "bg": "#6B3B2A", "board": "#D9A570", "scope": "Externo", "hint": "Pasa afuera y puede hacer daño." }
+  "_nota": "Contenido oficial de la profesora: no modificar textos, respuestas ni granos.",
+  "id": "m1-foda",
+  "code": "1.3",
+  "template": "foda",
+  "title": "Análisis FODA",
+  "max": 80,
+  "puntos": { "tarjeta": 5, "estrategia": 20 },
+  "cuadrantes": {
+    "F": ["Fortalezas", "Factores internos positivos", "#3F7E44", "M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.8l-5.3 2.6 1.2-6-4.5-4.1 6-.7z"],
+    "D": ["Debilidades", "Factores internos negativos", "#AC0B32", "M12 3l9 16H3zM12 10v4M12 17h.01"],
+    "O": ["Oportunidades", "Factores externos favorables", "#2F6F8A", "M7 17L17 7M9 7h8v8"],
+    "A": ["Amenazas", "Factores externos desfavorables", "#8A5A2E", "M7 16a4 4 0 1 1 .5-8A5 5 0 0 1 17 9a3.5 3.5 0 0 1 0 7M12 13l-2 4h4l-2 4"]
+  },
+  "tarjetas": [
+    ["Relación directa y de largo plazo con 120 familias productoras", "F", 8],
+    ["Tostadoras antiguas con alto consumo de energía", "D", 7],
+    ["Demanda creciente de chocolate de origen en Europa y Estados Unidos", "O", 8],
+    ["El Reglamento europeo sobre deforestación exige demostrar que el cacao no proviene de zonas deforestadas", "A", 15],
+    ["Trazabilidad de cada lote desde la finca hasta la barra", "F", 12],
+    ["Incentivos tributarios a la energía renovable (Ley 1715 de 2014)", "O", 7],
+    ["Rotación del personal operativo del 28 % al año", "D", 8],
+    ["Variabilidad climática que reduce las cosechas", "A", 13],
+    ["Equipo con conocimiento técnico en fermentación y tostión", "F", 9],
+    ["Consumidores jóvenes que prefieren marcas con propósito", "O", 12],
+    ["No existe informe de sostenibilidad ni canal de denuncias", "D", 16],
+    ["Competidores con precios bajos y producto importado", "A", 8]
   ],
-  "cardPoints": 5,
-  "cards": [
-    { "id": "c1", "text": "Relación de largo plazo con 120 familias productoras", "answer": "F", "ods": 8 },
-    { "id": "c4", "text": "Tostadoras antiguas con alto consumo de energía", "answer": "D", "ods": 7 },
-    { "id": "c7", "text": "Demanda creciente de chocolate de origen en Europa y EE. UU.", "answer": "O", "ods": 8 },
-    { "id": "c10", "text": "El reglamento europeo exige probar que el cacao no viene de zonas deforestadas", "answer": "A", "ods": 15 },
-    { "id": "c2", "text": "Trazabilidad de cada lote, de la finca a la barra", "answer": "F", "ods": 12 },
-    { "id": "c8", "text": "Incentivos tributarios a la energía renovable (Ley 1715)", "answer": "O", "ods": 7, "trap": { "pick": "F", "text": "La ley existe afuera: la empresa no la controla. Es oportunidad." } },
-    { "id": "c5", "text": "Rotación del personal operativo del 28 % al año", "answer": "D", "ods": 8 },
-    { "id": "c11", "text": "Variabilidad climática que reduce las cosechas", "answer": "A", "ods": 13 },
-    { "id": "c3", "text": "Equipo con conocimiento técnico en fermentación y tostión", "answer": "F", "ods": 9 },
-    { "id": "c9", "text": "Consumidores jóvenes que prefieren marcas con propósito", "answer": "O", "ods": 12 },
-    { "id": "c6", "text": "No hay informe de sostenibilidad ni canal de denuncias", "answer": "D", "ods": 16 },
-    { "id": "c12", "text": "Competidores con precios bajos y producto importado", "answer": "A", "ods": 8 }
+  "incentivo": 5,
+  "porQueIncentivo": "Los incentivos existen afuera: la empresa no los controla. Solo cuando CACAO Raíz los aprovecha se convierten en una ventaja interna.",
+  "porQue": { "F": "La empresa lo controla y le ayuda.", "D": "La empresa lo controla, pero le juega en contra.", "O": "Pasa afuera y puede aprovecharse.", "A": "Pasa afuera y puede hacer daño." },
+  "estrategias": [
+    ["A", "Usar la trazabilidad lote a lote para ingresar al mercado europeo de chocolate de origen con una etiqueta verificable.", true, "¡Exacto! Cruzas una fortaleza con una oportunidad."],
+    ["B", "Cambiar las tostadoras para no perder clientes frente a competidores baratos.", false, "Eso cruza una debilidad con una amenaza (DA)."],
+    ["C", "Bajar precios para competir con los importados.", false, "No usa ninguna fortaleza ni es sostenible."],
+    ["D", "Capacitar al personal para reducir la rotación.", false, "Ataca una debilidad, pero sin cruce externo."]
   ],
-  "strategy": {
-    "prompt": "¿Qué estrategia cruza mejor una fortaleza con una oportunidad?",
-    "points": 20,
-    "hint": "Busca la que usa algo que la empresa ya hace bien para aprovechar algo de afuera.",
-    "options": [
-      { "id": "a", "text": "Usar la trazabilidad lote a lote para entrar al mercado europeo con una etiqueta verificable.", "correct": true, "feedback": "¡Exacto! Cruzas una fortaleza con una oportunidad." },
-      { "id": "b", "text": "Cambiar las tostadoras para no perder clientes frente a competidores baratos.", "correct": false, "feedback": "Eso cruza una debilidad con una amenaza (DA)." },
-      { "id": "c", "text": "Bajar precios para competir con los importados.", "correct": false, "feedback": "No usa ninguna fortaleza ni es sostenible." },
-      { "id": "d", "text": "Capacitar al personal para reducir la rotación.", "correct": false, "feedback": "Ataca una debilidad, pero sin cruce externo." }
-    ]
-  }
+  "consigna": "Antes de decidir, visualiza CACAO Raíz S.A.S. en su entorno interno y externo. Recuerda, lo que la empresa es capaz de controlar es interno y lo que pasa en su entorno fuera, es externo.",
+  "consignaB": "Tienes presupuesto para una sola apuesta este año. ¿Cuál eliges?"
 }

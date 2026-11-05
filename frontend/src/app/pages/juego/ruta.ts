@@ -7,9 +7,9 @@ import { metersAt } from '../../core/services/company';
 import { ProgressService } from '../../core/services/progress.service';
 import { RETOS_JSON } from '../../retos/registry';
 import { Accesibilidad } from '../../shared/accesibilidad';
-import { ObjetivoCurso } from '../../shared/objetivo-curso';
+import { LogoUao } from '../../shared/logo-uao';
 import { Tour, TourStep } from '../../shared/tour';
-import { MapaIlustracion, SceneLayers, ZoneId, ZoneState } from './mapa/mapa-ilustracion';
+import { MapLayers, MapaIlustracion, SceneLayers, ZoneId, ZoneState } from './mapa/mapa-ilustracion';
 
 const YEARS = [2026, 2027, 2028, 2029, 2030];
 const PHASE = ['Diagnóstico', 'Planeación', 'Organización', 'Dirección', 'Control'];
@@ -24,24 +24,25 @@ const MTIP: Record<Dim, string> = {
   'Económico': 'Ventas y margen. Sin dinero no hay sostenibilidad posible.',
 };
 /** ODS: número, reto que lo logra (con nota ≥ 3) y nombre. */
+/** Colores oficiales de cada ODS (cuando ya se logró). */
+const ODS_COL: Record<number, string> = { 7: '#FCC30B', 8: '#A21942', 12: '#BF8B2E', 13: '#3F7E44', 15: '#56C02B' };
 const ODS: [number, string, string][] = [[7, 'm2-presupuesto-verde', 'Energía asequible y no contaminante'], [8, 'm3-crisis', 'Trabajo decente'], [12, 'm1-valores', 'Producción y consumo responsables'], [13, 'm4-cuellos-botella', 'Acción por el clima'], [15, 'm1-foda', 'Vida de ecosistemas terrestres']];
 
 /** Un reto suelto (módulo 1) o un módulo completo (2–4) dentro del menú de una zona. */
 type Item = { kind: 'reto'; code: string } | { kind: 'modulo'; module: number };
 const ZONES: { id: ZoneId; name: string; x: string; y: string; icon: string; items: Item[] }[] = [
-  { id: 'sala', name: 'Sala de juntas', x: '57%', y: '60%', icon: 'M4 21V4M4 4h12l-2 4 2 4H4', items: [{ kind: 'reto', code: '1.1' }, { kind: 'reto', code: '1.4' }, { kind: 'modulo', module: 4 }] },
-  { id: 'mercado', name: 'Mercado', x: '16%', y: '30%', icon: 'M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', items: [{ kind: 'reto', code: '1.2' }, { kind: 'reto', code: '1.3' }] },
-  { id: 'planta', name: 'Planta', x: '80%', y: '36%', icon: 'M3 21V11l5-3v3l5-3v3l5-3v13zM3 21h18', items: [{ kind: 'modulo', module: 2 }] },
-  { id: 'finca', name: 'Finca', x: '24%', y: '72%', icon: 'M3 11l9-7 9 7M5 10v10h14V10', items: [{ kind: 'modulo', module: 3 }] },
+  { id: 'sala', name: 'Sala de juntas', x: '66%', y: '70%', icon: 'M4 21V4M4 4h12l-2 4 2 4H4', items: [{ kind: 'reto', code: '1.1' }, { kind: 'reto', code: '1.4' }, { kind: 'modulo', module: 4 }] },
+  { id: 'mercado', name: 'Mercado', x: '24%', y: '75%', icon: 'M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', items: [{ kind: 'reto', code: '1.2' }, { kind: 'reto', code: '1.3' }] },
+  { id: 'planta', name: 'Planta', x: '80%', y: '38%', icon: 'M3 21V11l5-3v3l5-3v3l5-3v13zM3 21h18', items: [{ kind: 'modulo', module: 2 }] },
+  { id: 'finca', name: 'Finca', x: '31%', y: '33%', icon: 'M3 11l9-7 9 7M5 10v10h14V10', items: [{ kind: 'modulo', module: 3 }] },
 ];
 const TOOLS = [
   ['Mis logros', 'logros', 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z'],
   ['Bitácora', 'bitacora', 'M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4zM8 9h8M8 13h6'],
-  ['Objetivo del curso', 'objetivo', 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z'],
 ];
 const TOUR: TourStep[] = [
   { target: 'tiempo', text: 'Tus años como gerente. Los pasados se pueden revivir.' },
-  { target: 'mapa', text: 'Toca una zona con borde coral para ver sus retos.' },
+  { target: 'mapa', text: 'Toca una zona con borde rojo para ver sus retos.' },
   { target: 'tablero', text: 'Así va tu empresa. Toca un medidor para saber qué mide.' },
   { target: 'mision', text: 'Aquí sigues donde quedaste.' },
   { target: 'accesibilidad', text: 'Ajusta subtítulos, voz y texto cuando quieras.' },
@@ -51,7 +52,7 @@ type RetoState = 'open' | 'done' | 'locked';
 /** Ruta (Mapa.dc.html): pantalla central del juego. */
 @Component({
   selector: 'app-ruta',
-  imports: [RouterLink, Accesibilidad, MapaIlustracion, ObjetivoCurso, Tour],
+  imports: [RouterLink, Accesibilidad, MapaIlustracion, Tour, LogoUao],
   templateUrl: './ruta.html',
   styles: `
     a{color:#8A1428} a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:3px solid #FF836C;outline-offset:3px} button{font-family:inherit}
@@ -61,20 +62,32 @@ type RetoState = 'open' | 'done' | 'locked';
     .pulse{animation:pulse 1.6s ease-out infinite}
     .float{animation:float 5s ease-in-out infinite}
     .up{animation:up .35s cubic-bezier(.2,.7,.2,1) both}
+    .bar{transition:width .8s cubic-bezier(.2,.7,.2,1)}
     .pin{transition:transform .18s}.pin:hover{transform:scale(1.07)}
     .node{transition:transform .18s}.node:hover{transform:scale(1.1)}
     @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
     .bounce{animation:bounce 1.2s ease-in-out infinite}
-    .menu-x{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 10px;border:none;border-top:1px solid #EADFD0;background:transparent;color:#231417;font-size:15px;font-weight:600;cursor:pointer;text-align:left}
-    .mapa{height:618px}.lado{height:618px}
-    @media (max-width: 900px){.mapa{height:520px}.lado{height:auto}.linea{width:24px !important}.nodo{width:64px !important}}
+    .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+    .menu-x{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:0 8px;margin-top:4px;border:none;border-top:1px solid #4A2A2F;border-radius:6px;background:transparent;color:#FBF5EC;font-size:15px;font-weight:700;cursor:pointer;text-align:left}
+    .menu-x:hover{background:rgba(255,131,108,.12)}
+    .mx-ic{width:32px;height:32px;flex-shrink:0;border-radius:6px;background:#4A2A2F;display:flex;align-items:center;justify-content:center}
+    .mapa{height:calc(100vh - 160px);min-height:620px}
+    @media (max-width: 900px){
+      .mapa{height:auto;min-height:640px}
+      .lado{position:static !important;flex-direction:column;align-items:stretch !important;order:-1}
+      .tablero{flex-wrap:wrap;gap:12px 20px !important}
+      .tablero > button{flex:1 1 40% !important}
+      .ods{position:static !important;flex-direction:row !important;justify-content:space-between}
+    }
     @media (max-width: 560px){
-      .mapa{height:440px}.linea{width:8px !important}.nodo{width:56px !important}
-      .pin{font-size:12px !important;padding:4px 10px 4px 4px !important;gap:6px !important}
-      .pin > span:first-child{width:24px !important;height:24px !important}
+      .mapa{min-height:520px}
+      .linea{width:14px !important}
+      .pin{font-size:12px !important;padding:4px 8px 4px 4px !important;gap:5px !important}
+      .pin > span:first-child{width:22px !important;height:22px !important}
+      .chip{display:none}
       [role=menu],[role=tooltip]{max-width:calc(100vw - 48px)}
     }
-    @media (prefers-reduced-motion: reduce){.pulse,.float,.up,.bounce{animation:none}.pin,.node{transition:none}}
+    @media (prefers-reduced-motion: reduce){.pulse,.float,.up,.bounce{animation:none}.bar,.pin,.node{transition:none}}
   `,
 })
 export class RutaPage {
@@ -91,7 +104,6 @@ export class RutaPage {
   tip = signal<string | null>(null);
   meter = signal<Dim | null>(null);
   event = signal(false);
-  objetivo = signal(false);
   messages = signal<BoardMessage[]>([]);
 
   stats = this.progress.moduleStats;
@@ -104,7 +116,15 @@ export class RutaPage {
   curYear = computed(() => String(YEARS[this.cur()]));
   curPhase = computed(() => PHASE[this.cur()]);
   viewYear = computed(() => YEARS[this.v()]);
-  tools = computed(() => TOOLS.map(([label, key, icon]) => ({ label, key, icon, href: key === 'logros' ? '/logros' : key === 'bitacora' ? '/bitacora/' + Math.max(1, this.cur()) : null })));
+  /** La Bitácora se habilita cuando ya escribiste la primera. */
+  tools = computed(() => {
+    this.stats();
+    const firstBit = [1, 2, 3, 4].find((m) => this.progress.isReflectionComplete(m));
+    return TOOLS.map(([label, key, icon], k) => {
+      const href = key === 'logros' ? '/logros' : firstBit ? '/bitacora/' + Math.max(firstBit, ...[1, 2, 3, 4].filter((m) => this.progress.isReflectionComplete(m))) : null;
+      return { label, key, icon, href, k, tip: !href && this.tip() === 't' + k };
+    });
+  });
 
   years = computed(() =>
     YEARS.map((yr, i) => {
@@ -167,6 +187,14 @@ export class RutaPage {
     return { module: it.module, state, name: codes[0] + ' a ' + codes[codes.length - 1] + ' ' + m.phase, pts: s.max + ' pts', link: '/modulo/' + it.module };
   }
 
+  /** Zona donde está el siguiente reto pendiente. */
+  missionZone = computed(() => {
+    const link = this.mission().link;
+    const code = link.startsWith('/reto/') ? link.slice(6) : null;
+    const mod = link.startsWith('/modulo/') ? Number(link.slice(8)) : null;
+    return ZONES.findIndex((z) => z.items.some((it) => (it.kind === 'reto' ? it.code === code : it.module === mod)));
+  });
+
   zones = computed(() => {
     this.stats();
     const cur = this.cur();
@@ -185,12 +213,17 @@ export class RutaPage {
         : st === 'open' ? '¡Hay retos esperándote!'
         : st === 'done' ? '✓ Zona completada'
         : items.some((x) => x.module === cur) ? 'Sigue en orden: termina el reto anterior.' : 'Vuelves aquí más adelante.';
+      /** La zona de la siguiente misión lleva el rótulo «MISIÓN» y el estado «AHORA». */
+      const mission = this.missionZone() === i;
       return {
-        ...z, st, i, items, sel, tipText, inOrder, zi: tip === 'z' + i || sel ? 4 : 2,
-        aria: z.name + '. ' + tipText,
-        bg: sel ? '#231417' : st === 'locked' ? '#E9E4DE' : '#FFFFFF', fg: sel ? '#FFFFFF' : st === 'locked' ? '#6E6563' : '#231417',
+        ...z, st, i, items, sel, tipText, inOrder, mission, zi: tip === 'z' + i || sel ? 4 : 2,
+        aria: z.name + '. ' + (mission ? 'Aquí está tu siguiente misión. ' : '') + tipText,
+        bg: sel ? '#231417' : st === 'locked' ? '#E9E4DE' : '#FFFFFF', fg: sel ? '#FFFFFF' : st === 'locked' ? '#5C4A4D' : '#231417',
         bd: sel ? '#FF836C' : st === 'open' ? '#FF836C' : st === 'locked' ? '#B5A9A6' : '#3F7E44',
         dot: st === 'open' ? '#AC0B32' : st === 'locked' ? '#9A8F8C' : '#3F7E44',
+        stT: mission ? 'AHORA' : st === 'open' ? 'ABIERTA' : st === 'done' ? 'HECHA' : st === 'done-part' ? 'EN CURSO' : 'BLOQUEADA',
+        stBg: mission ? '#AC0B32' : st === 'open' ? '#AC0B32' : st === 'locked' ? '#6E5458' : '#2C5E31',
+        pulse: st === 'open' || mission,
         pinIcon: st === 'locked' ? 'M5 11h14v10H5zM8 11V8a4 4 0 0 1 8 0v3' : st === 'done' ? 'M5 12l5 5 9-10' : z.icon,
         op: st === 'locked' ? '0.9' : '1',
         menu: sel && (st !== 'locked' || inOrder),
@@ -229,7 +262,7 @@ export class RutaPage {
       const on = Number(ex.charAt(1)) <= v && (this.progress.best(ex)?.grade ?? 0) >= 3;
       return {
         n, delay: i * -0.9 + 's', aria: 'ODS ' + n + ': ' + name + (on ? ' (logrado)' : ' (aún no)'),
-        bg: on ? 'rgba(255,131,108,0.28)' : 'rgba(255,255,255,0.06)', bd: on ? '#FF836C' : 'rgba(255,255,255,0.25)', fg: on ? '#FFFFFF' : '#8C7A7D',
+        bg: on ? ODS_COL[n] : '#FFFFFF', bd: on ? '#FFFFFF' : '#B5A9A6', fg: on ? (n === 7 ? '#231417' : '#FFFFFF') : '#6E5458',
       };
     });
   });
@@ -255,6 +288,22 @@ export class RutaPage {
     return { text: 'Ronda de inversión · 2030', link: '/inversion' };
   });
   modPips = computed(() => [1, 2, 3, 4].map((m) => (m < this.cur() || this.mission().link === '/inversion' ? '#FF836C' : m === this.cur() ? '#FBF5EC' : '#4A2A2F')));
+
+  // ---------- Capas del mapa ilustrado
+  /** % de granos del módulo m (para saber si la zona queda «buena»: ≥ 60 % al cerrarlo). */
+  private pctModulo(m: number) {
+    const s = this.stats()[m - 1];
+    return s.max ? s.points / s.max : 0;
+  }
+  mapLayers = computed<MapLayers>(() => {
+    const v = this.v();
+    const good = (m: number, desde: number) => v >= desde && this.progress.seasonDone(m) && this.pctModulo(m) >= 0.6;
+    const frase = this.progress.lastAnswers<{ text?: Record<string, string> }>('m1-valores')?.text?.['C'] ?? '';
+    return {
+      sala: good(1, 2), mercado: good(1, 2), planta: good(2, 3), finca: good(3, 4),
+      composta: v >= 2, arboles: v >= 4, humo: v < 2 ? 2 : v === 2 ? 1 : 0, frase: frase.trim().slice(0, 40),
+    };
+  });
 
   private host = inject(ElementRef);
 
@@ -285,12 +334,6 @@ export class RutaPage {
     this.event.set(!this.event());
     this.zone.set(null);
   }
-  private injector = inject(Injector);
-  tool(key: string) {
-    if (key !== 'objetivo') return;
-    this.objetivo.set(true);
-    afterNextRender(() => this.host.nativeElement.querySelector('[aria-label="Objetivo del curso"][role="dialog"] button')?.focus(), { injector: this.injector });
-  }
   repeatTour(menu: Accesibilidad) {
     menu.close();
     this.view.set(null);
@@ -303,10 +346,6 @@ export class RutaPage {
     const now = new Date().toISOString();
     this.auth.updateStudent({ tourVisto: now });
     if (this.auth.token()) this.api.saveOnboarding({ tourVisto: now }).subscribe();
-  }
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/ingreso']);
   }
 
   /** Tocar fuera de una zona, del «!» o de un año cierra su menú o mensaje. */
@@ -321,7 +360,6 @@ export class RutaPage {
   }
   @HostListener('document:keydown.escape')
   onEsc() {
-    if (this.objetivo()) this.objetivo.set(false);
     this.zone.set(null);
     this.event.set(false);
     this.tip.set(null);

@@ -25,7 +25,7 @@ export interface TourStep {
         <p id="tour-txt" style="margin: 0; font-size: 16px; font-weight: 700; line-height: 1.35">{{ step().text }}</p>
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
           <button #skip type="button" (click)="close(false)" (keydown)="trap($event)" style="min-height: 44px; padding: 0 12px; border: none; background: transparent; color: #8A1428; font-size: 14px; font-weight: 700; text-decoration: underline; cursor: pointer">Saltar tour</button>
-          <button #next type="button" class="gbtn" (click)="advance()" (keydown)="trap($event)" style="min-height: 44px; padding: 0 18px; border: none; background: #AC0B32; color: #FFFFFF; cursor: pointer"><span class="px" style="font-size: 10px">{{ last() ? '✓ LISTO' : '▶ SIGUIENTE' }}</span></button>
+          <button #next type="button" class="gbtn" (click)="advance()" (keydown)="trap($event)" style="min-height: 44px; padding: 0 18px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 10px">{{ last() ? '✓ LISTO' : '▶ SIGUIENTE' }}</span></button>
         </div>
       </div>
       <div class="sr" aria-live="assertive">{{ announce() }}</div>
@@ -33,13 +33,13 @@ export interface TourStep {
   `,
   styles: `
     .tour-block{position:fixed;inset:0;z-index:1000;background:transparent;cursor:not-allowed}
-    .tour-spot{position:fixed;z-index:1001;border-radius:14px;box-shadow:0 0 0 9999px rgba(26,6,9,.8);outline:3px solid #FF836C;pointer-events:none;transition:all .3s cubic-bezier(.2,.7,.2,1)}
-    .tour-box{position:fixed;z-index:1002;width:min(360px, calc(100vw - 32px));box-sizing:border-box;padding:14px 16px;border-radius:8px;background:#FBF5EC;color:#231417;box-shadow:4px 4px 0 #8A1428;display:flex;flex-direction:column;gap:10px;font-family:'DM Sans',Arial,sans-serif}
+    .tour-spot{position:fixed;z-index:1001;border-radius:14px;box-shadow:0 0 0 9999px rgba(26,6,9,.82);outline:3px solid #FF836C;pointer-events:none;transition:all .3s cubic-bezier(.2,.7,.2,1)}
+    .tour-box{position:fixed;z-index:1002;width:min(360px, calc(100vw - 32px));box-sizing:border-box;padding:14px 16px;border-radius:8px;background:#FFFFFF;color:#231417;border:3px solid #FF836C;box-shadow:6px 6px 0 #8A1428;display:flex;flex-direction:column;gap:10px;font-family:'DM Sans',Arial,sans-serif}
     .tour-box button:focus-visible{outline:3px solid #231417;outline-offset:2px}
     .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
     @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
     .up{animation:up .3s cubic-bezier(.2,.7,.2,1) both}
-    @media (prefers-reduced-motion: reduce){.up{animation:none}.tour-spot{transition:none}}
+    @media (prefers-reduced-motion: reduce){.up{animation:none}.tour-spot{position:fixed;z-index:1001;border-radius:14px;box-shadow:0 0 0 9999px rgba(26,6,9,.82);outline:3px solid #FF836C;pointer-events:none;transition:all .3s cubic-bezier(.2,.7,.2,1)}}
   `,
 })
 export class Tour {

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { LogoUao } from '../../shared/logo-uao';
 import { Personaje } from '../../shared/personaje';
 
 const STEPS = ['Verificando tu cuenta', 'Cargando tu progreso', 'Preparando tu empresa'];
@@ -8,16 +9,16 @@ const STEPS = ['Verificando tu cuenta', 'Cargando tu progreso', 'Preparando tu e
 /** Conectando (Conectando.dc.html): carga mientras se identifica al estudiante. */
 @Component({
   selector: 'app-conectando',
-  imports: [RouterLink, Personaje],
+  imports: [RouterLink, Personaje, LogoUao],
   template: `
     <div style="min-height: 100vh; background: #8A1428; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; box-sizing: border-box; text-align: center; color: #FFFFFF; font-family: 'DM Sans', Arial, sans-serif">
-      <img src="/assets/fondo-cacao.jpg" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55">
+      <img src="/assets/fondo-cacao.jpg" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.22">
       <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(138,20,40,0.8)"></div>
 
       <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 26px">
-        <span style="background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><img src="/assets/logo-uao.png" alt="Universidad Autónoma de Occidente" style="height: 22px; width: auto"></span>
+        <span style="background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><app-logo-uao /></span>
         <div style="position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center">
-          <svg class="spin" width="200" height="200" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"></circle><path d="M50 4 a46 46 0 0 1 46 46" fill="none" stroke="#FF836C" stroke-width="3" stroke-linecap="round"></path></svg>
+          <svg class="spin" width="200" height="200" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"></circle><path d="M50 4 a46 46 0 0 1 46 46" fill="none" stroke="#FBF5EC" stroke-width="3" stroke-linecap="round"></path></svg>
           <app-personaje who="teo-casual" [size]="140" />
         </div>
         <h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF">Conectando con Moodle…</h1>

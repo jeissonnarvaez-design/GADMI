@@ -1,6 +1,6 @@
 {
   "id": "m3-crisis", "code": "3.2", "title": "Liderar en crisis", "template": "cartas", "max": 90,
-  "meters": [ { "label": "Clima laboral", "color": "#FF836C" }, { "label": "Productividad", "color": "#FCC30B" }, { "label": "Reputación", "color": "#56C02B" } ],
+  "meters": [ { "label": "Clima laboral", "color": "#FBF5EC" }, { "label": "Productividad", "color": "#FCC30B" }, { "label": "Reputación", "color": "#56C02B" } ],
   "start": [58, 60, 60],
   "flags": { "sinGreenwashing": { "scenario": "C", "not": "4" } },
   "scenarios": [

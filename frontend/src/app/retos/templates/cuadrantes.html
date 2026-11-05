@@ -27,13 +27,13 @@
 
         @if (phase() === 'strategy') {
           <div class="up" style="display: flex; flex-direction: column; gap: 10px">
-            <span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 4px">PASO 2 · ESTRATEGIA FO</span>
+            <span class="px" style="font-size: 10px; color: #FBF5EC; margin-bottom: 4px">PASO 2 · ESTRATEGIA FO</span>
             @for (s of data().strategy.options; track s.id) {
               <button type="button" class="gbtn" (click)="pickStrategy(s.id)" [style.border]="'3px solid ' + stratBd(s.id, s.correct)" [style.background]="stratBg(s.id, s.correct)" style="text-align: left; min-height: 60px; padding: 10px 14px; color: #231417; font-size: 15px; font-weight: 700; cursor: pointer">{{ s.text }}</button>
             }
             @if (stratChosen()) {
               <span class="pop" aria-live="polite" style="font-size: 15px; font-weight: 700; color: #FBF5EC">{{ stratText() }}</span>
-              <button type="button" class="gbtn glow pop" (click)="finish()" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
+              <button type="button" class="gbtn glow pop" (click)="finish()" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border: none; background: #FBF5EC; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
             }
           </div>
         }

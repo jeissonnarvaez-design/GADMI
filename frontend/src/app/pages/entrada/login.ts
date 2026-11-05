@@ -6,6 +6,7 @@ import { ApiService, apiError } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PreferencesService } from '../../core/services/preferences.service';
 import { Accesibilidad } from '../../shared/accesibilidad';
+import { LogoUao } from '../../shared/logo-uao';
 import { Personaje } from '../../shared/personaje';
 
 type Rol = 'docente' | 'estudiante';
@@ -16,21 +17,25 @@ type Rol = 'docente' | 'estudiante';
  */
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, Accesibilidad, Personaje],
+  imports: [FormsModule, Accesibilidad, Personaje, LogoUao],
   template: `
     <div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #FBF5EC; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
       <section style="flex: 1 1 520px; min-height: 100vh; background: #8A1428; color: #FFFFFF; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 40px; box-sizing: border-box">
-        <img src="/assets/fondo-cacao.jpg" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55">
+        <img src="/assets/fondo-cacao.jpg" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.22">
         <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(138,20,40,0.78)"></div>
-        <span style="position: relative; align-self: flex-start; background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><img src="/assets/logo-uao.png" alt="Universidad Autónoma de Occidente" style="height: 22px; width: auto"></span>
+        <span style="position: relative; align-self: flex-start; background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><app-logo-uao /></span>
         <div style="position: relative; display: flex; flex-direction: column; line-height: 0.9">
           <span style="font-size: 104px; font-weight: 800; letter-spacing: -0.05em">GADMI</span>
           <span style="font-size: 34px; font-weight: 700; color: #FFD3C9; margin-top: 8px">Sost-Empresarial</span>
         </div>
-        <div class="pj-fila" style="position: relative; display: flex; align-items: flex-end; gap: 6px">
-          <app-personaje who="teo" [size]="170" />
-          <app-personaje who="chispa" [size]="110" />
-          <app-personaje who="nibi" [size]="120" />
+        <!-- Personajes agrupados sobre una colina -->
+        <div aria-hidden="true" class="colina" style="position: relative; height: 250px; margin: 0 -40px -40px; display: flex; align-items: flex-end; justify-content: center">
+          <svg viewBox="0 0 600 110" preserveAspectRatio="none" style="position: absolute; left: 0; bottom: 0; width: 100%; height: 110px"><path d="M0 70 Q300 -10 600 70 V110 H0z" fill="#5E0F1E"></path><path d="M0 70 Q300 -10 600 70" fill="none" stroke="#FF836C" stroke-width="3" opacity="0.5"></path></svg>
+          <div class="pj-fila" style="position: relative; display: flex; align-items: flex-end; margin-bottom: 52px">
+            <div style="position: relative; margin-right: -14px; margin-bottom: -6px"><span style="position: absolute; left: 15%; right: 15%; bottom: -4px; height: 14px; border-radius: 999px; background: rgba(0,0,0,0.3)"></span><app-personaje who="chispa" [size]="124" /></div>
+            <div style="position: relative; z-index: 1; margin-bottom: 12px"><span style="position: absolute; left: 15%; right: 15%; bottom: -4px; height: 16px; border-radius: 999px; background: rgba(0,0,0,0.3)"></span><app-personaje who="teo" [size]="184" /></div>
+            <div style="position: relative; margin-left: -14px; margin-bottom: -6px"><span style="position: absolute; left: 15%; right: 15%; bottom: -4px; height: 14px; border-radius: 999px; background: rgba(0,0,0,0.3)"></span><app-personaje who="nibi" [size]="132" /></div>
+          </div>
         </div>
       </section>
 
@@ -91,7 +96,7 @@ type Rol = 'docente' | 'estudiante';
     a{color:#8A1428} a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid #231417;outline-offset:2px} input,button{font-family:inherit}
     @media (max-width: 640px){
       .acc-login{position:static !important;display:flex;justify-content:flex-end;margin:-16px 0 18px}
-      .pj-fila{transform:scale(.78);transform-origin:left bottom}
+      .pj-fila{transform:scale(.78);transform-origin:center bottom}.colina{height:200px !important}
     }
   `,
 })

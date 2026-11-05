@@ -27,7 +27,7 @@ const fmt = (s: number) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60))
   templateUrl: './video.html',
   styles: `
 a{color:#FFFFFF}
-a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+a:focus-visible,button:focus-visible{outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417;}
 button{font-family:inherit}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes pop{0%{opacity:0;transform:scale(.4)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
@@ -78,7 +78,7 @@ export class VideoPage implements OnInit, OnDestroy {
   readonly stages = [
     ['Siembra', 'Planear', '#AC0B32', 'M12 21v-8M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 13c4 0 6-3 6-7-4 0-6 3-6 7z'],
     ['Árbol', 'Organizar', '#8A1428', 'M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM8 18h8'],
-    ['Cosecha', 'Dirigir', '#FF836C', 'M12 3c4 2 6 6 6 10s-2 8-6 8-6-4-6-8 2-8 6-10zM12 3v18M8 8c1 4 1 8 0 11M16 8c-1 4-1 8 0 11'],
+    ['Cosecha', 'Dirigir', '#9A5B2E', 'M12 3c4 2 6 6 6 10s-2 8-6 8-6-4-6-8 2-8 6-10zM12 3v18M8 8c1 4 1 8 0 11M16 8c-1 4-1 8 0 11'],
     ['Barra', 'Controlar', '#231417', 'M5 6h14v12H5zM5 10h14M5 14h14M10 6v12M15 6v12'],
   ];
 

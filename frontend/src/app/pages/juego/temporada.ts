@@ -4,7 +4,7 @@ import { getModule } from '../../core/data/modules';
 import { metersAt } from '../../core/services/company';
 import { PreferencesService } from '../../core/services/preferences.service';
 import { ProgressService } from '../../core/services/progress.service';
-import { GameHeader } from '../../shared/game-header';
+import { Hud } from '../../shared/hud';
 import { Personaje } from '../../shared/personaje';
 
 const M = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -12,11 +12,12 @@ const S = [170, 168, 160, 158, 150, 146, 140, 132, 128, 118, 112, 104];
 const E = [60, 62, 70, 76, 84, 96, 104, 112, 122, 134, 144, 156];
 const path = (arr: number[], k: number) => arr.slice(0, k + 1).map((v, i) => (i ? 'L' : 'M') + (i * 54 + 6) + ' ' + v).join(' ');
 const lerp = (a: number, b: number, f: number) => Math.round(a + (b - a) * f);
-const EVENTS: Record<number, string> = {
-  1: 'Junio: un cliente europeo pidió tu primer informe de sostenibilidad.',
-  2: 'Junio: llegan los paneles y las familias empiezan el programa agroforestal.',
-  3: 'Junio: la temporada alta pone a prueba al equipo.',
-  4: 'Junio: la junta pide el reporte con semáforos.',
+/** Novedad de junio (notificación): texto y efecto en el tablero. */
+const EVENTS: Record<number, { texto: string; efecto: string }> = {
+  1: { texto: 'Un cliente europeo pidió tu informe de sostenibilidad. Como era uno de tus objetivos, ya estaba listo.', efecto: '▲ Gobernanza sube' },
+  2: { texto: 'Llegan los paneles y las familias empiezan el programa agroforestal.', efecto: '▲ Ambiental sube' },
+  3: { texto: 'La temporada alta pone a prueba al equipo.', efecto: '' },
+  4: { texto: 'La junta pide el reporte con semáforos.', efecto: '' },
 };
 const TITLES: Record<number, string> = { 1: 'Ya tenemos rumbo.', 2: 'La empresa ya tiene estructura.', 3: 'Lideramos con propósito.', 4: 'Medimos y mejoramos.' };
 const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-verde', 3: 'liderazgo-proposito', 4: 'mirada-esg' };
@@ -24,18 +25,18 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
 /** Temporada (Temporada.dc.html): el año avanza y llega el reporte de cierre. */
 @Component({
   selector: 'app-temporada',
-  imports: [RouterLink, GameHeader, Personaje],
+  imports: [RouterLink, Hud, Personaje],
   template: `
     @if (module(); as mod) {
       <div class="game-bg" style="color: #FFFFFF">
-        <app-game-header [kicker]="'MÓDULO ' + mod.id + ' · ' + mod.phase.toUpperCase()" [title]="'Temporada ' + mod.year">
+        <app-hud [kicker]="'MÓDULO ' + mod.id + ' · ' + mod.phase.toUpperCase()" [title]="'Temporada ' + mod.year" variant="modulo" [mini]="false">
           @if (k() < 12 && ready()) { <button type="button" class="gbtn" (click)="skip()" style="min-height: 44px; padding: 0 16px; border: 2px solid #FF836C; background: #2A0B12; color: #FBF5EC; font-weight: 700; cursor: pointer">Saltar</button> }
-        </app-game-header>
+        </app-hud>
 
         @if (!ready()) {
           <main style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px; text-align: center">
             <p style="font-size: 20px; font-weight: 700; margin: 0">Termina los retos del módulo para simular el año.</p>
-            <a class="gbtn" [routerLink]="'/modulo/' + mod.id" style="padding: 12px 20px; background: #FF836C; color: #1A0609; text-decoration: none; font-weight: 800">Volver al módulo</a>
+            <a class="gbtn" [routerLink]="'/modulo/' + mod.id" style="padding: 12px 20px; background: #FBF5EC; color: #1A0609; text-decoration: none; font-weight: 800">Volver al módulo</a>
           </main>
         } @else {
           <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 18px 32px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; justify-content: center">
@@ -53,7 +54,7 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
                   <path [attr.d]="sales()" fill="none" stroke="#FF836C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
                   <path [attr.d]="energy()" fill="none" stroke="#56C02B" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round"></path>
                   <path d="M0 150 H600" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.5"></path>
-                  <text x="596" y="144" text-anchor="end" font-size="12" fill="#E9DCCF">tu meta de energía</text>
+                  <text x="596" y="141" text-anchor="end" font-size="14" font-weight="700" fill="#FFFFFF" stroke="#2A0B12" stroke-width="6" stroke-linejoin="round" paint-order="stroke">tu meta de energía</text>
                 </svg>
                 <div style="display: flex; gap: 18px; font-size: 13px; color: #E9DCCF"><span>━ Ventas</span><span style="color: #56C02B">┅ Energía por tonelada</span></div>
               </section>
@@ -67,25 +68,21 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
                   }
                 </section>
                 @if (k() >= 6) {
-                  <section class="up gpanel" style="background: #FBF5EC; color: #231417; border-radius: 20px; padding: 14px 16px; display: flex; gap: 12px; align-items: center">
+                  <section class="up" role="status" style="background: #FFFFFF; color: #231417; border-radius: 18px; padding: 14px 18px 14px 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 14px 30px rgba(0,0,0,0.35)">
                     <app-personaje who="chispa" [size]="60" />
-                    <span style="font-size: 15px; font-weight: 700">{{ event() }}</span>
+                    <span style="display: flex; flex-direction: column; gap: 4px"><span class="px" style="align-self: flex-start; padding: 3px 8px; border-radius: 999px; background: #FF836C; color: #1A0609; font-size: 10px">NOVEDAD · JUNIO</span><span style="font-size: 15px; font-weight: 700; line-height: 1.35">{{ event().texto }}</span>@if (event().efecto) {<span style="font-size: 13px; font-weight: 800; color: #2C5E31">{{ event().efecto }}</span>}</span>
                   </section>
                 }
               </aside>
             </div>
 
             @if (k() >= 12) {
-              <section class="up gpanel" style="background: #8A1428; border-radius: 28px; padding: 24px 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
-                <app-personaje who="teo" [size]="120" />
-                <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 6px">
-                  <span class="px" style="font-size: 10px; color: #FFD3C9">AÑO COMPLETADO</span><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em">{{ title() }}</span>
-                  <span style="font-size: 17px; color: #FBF5EC">{{ stat().points }} / {{ stat().max }} puntos · nota {{ stat().grade.toFixed(1) }} / 5</span>
+              <section class="up gpanel" style="background: #8A1428; padding: 14px 24px 14px 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 20px; border-style: none">
+                <app-personaje who="teo" [size]="90" />
+                <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 6px"><span class="px" style="font-size: 11px; color: #FFD3C9">AÑO COMPLETADO</span>
+                  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap"><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em">{{ title() }}</span><span class="px" style="margin-left: 18px; padding: 10px 18px; border-radius: 8px; background: #2A0B12; border: 2px solid #FF836C; font-size: 14px; color: #FBF5EC">{{ stat().points }} / {{ stat().max }} GRANOS</span><span style="font-size: 15px; color: #FFD3C9">Nota {{ stat().grade.toFixed(1).replace('.', ',') }} / 5</span></div>
                 </div>
-                @if (badge(); as b) {
-                  <div class="pop" [style.opacity]="b.earned ? 1 : 0.55" style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span [style.background]="b.earned ? '#FF836C' : '#5C4A4D'" style="width: 76px; height: 76px; border-radius: 999px; display: flex; align-items: center; justify-content: center"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#231417" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg></span><span style="font-size: 13px; font-weight: 800">{{ b.name }}{{ b.earned ? '' : ' (aún no)' }}</span></div>
-                }
-                <a class="gbtn glow" [routerLink]="nextLink()" style="display: inline-flex; align-items: center; min-height: 54px; padding: 0 22px; background: #FFFFFF; color: #8A1428; text-decoration: none"><span class="px" style="font-size: 11px">▶ {{ nextLabel() }}</span></a>
+                <a class="gbtn glow" [routerLink]="nextLink()" style="display: inline-flex; align-items: center; min-height: 60px; padding: 0 30px; background: #FFFFFF; color: #8A1428; text-decoration: none; justify-content: center"><span class="px" style="font-size: 16px">▶ {{ nextLabel() }}</span></a>
               </section>
             }
           </main>
@@ -124,7 +121,7 @@ export class TemporadaPage implements OnInit, OnDestroy {
     const f = Math.min(this.k(), 11) / 11;
     const s = this.start();
     const e = this.end();
-    return ([['Ambiental', 'ambiental', '#56C02B'], ['Social', 'social', '#FF836C'], ['Gobernanza', 'gobernanza', '#FBF5EC'], ['Económico', 'economico', '#FCC30B']] as const).map(([label, key, c]) => {
+    return ([['Ambiental', 'ambiental', '#56C02B'], ['Social', 'social', '#FBF5EC'], ['Gobernanza', 'gobernanza', '#FBF5EC'], ['Económico', 'economico', '#FCC30B']] as const).map(([label, key, c]) => {
       const v = lerp(s[key], e[key], f);
       return { label, c, v: v + ' %', w: v + '%' };
     });

@@ -1,44 +1,28 @@
 {
-  "id": "m1-valores", "code": "1.2", "title": "Valores que dejan huella", "template": "partes", "max": 50,
-  "who": "chispa",
-  "endTitles": { "perfect": "¡Marca con huella!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "flags": { "greenwashing": { "part": "A", "items": ["v7"] } },
-  "parts": [
-    {
-      "key": "A", "type": "choice", "layout": "cards",
-      "prompt": "Mercadeo propone 8 ideas. ¿Cuáles cambian algo real?",
-      "options": [ { "id": "v", "label": "Valor real" }, { "id": "a", "label": "Solo apariencia" }, { "id": "n", "label": "No aporta" } ],
-      "optionFeedback": { "v": "Cambia algo real.", "a": "Se ve bien, no cambia nada.", "n": "No es un valor de impacto." },
-      "hint": "¿Cambia algo en la operación o solo en cómo se ve?",
-      "brillo": { "item": "v7", "answer": "a", "text": "¡Me descubriste! Una frase bonita sin datos no es sostenibilidad." },
-      "items": [
-        { "id": "v1", "text": "Prima pagada directo a las familias cacaoteras", "answer": "v", "points": 4, "icon": "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" },
-        { "id": "v6", "text": "Nuevo logo en color verde", "answer": "a", "points": 4, "icon": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8" },
-        { "id": "v2", "text": "Empaques compostables certificados", "answer": "v", "points": 4, "icon": "M4 7h16v13H4zM9 7V4h6v3" },
-        { "id": "v7", "text": "Etiqueta «amigable con el planeta», sin ningún dato", "answer": "a", "points": 4, "icon": "M20 12l-8 8-8-8 8-8h8z" },
-        { "id": "v3", "text": "Paneles solares en la planta", "answer": "v", "points": 4, "icon": "M12 3v2M12 19v2M3 12h2M19 12h2M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" },
-        { "id": "v8", "text": "Los precios más bajos del mercado", "answer": "n", "points": 4, "icon": "M4 7l8 10 8-10" },
-        { "id": "v4", "text": "Cacao en sistemas agroforestales que cuidan el bosque", "answer": "v", "points": 4, "icon": "M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" },
-        { "id": "v5", "text": "La mitad de las jefaturas, ocupadas por mujeres", "answer": "v", "points": 4, "icon": "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 12v9M9 18h6" }
-      ]
-    },
-    {
-      "key": "B", "type": "choice", "layout": "rows", "optionStyle": "circle",
-      "prompt": "Une cada valor real con el ODS al que más aporta.",
-      "options": [ { "id": "5", "label": "5", "aria": "ODS 5" }, { "id": "7", "label": "7", "aria": "ODS 7" }, { "id": "8", "label": "8", "aria": "ODS 8" }, { "id": "12", "label": "12", "aria": "ODS 12" }, { "id": "15", "label": "15", "aria": "ODS 15" } ],
-      "hint": "¿A qué meta global aporta más directamente?",
-      "items": [
-        { "id": "v1", "text": "Prima pagada directo a las familias cacaoteras", "answer": "8", "points": 3 },
-        { "id": "v2", "text": "Empaques compostables certificados", "answer": "12", "points": 3 },
-        { "id": "v3", "text": "Paneles solares en la planta", "answer": "7", "points": 3 },
-        { "id": "v4", "text": "Cacao en sistemas agroforestales que cuidan el bosque", "answer": "15", "points": 3 },
-        { "id": "v5", "text": "La mitad de las jefaturas, ocupadas por mujeres", "answer": "5", "points": 3 }
-      ]
-    },
-    {
-      "key": "C", "type": "text", "prompt": "Ahora, ¿cuál sería la bandera de la marca?",
-      "label": "TU FRASE BANDERA", "placeholder": "Ej.: Del Pacífico, con pago justo", "help": "Elige el valor que mejor representa a la marca.",
-      "points": 3, "minLength": 4
-    }
-  ]
+  "_nota": "Contenido de la actividad: no modificar textos, respuestas ni granos.",
+  "id": "m1-valores",
+  "code": "1.2",
+  "template": "valores",
+  "title": "Valores que dejan huella",
+  "max": 50,
+  "puntos": { "parteA": 4, "parteB": 3, "parteC": 3 },
+  "opciones": [["v", "✔", "Aprobar"], ["a", "✖", "Es maquillaje"], ["n", "—", "Descartar"]],
+  "ideas": [
+    ["Prima por calidad a familias cacaoteras", "v", 8, "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"],
+    ["Nuevo logo en color verde", "a", 0, "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8"],
+    ["Empaques compostables certificados", "v", 12, "M4 7h16v13H4zM9 7V4h6v3"],
+    ["Etiqueta «amigable con el planeta», sin ningún dato", "a", 0, "M20 12l-8 8-8-8 8-8h8z"],
+    ["Paneles solares en la planta", "v", 7, "M12 3v2M12 19v2M3 12h2M19 12h2M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
+    ["Los precios más bajos del mercado", "n", 0, "M4 7l8 10 8-10"],
+    ["Cacao agroforestal que conserva el bosque", "v", 15, "M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"],
+    ["Participación de mujeres en jefaturas", "v", 5, "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 12v9M9 18h6"]
+  ],
+  "ods": [5, 7, 8, 12, 15],
+  "retro": { "v": "Cambia algo real.", "a": "Se ve bien, no cambia nada.", "n": "No es un valor de impacto." },
+  "consignas": {
+    "A": "Chispa trae 8 ideas para la marca. Tú decides cuáles se aprueban.",
+    "B": "Une cada valor real con el ODS al que más aporta.",
+    "C": "Ahora, ¿cuál sería la bandera de la marca?"
+  },
+  "fraseMax": 40
 }

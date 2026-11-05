@@ -62,7 +62,7 @@ const WHO: Record<number, Who> = { 1: 'teo', 2: 'nibi', 3: 'nibi', 4: 'chispa' }
                     <app-grade [grade]="a.grade" />
                   </div>
                   @if (a.summary) { <span style="font-weight: 600">{{ a.summary }}</span> }
-                  @if (improvement() > 0) { <span class="tag tag-ok">Subiste {{ fmt(improvement()) }} puntos. Eso es mejora continua en acción.</span> }
+                  @if (improvement() > 0) { <span class="tag tag-ok">Subiste {{ fmt(improvement()) }} granos. Eso es mejora continua en acción.</span> }
                   <ul class="fb-list">
                     @if (!locked()) {
                       @for (it of wrong(); track $index) { <li class="li-bad">↺ <strong>{{ it.label }}:</strong> {{ it.hint }}</li> }
@@ -77,7 +77,7 @@ const WHO: Record<number, Who> = { 1: 'teo', 2: 'nibi', 3: 'nibi', 4: 'chispa' }
 
           @if (locked()) {
             <div class="row">
-              <a class="gbtn glow" [routerLink]="after().link" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 11px">▶ {{ after().label }}</span></a>
+              <a class="gbtn glow" [routerLink]="after().link" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; background: #FBF5EC; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 11px">▶ {{ after().label }}</span></a>
               <a routerLink="/ruta" style="color: #8A1428; font-weight: 700">Volver a la ruta</a>
             </div>
           }
@@ -86,12 +86,12 @@ const WHO: Record<number, Who> = { 1: 'teo', 2: 'nibi', 3: 'nibi', 4: 'chispa' }
     </div>
   `,
   styles: `
-    .why-dark > summary { cursor: pointer; font-weight: 800; color: #FF836C; font-size: 14px; }
+    .why-dark > summary { cursor: pointer; font-weight: 800; color: #FBF5EC; font-size: 14px; }
     .fb-list { padding-left: 0; list-style: none; margin: 4px 0 0; }
     .fb-list li { margin-bottom: .35rem; }
     .li-ok { color: #2C5E31; }
     .li-bad { color: #8A1428; }
-    a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+    a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417;}
   `,
 })
 export class ExerciseFrame {

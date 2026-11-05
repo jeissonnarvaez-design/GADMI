@@ -21,7 +21,7 @@ interface Answers { picks: Record<string, Record<string, string>>; text: Record<
     .pop{animation:pop .4s cubic-bezier(.2,.7,.2,1) both}
     .up{animation:up .4s cubic-bezier(.2,.7,.2,1) both}
     a{color:#FBF5EC}
-    a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+    a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417;}
     @media (prefers-reduced-motion: reduce){.pop,.up{animation:none}}
   `,
 })

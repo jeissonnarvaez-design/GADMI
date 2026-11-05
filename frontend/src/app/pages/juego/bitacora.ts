@@ -3,16 +3,16 @@ import { Router } from '@angular/router';
 import { getModule } from '../../core/data/modules';
 import { ProgressService } from '../../core/services/progress.service';
 import { Escuchar } from '../../shared/escuchar';
-import { GameHeader } from '../../shared/game-header';
+import { Hud } from '../../shared/hud';
 import { Personaje } from '../../shared/personaje';
 
 /** Bitácora (Bitacora.dc.html): 3 preguntas de reflexión. No suma puntos. */
 @Component({
   selector: 'app-bitacora-page',
-  imports: [GameHeader, Personaje, Escuchar],
+  imports: [Hud, Personaje, Escuchar],
   template: `
     <div class="game-bg" style="color: #231417">
-      <app-game-header [kicker]="'CIERRE · MÓDULO ' + id()" title="Bitácora del gerente" />
+      <app-hud [kicker]="'CIERRE · MÓDULO ' + id()" title="Bitácora del gerente" variant="modulo" [mini]="false" />
       <main style="flex: 1; width: 100%; max-width: 900px; margin: 0 auto; padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px; justify-content: center">
         <div style="display: flex; align-items: center; gap: 14px">
           <app-personaje who="teo" [size]="90" />
@@ -42,7 +42,7 @@ import { Personaje } from '../../shared/personaje';
             @if (i() === 2 && !complete()) { <span role="status" style="font-size: 13px; color: #8A1428; font-weight: 700">Responde las tres preguntas (mínimo 10 caracteres cada una).</span> }
           </section>
         }
-        <p style="margin: 0; font-size: 14px; color: #C9B8A6; text-align: center">La bitácora no suma puntos. Es necesaria para el certificado y la profe puede leerla.</p>
+        <p style="margin: 0; font-size: 14px; color: #C9B8A6; text-align: center">La bitácora no suma granos. Es necesaria para el certificado y la profe puede leerla.</p>
       </main>
     </div>
   `,

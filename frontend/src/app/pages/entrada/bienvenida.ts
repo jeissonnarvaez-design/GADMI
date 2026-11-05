@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Accesibilidad } from '../../shared/accesibilidad';
+import { LogoUao } from '../../shared/logo-uao';
 import { Personaje } from '../../shared/personaje';
 
 const ODS: [number, string][] = [
@@ -20,17 +21,17 @@ const HI: [string, string, string, string, string][] = [
 /** Bienvenida (Main.dc.html): foto con velo, personajes con saludo y ODS. */
 @Component({
   selector: 'app-bienvenida',
-  imports: [RouterLink, Accesibilidad, Personaje],
+  imports: [RouterLink, Accesibilidad, Personaje, LogoUao],
   template: `
     <div style="min-height: 100vh; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #2A0B12; color: #FFFFFF; font-family: 'DM Sans', Arial, sans-serif" [style.filter]="fx() ? 'url(#nibi-vision)' : 'none'">
       <svg width="0" height="0" style="position: absolute" aria-hidden="true"><filter id="nibi-vision"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"></feColorMatrix></filter></svg>
       <div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden">
-        <img class="zoom" src="/assets/fondo-cacao.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover">
+        <img class="zoom" src="/assets/fondo-cacao.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4">
         <div style="position: absolute; inset: 0; background: rgba(42,11,18,0.8)"></div>
       </div>
 
       <header style="position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 40px">
-        <span style="background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><img src="/assets/logo-uao.png" alt="Universidad Autónoma de Occidente" style="height: 22px; width: auto"></span>
+        <span style="background: #FFFFFF; border-radius: 999px; padding: 7px 20px 7px 16px; display: inline-flex; align-items: center"><app-logo-uao /></span>
         <div style="display: flex; align-items: center; gap: 10px"><span style="font-size: 14px; color: #FBF5EC; padding: 8px 14px; border-radius: 999px; background: rgba(0,0,0,0.25)">Hola, <strong>{{ name() }}</strong></span><app-accesibilidad tone="dark" /></div>
       </header>
 

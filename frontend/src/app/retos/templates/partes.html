@@ -71,9 +71,9 @@
             @if (!isChecked()) {
               <button type="button" class="gbtn" (click)="check()" style="min-height: 50px; padding: 0 22px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Revisar ({{ placed() }}/{{ total() }})</button>
             } @else if (!isLast()) {
-              <button type="button" class="gbtn glow" (click)="toNext()" style="min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ PARTE {{ nextKey() }}</span></button>
+              <button type="button" class="gbtn glow" (click)="toNext()" style="min-height: 50px; padding: 0 22px; border: none; background: #FBF5EC; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ PARTE {{ nextKey() }}</span></button>
             } @else {
-              <button type="button" class="gbtn glow" (click)="finish()" style="min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
+              <button type="button" class="gbtn glow" (click)="finish()" style="min-height: 50px; padding: 0 22px; border: none; background: #FBF5EC; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
             }
           </div>
         </div>

@@ -60,7 +60,7 @@ export class RetoTarjetas extends RetoBase<TarjetasReto> {
   right = computed(() => Object.keys(this.ok()).length);
   score = computed(() => this.flat().filter((f) => this.ok()[f.card.id]).reduce((s, f) => s + f.card.points, 0));
   wrong = computed(() => this.flat().map((f, i) => ({ f, i })).filter((x) => !this.ok()[x.f.card.id]).map((x) => x.i));
-  dots = computed(() => this.queue().map((_, i) => (i < this.pos() ? '#8A1428' : i === this.pos() ? '#FF836C' : '#E2D6C8')));
+  dots = computed(() => this.queue().map((_, i) => (i < this.pos() ? '#8A1428' : i === this.pos() ? '#FBF5EC' : '#5C4A4D')));
   prompt = computed(() => this.cur()?.round.prompt ?? this.data().prompt);
   canRetry = computed(() => !this.locked() && this.wrong().length > 0);
   zoneCols = computed(() => (this.data().compact ? 'repeat(auto-fill, minmax(170px, 1fr))' : 'repeat(4, minmax(0, 1fr))'));

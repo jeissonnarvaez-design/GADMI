@@ -20,7 +20,7 @@ import { SpeechService } from '../core/services/speech.service';
     </button>
     @if (voice.error() && voice.current() === null) { <span class="sr-only" role="status">{{ voice.error() }}</span> }
   `,
-  styles: `:host { display: inline-flex; } button:focus-visible { outline: 3px solid #FF836C; outline-offset: 3px; }`,
+  styles: `:host { display: inline-flex; } button:focus-visible { outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417; }`,
 })
 export class Escuchar implements OnInit, OnDestroy {
   text = input.required<string>();

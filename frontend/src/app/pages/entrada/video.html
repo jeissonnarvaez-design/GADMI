@@ -25,7 +25,7 @@
           <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 30px 60px 120px; box-sizing: border-box">
             <svg viewBox="0 0 420 380" style="width: 420px; height: 380px; flex-shrink: 0" aria-hidden="true">
               <rect x="0" y="0" width="150" height="380" fill="#FFE3DC"></rect>
-              <path d="M14 80 q16 -9 32 0 t32 0 t32 0 M14 180 q16 -9 32 0 t32 0 t32 0 M14 280 q16 -9 32 0 t32 0 t32 0" fill="none" stroke="#FF836C" stroke-width="3"></path>
+              <path d="M14 80 q16 -9 32 0 t32 0 t32 0 M14 180 q16 -9 32 0 t32 0 t32 0 M14 280 q16 -9 32 0 t32 0 t32 0" fill="none" stroke="#9A5B2E" stroke-width="3"></path>
               <path class="draw" d="M150 0 C 128 70, 172 110, 140 180 S 118 300, 168 380" fill="none" stroke="#8A1428" stroke-width="4"></path>
               <circle class="pop d2" cx="300" cy="190" r="16" fill="#AC0B32"></circle>
               <text class="up d3" x="276" y="160" font-size="20" font-weight="800" fill="#231417">Cali</text>
@@ -39,7 +39,7 @@
           <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 48px; padding: 30px 60px 120px; box-sizing: border-box">
             <svg viewBox="0 0 320 260" style="width: 340px; height: 280px; flex-shrink: 0" aria-hidden="true">
               <path class="draw" d="M10 240 H310 M30 240 V130 L90 96 V130 L150 96 V130 L210 96 V240 M210 240 V50 H240 V240 M100 240 V196 H140 V240" fill="none" stroke="#8A1428" stroke-width="5" stroke-linejoin="round"></path>
-              <path class="draw d2" d="M222 40 c -10 -14 10 -18 0 -32 M232 40 c -10 -14 10 -18 0 -32" fill="none" stroke="#FF836C" stroke-width="4"></path>
+              <path class="draw d2" d="M222 40 c -10 -14 10 -18 0 -32 M232 40 c -10 -14 10 -18 0 -32" fill="none" stroke="#9A5B2E" stroke-width="4"></path>
             </svg>
             <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
               <div class="pop d1" style="display: flex; flex-direction: column; align-items: center; gap: 6px"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#AC0B32" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="7" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 20v-1a6 6 0 0 1 12 0v1M15 20v-1a4 4 0 0 1 6-3.5"></path></svg><span style="font-size: 44px; font-weight: 800; color: #8A1428">48</span></div>
@@ -89,17 +89,17 @@
 
       }
       @if (captions() && !videoReady()) {
-        <p aria-live="polite" style="position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(86%, 820px); box-sizing: border-box; margin: 0; padding: 14px 20px; border-radius: 14px; background: rgba(20,10,12,0.9); color: #FFFFFF; font-size: 20px; line-height: 1.4; text-align: center"><strong style="color: #FF836C">{{ speaker() }}:</strong> {{ caption() }}</p>
+        <p aria-live="polite" style="position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(86%, 820px); box-sizing: border-box; margin: 0; padding: 14px 20px; border-radius: 14px; background: rgba(20,10,12,0.9); color: #FFFFFF; font-size: 20px; line-height: 1.4; text-align: center"><strong style="color: #FBF5EC">{{ speaker() }}:</strong> {{ caption() }}</p>
       }
     </section>
 
-    <div style="height: 6px; border-radius: 999px; background: #3D2C2F; overflow: hidden" aria-hidden="true"><div style="height: 6px; background: #FF836C" [style.width]="progress()"></div></div>
+    <div style="height: 6px; border-radius: 999px; background: #3D2C2F; overflow: hidden" aria-hidden="true"><div style="height: 6px; background: #FBF5EC" [style.width]="progress()"></div></div>
 
     <div class="ctrls" style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px">
       <span style="color: #C9B8A6; font-size: 14px; font-variant-numeric: tabular-nums">{{ time() }}</span>
       <div style="display: flex; align-items: center; gap: 12px">
         <button type="button" (click)="prev()" aria-label="Retroceder una escena" style="width: 48px; height: 48px; border-radius: 999px; border: 1px solid #5C4A4D; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"></path></svg></button>
-        <button type="button" (click)="togglePlay()" [attr.aria-label]="playing() ? 'Pausar' : 'Reproducir'" style="width: 64px; height: 64px; border-radius: 999px; border: none; background: #FF836C; cursor: pointer; display: flex; align-items: center; justify-content: center">
+        <button type="button" (click)="togglePlay()" [attr.aria-label]="playing() ? 'Pausar' : 'Reproducir'" style="width: 64px; height: 64px; border-radius: 999px; border: none; background: #FBF5EC; cursor: pointer; display: flex; align-items: center; justify-content: center">
           @if (playing()) { <svg width="24" height="24" viewBox="0 0 24 24" fill="#231417" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg> }
           @else { <svg width="24" height="24" viewBox="0 0 24 24" fill="#231417" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg> }
         </button>
@@ -112,7 +112,7 @@
     </div>
     @if (tr()) {
       <section id="transcripcion" aria-label="Transcripción del video" style="background: #2A1A1D; border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; color: #FBF5EC; font-size: 15px">
-        @for (l of transcript; track $index) { <span><strong style="color: #FF836C">{{ l[0] }}:</strong> {{ l[1] }}</span> }
+        @for (l of transcript; track $index) { <span><strong style="color: #FBF5EC">{{ l[0] }}:</strong> {{ l[1] }}</span> }
       </section>
     }
   </main>

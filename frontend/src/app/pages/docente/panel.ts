@@ -4,17 +4,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService, CourseRow, CourseSummary, PublicCertificate, apiError, normalizarCodigo } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Accesibilidad } from '../../shared/accesibilidad';
+import { LogoUao } from '../../shared/logo-uao';
 
 /** Panel del curso (Docente.dc.html) con datos reales. */
 @Component({
   selector: 'app-panel-docente',
-  imports: [RouterLink, Accesibilidad],
+  imports: [RouterLink, Accesibilidad, LogoUao],
   template: `
     <div style="min-height: 100vh; background: #FBF5EC; display: flex; flex-direction: column; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
       <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 40px; background: #FFFFFF; border-bottom: 1px solid #EADFD0">
         <div style="display: flex; align-items: center; gap: 16px">
-          <img src="/assets/logo-uao.png" alt="UAO" style="height: 28px; width: auto">
-          <div style="display: flex; flex-direction: column"><span style="font-size: 13px; color: #5C4A4D">Vista docente · {{ teacher() }}</span><span style="font-size: 18px; font-weight: 700">Seguimiento GADMI</span></div>
+          <app-logo-uao size="md" />
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
           <label style="display: flex; align-items: center; gap: 8px; font-size: 14px">Grupo
@@ -26,7 +26,7 @@ import { Accesibilidad } from '../../shared/accesibilidad';
           <button type="button" (click)="export()" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D9CBBB; background: #FFFFFF; font-weight: 600; font-size: 14px; cursor: pointer; color: #231417">Exportar CSV</button>
           <button type="button" disabled title="A futuro: sincronizar con el libro de calificaciones de Moodle" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 700; font-size: 14px; cursor: not-allowed; opacity: .6">Enviar notas a Moodle</button>
           <app-accesibilidad tone="light" />
-          <button type="button" (click)="logout()" style="min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid #D9CBBB; background: transparent; font-size: 14px; cursor: pointer; color: #231417">Salir</button>
+          <button type="button" (click)="logout()" [title]="'Salir · ' + teacher()" style="min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid #D9CBBB; background: transparent; font-size: 14px; cursor: pointer; color: #231417">Salir</button>
         </div>
       </header>
 
@@ -34,7 +34,7 @@ import { Accesibilidad } from '../../shared/accesibilidad';
         @if (error()) { <p role="alert" style="margin: 0; padding: 12px 16px; border-radius: 14px; background: #FFE3DC; color: #8A1428; font-weight: 700">{{ error() }}</p> }
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
           <div style="background: #FFFFFF; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; color: #5C4A4D">Estudiantes activos</span><span style="font-size: 32px; font-weight: 800">{{ sum()?.activos ?? '—' }}</span></div>
-          <div style="background: #FFFFFF; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; color: #5C4A4D">Promedio de puntos</span><span style="font-size: 32px; font-weight: 800">{{ sum()?.promedio ?? '—' }}</span></div>
+          <div style="background: #FFFFFF; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; color: #5C4A4D">Promedio de granos</span><span style="font-size: 32px; font-weight: 800">{{ sum()?.promedio ?? '—' }}</span></div>
           <div style="background: #FFFFFF; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; color: #5C4A4D">Certificados emitidos</span><span style="font-size: 32px; font-weight: 800">{{ sum()?.certificados ?? '—' }}</span></div>
           <a routerLink="/docente/bitacoras" style="background: #FFFFFF; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px; border: 2px solid #AC0B32; text-decoration: none; color: #231417"><span style="font-size: 14px; color: #5C4A4D">Bitácoras por revisar</span><span style="font-size: 32px; font-weight: 800; color: #8A1428">{{ sum()?.bitacorasPorRevisar ?? '—' }}</span></a>
         </div>
@@ -78,8 +78,8 @@ import { Accesibilidad } from '../../shared/accesibilidad';
                       <td style="padding: 12px 8px"><a [routerLink]="['/docente/estudiante', r.id]" [queryParams]="{ tab: 1 }">{{ r.bitacoraEstado }}</a></td>
                       <td style="padding: 12px 8px">
                         @if (r.certificado; as c) {
-                          <button type="button" (click)="useCode(c.codigo)" title="Verificar este código" [attr.aria-label]="'Verificar el certificado ' + c.codigo + (c.estado === 'anulado' ? ' (anulado)' : '')" [style.color]="c.estado === 'anulado' ? '#8C7A7D' : '#8A1428'" [style.text-decoration]="c.estado === 'anulado' ? 'line-through' : 'underline'" style="border: none; background: transparent; padding: 0; cursor: pointer; font-family: ui-monospace, Consolas, monospace; font-size: 12px">{{ c.codigo }}</button>
-                        } @else { <span style="color: #8C7A7D">—</span> }
+                          <button type="button" (click)="useCode(c.codigo)" title="Verificar este código" [attr.aria-label]="'Verificar el certificado ' + c.codigo + (c.estado === 'anulado' ? ' (anulado)' : '')" [style.color]="c.estado === 'anulado' ? '#6E5458' : '#8A1428'" [style.text-decoration]="c.estado === 'anulado' ? 'line-through' : 'underline'" style="border: none; background: transparent; padding: 0; cursor: pointer; font-family: ui-monospace, Consolas, monospace; font-size: 12px">{{ c.codigo }}</button>
+                        } @else { <span style="color: #6E5458">—</span> }
                       </td>
                     </tr>
                   } @empty {

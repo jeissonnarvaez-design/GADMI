@@ -1,73 +1,113 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, ElementRef, Injector, afterNextRender, computed, inject, input, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getModule } from '../../core/data/modules';
+import { PreferencesService } from '../../core/services/preferences.service';
 import { ProgressService } from '../../core/services/progress.service';
 import { RETOS_JSON } from '../../retos/registry';
-import { Accesibilidad } from '../../shared/accesibilidad';
-import { Escuchar } from '../../shared/escuchar';
-import { Personaje, Who } from '../../shared/personaje';
+import { Hud } from '../../shared/hud';
+import { Who } from '../../shared/personaje';
 
-/** Intro de módulo (IntroModulo.dc.html): encargo de la junta y retos del año. */
+/** Transcripción del video de cada módulo (el del módulo 1 viene del diseño; los demás, del encargo). */
+const TRANSCRIPCION: Record<number, string> = {
+  1: 'Teo: Gerente, la junta quiere saber hacia dónde vamos. En este módulo vas a definir la misión y la visión, elegir valores reales, leer el entorno con un FODA y ponerle metas medibles a cada objetivo. ¡Empecemos!',
+};
+const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
+
+/**
+ * Intro de módulo (IntroModulo.dc.html, rediseño): encargo, retos del año y video en «modo cine».
+ * Video: public/assets/video/modulo-N.mp4 con subtítulos modulo-N.vtt (aún no están listos:
+ * el reproductor ya los recibe). «COMENZAR» aparece después de ver el video.
+ */
 @Component({
   selector: 'app-intro-modulo',
-  imports: [RouterLink, Accesibilidad, Personaje, Escuchar],
+  imports: [RouterLink, Hud],
   template: `
     @if (module(); as m) {
       <div class="game-bg" style="color: #FFFFFF">
-        <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 28px; background: #2A0B12; border-bottom: 3px solid #FF836C; color: #FBF5EC">
-          <div style="display: flex; align-items: center; gap: 14px">
-            <a routerLink="/ruta" aria-label="Volver" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 2px solid #FF836C; border-radius: 6px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></a>
-            <div style="display: flex; flex-direction: column; gap: 6px"><span class="px" style="font-size: 10px; color: #FF836C">{{ m.intro.scene.toUpperCase() }}</span><span style="font-size: 18px; font-weight: 800">Módulo {{ m.id }} · {{ m.phase }}</span></div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 10px"><app-accesibilidad tone="dark" /></div>
-        </header>
+        <app-hud [kicker]="m.intro.scene.toUpperCase()" [title]="'Módulo ' + m.id + ' · ' + m.phase" variant="modulo" />
         <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 32px 40px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; align-content: center; gap: 40px">
-          <section style="flex: 1 1 460px; display: flex; flex-direction: column; gap: 18px">
+          <section style="flex: 0 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
             @if (!open()) {
-              <span class="up px" style="align-self: flex-start; font-size: 11px; padding: 8px 10px; background: #5C4A4D; color: #FBF5EC">BLOQUEADO · {{ m.year }}</span>
-              <h1 class="up d1" style="margin: 0; font-size: 84px; line-height: 0.92; font-weight: 800; letter-spacing: -0.04em; color: #FFFFFF">{{ m.phase.split(' ')[0] }}</h1>
-              <p class="up d2" style="margin: 0; font-size: 22px; color: #E9DCCF">Se abre al terminar el módulo {{ m.id - 1 }}.</p>
+              <span class="up px" style="align-self: flex-start; font-size: 11px; padding: 8px 10px; background: #6E5458; color: #FFFFFF">BLOQUEADO · {{ m.year }}</span>
+              <h1 class="up d1" style="margin: 0; font-size: 58px; line-height: 0.95; font-weight: 800; letter-spacing: -0.04em">{{ m.phase.split(' ')[0] }}</h1>
+              <p class="up d2" style="margin: 0; font-size: 19px; color: #E9DCCF">Se abre al terminar el módulo {{ m.id - 1 }}.</p>
             } @else {
               <span class="up px" style="align-self: flex-start; font-size: 11px; padding: 8px 10px; background: #FF836C; color: #1A0609">NUEVA MISIÓN · {{ m.year }}</span>
-              <h1 class="up d1" style="margin: 0; font-size: 84px; line-height: 0.92; font-weight: 800; letter-spacing: -0.04em; color: #FFFFFF; hyphens: manual">{{ m.id === 1 ? 'Planea­ción' : m.phase.split(' ')[0] }}</h1>
-              <div class="up d2" style="display: flex; align-items: center; gap: 12px"><p style="margin: 0; font-size: 22px; color: #E9DCCF">{{ m.intro.goal }}</p><app-escuchar [who]="who()" [text]="m.intro.text + ' ' + m.intro.goal" label="Escuchar el encargo" /></div>
-              <ol class="up d3" style="list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 520px">
+              <h1 class="up d1" style="margin: 0; font-size: 58px; line-height: 0.95; font-weight: 800; letter-spacing: -0.04em; hyphens: manual">{{ m.id === 1 ? 'Planea­ción' : m.phase.split(' ')[0] }}</h1>
+              <p class="up d2" style="margin: 0; font-size: 19px; color: #E9DCCF">{{ m.intro.goal }}</p>
+              <ol class="up d3" style="list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: 380px">
                 @for (r of retos(); track r.code) {
-                  <li><a [routerLink]="'/reto/' + r.code" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 4px; border: 2px solid rgba(255,131,108,0.5); background: rgba(255,131,108,0.06); font-size: 15px; font-weight: 700; text-decoration: none; color: #FFFFFF"><span class="px" style="font-size: 10px; color: #FF836C">{{ r.code }}</span>{{ r.title }}@if (r.done) { <span aria-label="hecho" style="margin-left: auto; color: #56C02B">✓</span> }</a></li>
+                  <li><a [routerLink]="'/reto/' + r.code" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 4px; border: 2px solid rgba(255,131,108,0.5); font-size: 15px; font-weight: 700; background-color: #FFFFFF; color: #5A2230; text-decoration: none; height: 100%; box-sizing: border-box"><span class="px" style="font-size: 10px; color: #AC0B32">{{ r.code }}</span>{{ r.title }}@if (r.done) { <span aria-label="hecho" style="margin-left: auto; color: #2C5E31">✓</span> }</a></li>
                 }
               </ol>
-              <div class="up d4" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px">
-                <a class="gbtn glow" [routerLink]="cta().link" style="display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 13px">▶ {{ cta().label }}</span></a>
+              <div class="up d4" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; min-height: 58px">
+                @if (seen()) {
+                  <a class="gbtn glow" [routerLink]="cta().link" style="display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 13px">▶ {{ cta().label }}</span></a>
+                } @else {
+                  <span style="align-self: center; font-size: 15px; color: #FFD3C9">Mira el video para empezar.</span>
+                }
               </div>
             }
           </section>
-          <section [attr.aria-label]="m.intro.scene" style="flex: 1 1 460px; position: relative; height: 480px">
-            <svg viewBox="0 0 460 420" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
-              <ellipse cx="230" cy="300" rx="200" ry="56" fill="#3D2C2F"></ellipse>
-              <circle class="pop d1" cx="90" cy="230" r="26" fill="#5C4A4D"></circle><rect class="pop d1" x="62" y="256" width="56" height="44" rx="20" fill="#5C4A4D"></rect>
-              <circle class="pop d2" cx="370" cy="230" r="26" fill="#5C4A4D"></circle><rect class="pop d2" x="342" y="256" width="56" height="44" rx="20" fill="#5C4A4D"></rect>
-              <circle class="pop d3" cx="300" cy="200" r="22" fill="#6E5A5D"></circle><rect class="pop d3" x="276" y="222" width="48" height="36" rx="18" fill="#6E5A5D"></rect>
-              <rect x="190" y="282" width="80" height="10" rx="5" fill="#FBF5EC" opacity="0.6"></rect>
-            </svg>
-            <div class="up d5" style="position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%)"><app-personaje [who]="who()" [size]="190" /></div>
+
+          <section aria-label="Video del módulo" style="flex: 1 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+            <div class="up d5 gpanel" style="position: relative; aspect-ratio: 16 / 9; background: radial-gradient(ellipse at 50% 30%, #4A1520, #1A0609 75%); overflow: hidden; display: flex; align-items: center; justify-content: center">
+              <button type="button" class="gbtn glow play" (click)="play()" [attr.aria-label]="'Reproducir video del módulo ' + m.id" style="width: 108px; height: 108px; border-radius: 999px !important; border: none; background: #FF836C; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="#1A0609"></path></svg></button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #FBF5EC">
+              <span style="flex: 1; height: 6px; border-radius: 999px; background: #4A2A2F; overflow: hidden"><span [style.width]="seen() ? '100%' : '0%'" style="display: block; height: 100%; background: #FF836C"></span></span>
+              <button type="button" (click)="toggleCc()" [attr.aria-pressed]="cc() ? 'true' : 'false'" aria-label="Subtítulos" [style.background]="cc() ? '#FF836C' : 'transparent'" [style.color]="cc() ? '#1A0609' : '#FBF5EC'" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 2px solid #FF836C; font-weight: 800; font-size: 13px; cursor: pointer">CC</button>
+              <button type="button" (click)="tr.set(!tr())" [attr.aria-expanded]="tr() ? 'true' : 'false'" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 2px solid #FF836C; background: transparent; color: #FBF5EC; font-weight: 800; font-size: 13px; cursor: pointer">Transcripción</button>
+            </div>
+            @if (tr() && !playing()) { <p class="up" style="margin: 0; padding: 12px 14px; border-radius: 6px; background: #2A0B12; color: #E9DCCF; font-size: 14px; line-height: 1.5">{{ transcript() }}</p> }
           </section>
         </main>
       </div>
+
+      <!-- Modo cine: al dar play el video crece a pantalla completa y el fondo se oscurece -->
+      @if (playing()) {
+        <div role="dialog" aria-modal="true" [attr.aria-label]="'Video del módulo ' + m.id" class="cine" (keydown.escape)="close()">
+          <div style="position: relative; width: min(92vw, 150vh); aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #7A3242, #2A0B12 75%); box-shadow: 0 30px 80px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center">
+            <video #vid [hidden]="!hasVideo()" [src]="'/assets/video/modulo-' + m.id + '.mp4'" playsinline autoplay
+              (loadedmetadata)="onReady()" (error)="hasVideo.set(false)" (ended)="markSeen()" (timeupdate)="onTime()"
+              style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #1A0609">
+              <track kind="captions" [src]="'/assets/video/modulo-' + m.id + '.vtt'" srclang="es" label="Español" default>
+            </video>
+            @if (!hasVideo()) {
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 20px">
+                <span class="px" style="font-size: 14px; color: #FFD3C9">▶ VIDEO · MÓDULO {{ m.id }}</span>
+                <span style="font-size: 15px; color: #E9DCCF">El video de este módulo está en producción. Mientras tanto, lee la transcripción.</span>
+              </div>
+              @if (cc()) { <span style="position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); max-width: 80%; padding: 8px 16px; border-radius: 6px; background: rgba(0,0,0,0.8); color: #FFFFFF; font-size: 22px; text-align: center">{{ ccLine() }}</span> }
+            }
+          </div>
+          <div style="width: min(92vw, 150vh); display: flex; align-items: center; gap: 12px; color: #FBF5EC; flex-wrap: wrap">
+            <span style="flex: 1 1 160px; height: 8px; border-radius: 999px; background: #4A2A2F; overflow: hidden"><span [style.width]="prog() + '%'" style="display: block; height: 100%; background: #FF836C"></span></span>
+            <button type="button" (click)="toggleCc()" [attr.aria-pressed]="cc() ? 'true' : 'false'" aria-label="Subtítulos" [style.background]="cc() ? '#FF836C' : 'transparent'" [style.color]="cc() ? '#1A0609' : '#FBF5EC'" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 2px solid #FF836C; font-weight: 800; font-size: 14px; cursor: pointer">CC</button>
+            <button type="button" (click)="tr.set(!tr())" [attr.aria-expanded]="tr() ? 'true' : 'false'" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 2px solid #FF836C; background: transparent; color: #FBF5EC; font-weight: 800; font-size: 14px; cursor: pointer">Transcripción</button>
+            <button type="button" (click)="close()" aria-label="Cerrar video" class="cerrar" style="min-height: 40px; padding: 0 16px; border-radius: 6px; border: none; background: #FFFFFF; color: #8A1428; font-weight: 800; font-size: 14px; cursor: pointer">✕ Cerrar</button>
+          </div>
+          @if (tr()) { <p style="margin: 0; width: min(92vw, 150vh); box-sizing: border-box; padding: 12px 16px; border-radius: 8px; background: #2A0B12; color: #E9DCCF; font-size: 15px; line-height: 1.5">{{ transcript() }}</p> }
+        </div>
+      }
     }
   `,
   styles: `
-    a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+    a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px} button{font-family:inherit}
     @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-    @keyframes pop{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
     .up{animation:up .7s cubic-bezier(.2,.7,.2,1) both}
-    .pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.2,1) both}
     .d1{animation-delay:.3s}.d2{animation-delay:.6s}.d3{animation-delay:.9s}.d4{animation-delay:1.2s}.d5{animation-delay:1.5s}
-    @media (prefers-reduced-motion: reduce){.up,.pop{animation:none}}
+    .cine{position:fixed;inset:0;z-index:50;background:rgba(26,6,9,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;box-sizing:border-box;overflow:auto;animation:up .35s cubic-bezier(.2,.7,.2,1) both}
+    @media (prefers-reduced-motion: reduce){.up,.cine{animation:none}}
   `,
 })
 export class IntroModuloPage {
   id = input.required<string>();
   private progress = inject(ProgressService);
+  private prefs = inject(PreferencesService);
+  private injector = inject(Injector);
+  private host = inject(ElementRef);
+  private vid = viewChild<ElementRef<HTMLVideoElement>>('vid');
   module = computed(() => getModule(Number(this.id())));
   open = computed(() => (this.progress.moduleStats(), this.progress.isModuleOpen(Number(this.id()))));
   who = computed(() => (this.module()?.intro.character.toLowerCase() ?? 'teo') as Who);
@@ -82,4 +122,61 @@ export class IntroModuloPage {
     if (!this.progress.seasonDone(m.id)) return { link: '/bitacora/' + m.id, label: 'BITÁCORA Y CIERRE' };
     return { link: '/temporada/' + m.id, label: 'VER TEMPORADA' };
   });
+
+  // ---------- Video en modo cine
+  playing = signal(false);
+  hasVideo = signal(true);
+  cc = signal(this.prefs.prefs().subtitulos);
+  tr = signal(false);
+  prog = signal(0);
+  private visto = signal(false);
+  /** Ya vio el video (o ya empezó los retos de este módulo). */
+  seen = computed(() => this.visto() || this.retos().some((r) => r.done) || this.readSeen());
+  transcript = computed(() => {
+    const m = this.module()!;
+    return TRANSCRIPCION[m.id] ?? `${m.intro.character}: ${m.intro.text} ${m.intro.goal}`;
+  });
+  ccLine = computed(() => this.transcript().replace(/^[^:]+:\s*/, '').split(/(?<=[.!?])\s/)[0]);
+
+  play() {
+    this.hasVideo.set(true);
+    this.playing.set(true);
+    this.prog.set(0);
+    afterNextRender(() => this.host.nativeElement.querySelector('.cerrar')?.focus(), { injector: this.injector });
+  }
+  close() {
+    this.vid()?.nativeElement.pause();
+    this.playing.set(false);
+    // Sin video todavía: abrir el reproductor cuenta como visto (el contenido está en la transcripción).
+    if (!this.hasVideo()) this.markSeen();
+  }
+  onReady() {
+    const track = this.vid()?.nativeElement.textTracks?.[0];
+    if (track) track.mode = this.cc() ? 'showing' : 'hidden';
+  }
+  onTime() {
+    const v = this.vid()?.nativeElement;
+    if (!v || !v.duration) return;
+    this.prog.set(Math.round((v.currentTime / v.duration) * 100));
+    if (v.currentTime / v.duration > 0.9) this.markSeen();
+  }
+  toggleCc() {
+    this.cc.set(!this.cc());
+    this.onReady();
+  }
+  markSeen() {
+    this.visto.set(true);
+    try {
+      localStorage.setItem(SEEN_KEY + this.id(), '1');
+    } catch {
+      /* sin almacenamiento local */
+    }
+  }
+  private readSeen() {
+    try {
+      return localStorage.getItem(SEEN_KEY + this.id()) === '1';
+    } catch {
+      return false;
+    }
+  }
 }

@@ -20,7 +20,7 @@ import type { CartasReto } from '../reto.types';
     .pop{animation:pop .45s cubic-bezier(.2,.7,.2,1) both}
     .opt{transition:transform .15s, box-shadow .15s}.opt:hover,.opt:focus-visible{transform:translateY(-6px) rotate(-1deg);box-shadow:0 16px 30px rgba(0,0,0,.35)}
     .bar{transition:width .9s cubic-bezier(.2,.7,.2,1)}
-    a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+    a:focus-visible,button:focus-visible{outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417;}
     @media (prefers-reduced-motion: reduce){.deal,.pop{animation:none}.opt,.bar{transition:none}}
   `,
 })
@@ -61,7 +61,7 @@ export class RetoCartas extends RetoBase<CartasReto> {
     const delta = this.ch()?.delta ?? (this.peek() !== null ? this.s().options[this.peek()!].delta : null);
     return this.data().meters.map((m, i) => {
       const d = delta ? delta[i] : 0;
-      return { ...m, w: this.vals()[i] + '%', arrow: d > 0 ? '▲' : d < 0 ? '▼' : '', arrowColor: d > 0 ? '#56C02B' : '#FF836C', arrowLabel: d > 0 ? 'sube' : d < 0 ? 'baja' : '' };
+      return { ...m, w: this.vals()[i] + '%', arrow: d > 0 ? '▲' : d < 0 ? '▼' : '', arrowColor: d > 0 ? '#56C02B' : '#FBF5EC', arrowLabel: d > 0 ? 'sube' : d < 0 ? 'baja' : '' };
     });
   });
   canRetry = computed(() => !this.locked() && this.pts() < this.data().max);

@@ -1,6 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { GameHeader } from '../../shared/game-header';
+import { Hud } from '../../shared/hud';
 import { Mood, Personaje, Who } from '../../shared/personaje';
 import DATA from './shark-tank.json';
 
@@ -23,31 +23,29 @@ const ST = DATA as {
  */
 @Component({
   selector: 'app-inversion',
-  imports: [RouterLink, GameHeader, Personaje],
+  imports: [RouterLink, Hud, Personaje],
   template: `
-    <div style="min-height: 100vh; background: #1A0609; display: flex; flex-direction: column; color: #FFFFFF; font-family: 'DM Sans', Arial, sans-serif">
-      <app-game-header kicker="FINAL · 2030" title="Ronda de inversión">
-        <span class="px" style="padding: 8px 12px; border: 2px solid #FF836C; border-radius: 6px; font-size: 10px; color: #FBF5EC">PIDES: {{ pitch.pides }}</span>
-      </app-game-header>
+    <div class="game-bg" style="min-height: 100vh; display: flex; flex-direction: column; color: #FFFFFF; font-family: 'DM Sans', Arial, sans-serif">
+      <app-hud kicker="FINAL · 2030" title="Ronda de inversión" variant="modulo" [mini]="false" style="position: relative; z-index: 3" />
 
       <!-- ESCENARIO -->
-      <section class="set" aria-label="Set de la ronda de inversión" style="position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 0%, #4A1520 0%, #1A0609 70%)">
+      <section class="set" aria-label="Set de la ronda de inversión" style="position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 0%, #7A3242 0%, #5A2230 75%)">
         <div aria-hidden="true" style="position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg, rgba(255,131,108,0.05) 0 2px, transparent 2px 120px)"></div>
-        <div aria-hidden="true" class="spot" style="position: absolute; left: 30%; top: -40px; width: 260px; height: 520px; background: linear-gradient(180deg, rgba(255,211,201,0.22), transparent 80%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%)"></div>
-        <div aria-hidden="true" class="spot" style="position: absolute; left: 62%; top: -40px; width: 260px; height: 520px; background: linear-gradient(180deg, rgba(255,211,201,0.18), transparent 80%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); animation-delay: 1.4s"></div>
+        <div aria-hidden="true" class="spot" style="position: absolute; left: 44%; top: -40px; width: 260px; height: 520px; background: linear-gradient(180deg, rgba(255,211,201,0.22), transparent 80%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%)"></div>
+        <div aria-hidden="true" class="spot" style="position: absolute; left: 65%; top: -40px; width: 260px; height: 520px; background: linear-gradient(180deg, rgba(255,211,201,0.18), transparent 80%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); animation-delay: 1.4s"></div>
         <div class="stage">
-          <section class="gpanel pitch" aria-label="Tu pitch" style="position: relative; z-index: 1; box-sizing: border-box; background: #FBF5EC; color: #231417; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px">
-            <div style="display: flex; flex-direction: column; gap: 8px">
-              <span class="px" style="font-size: 10px; color: #AC0B32; margin-bottom: 4px">TU PITCH</span>
-              <span style="font-size: 24px; font-weight: 800; line-height: 1.1">{{ pitch.titulo }}</span>
-              <span style="font-size: 14px; color: #5C4A4D">{{ pitch.descripcion }}</span>
+          <section class="gpanel pitch" aria-label="Tu pitch" style="position: relative; z-index: 1; box-sizing: border-box; background: #FFFFFF; color: #231417; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px">
+            <div style="position: relative; display: flex; flex-direction: column; gap: 8px">
+              <span style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; justify-content: center"><span class="px" style="font-size: 10px; color: #AC0B32">TU PITCH</span><button type="button" (click)="help.set(!help())" [attr.aria-expanded]="help() ? 'true' : 'false'" aria-controls="que-es-pitch" aria-label="¿Qué es un pitch?" [style.background]="help() ? '#AC0B32' : '#FFFFFF'" [style.color]="help() ? '#FFFFFF' : '#AC0B32'" style="width: 18px; height: 18px; border-radius: 999px; border: 1.5px solid #AC0B32; font-size: 11px; font-weight: 800; line-height: 1; cursor: pointer; padding: 0">?</button></span>
+              @if (help()) { <span id="que-es-pitch" class="bub" role="note" style="font-size: 13px; line-height: 1.35; color: #3D2C2F; background: #FFE6DD; border-radius: 6px; padding: 8px 10px">Un pitch es una presentación corta de tu idea, con datos, para convencer a quien puede invertir en ella.</span> }
+              <span style="font-size: 24px; font-weight: 800; line-height: 1.1; text-align: center">{{ pitch.titulo }}</span>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
               @for (d of data(); track d.l) {
-                <div style="background: #FFFFFF; border-radius: 6px; border-left: 4px solid #AC0B32; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 24px; line-height: 1.1; color: #8A1428">{{ d.v }}</strong><span style="font-size: 12px; color: #5C4A4D">{{ d.l }}</span></div>
+                <div style="border-radius: 8px; border: 2px solid #AC0B32; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; background-color: #FFFFFF"><strong style="font-size: 24px; line-height: 1.1; color: #8A1428">{{ d.v }}</strong><span style="font-size: 12px; font-weight: 600; color: #5C4A4D">{{ d.l }}</span></div>
               }
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; color: #8A1428; background-color: #FBF5EC; border: 1px solid #AC0B32"><span style="font-size: 13px; color: #8A1428">Pides</span><span style="font-size: 17px; font-weight: 800">{{ pitch.pides }}</span></div>
+            <span style="height: 44px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 0 14px; border: 2px solid #AC0B32; border-radius: 6px; font-size: 15px; background-color: #AC0B32; font-weight: 800; color: #FFFFFF">PIDES: {{ pitch.pides }}</span>
           </section>
 
           <!-- inversionistas -->
@@ -55,7 +53,7 @@ const ST = DATA as {
             @for (s of sharks(); track s.nombre) {
               <div style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 373px">
                 @if (s.talk) {
-                  <div class="bub" aria-live="polite" style="position: absolute; top: 6px; left: 0; right: 0; margin: 0 auto; max-width: 250px; background: #FFFFFF; color: #231417; border-radius: 14px; padding: 12px 14px; font-size: 16px; font-weight: 700; line-height: 1.3; box-shadow: 4px 4px 0 #8A1428; text-align: center; z-index: 3"><span class="sr">{{ s.nombre }} dice: </span>{{ s.say }}<span aria-hidden="true" style="position: absolute; left: 50%; bottom: -10px; margin-left: -10px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 12px solid #FFFFFF"></span></div>
+                  <div class="bub globo" aria-live="polite" style="position: absolute; z-index: 5; top: -5px; left: -60px; right: -60px; margin: 0; box-sizing: border-box; background: #FFFFFF; color: #231417; border-radius: 16px; padding: 14px 18px; font-size: 20px; font-weight: 800; line-height: 1.3; box-shadow: 6px 6px 0 #8A1428, 0 0 0 6px rgba(255,131,108,0.35), 0 20px 44px rgba(0,0,0,0.5); text-align: center; min-height: 105px"><span class="sr">{{ s.nombre }} dice: </span>{{ s.say }}<span aria-hidden="true" style="position: absolute; left: 50%; bottom: -10px; margin-left: -10px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 12px solid #FFFFFF"></span></div>
                 }
                 @if (s.stamped) {
                   <span class="stamp px" [style.border]="'4px solid ' + s.stC" [style.color]="s.stC" style="position: absolute; top: 60px; z-index: 2; padding: 10px 12px; background: rgba(26,6,9,0.85); font-size: 12px">{{ s.state }}</span>
@@ -65,10 +63,10 @@ const ST = DATA as {
                   <app-personaje [who]="s.personaje" [size]="200" [mood]="s.mood" [talking]="s.talking" [outline]="false" [alt]="s.aria" />
                 </div>
                 <!-- mesa -->
-                <div style="position: relative; width: calc(100% + 10px); height: 76px; margin-top: -26px; background: #8A1428; border-top: 4px solid #FF836C; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center">
+                <div style="position: relative; width: calc(100% - 10px); box-sizing: border-box; height: 76px; margin-top: -26px; background: #8A1428; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center">
                   <span style="font-size: 15px; font-weight: 800; color: #FBF5EC">{{ s.nombre }} <span style="font-weight: 600; color: #FFD3C9">· {{ s.tipo }}</span></span>
                   <span role="img" [attr.aria-label]="s.meterAria" style="display: flex; gap: 4px">
-                    @for (c of s.coins; track $index) { <span [style.background]="c" style="width: 16px; height: 16px; border-radius: 999px; border: 2px solid #1A0609; transition: background .4s"></span> }
+                    @for (c of s.coins; track $index) { <span [style.background]="c" style="width: 16px; height: 16px; border-radius: 999px; transition: background .4s"></span> }
                   </span>
                 </div>
               </div>
@@ -78,13 +76,13 @@ const ST = DATA as {
       </section>
 
       <section aria-live="polite" style="flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 14px 32px 20px; box-sizing: border-box; display: flex; align-items: flex-start; gap: 18px">
-        <div class="gpanel" style="flex: 1; min-width: 0; background: #2A0B12; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 10px; min-height: 173px; box-sizing: border-box">
+        <div style="flex: 1; min-width: 0; background: #FFFFFF; color: #231417; border-radius: 14px; box-shadow: 0 16px 36px rgba(0,0,0,0.35); padding: 18px 22px; display: flex; flex-direction: column; justify-content: center; gap: 10px; box-sizing: border-box">
           @if (phase() === 'ask') {
             <div style="display: flex; flex-direction: column; gap: 10px">
-              <span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 2px">PREGUNTA {{ i() + 1 }}/{{ total }} · ELIGE TU RESPUESTA</span>
+              <span class="px" style="font-size: 13px; color: #AC0B32; margin-bottom: 2px">PREGUNTA {{ i() + 1 }}/{{ total }} · ELIGE TU RESPUESTA</span>
               <div class="answers" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
                 @for (a of cur().respuestas; track a.texto; let k = $index) {
-                  <button type="button" class="gbtn" (click)="answer(a)" style="text-align: left; min-height: 96px; padding: 12px 14px; border: 2px solid #4A2A2F; background: #1A0609; color: #FBF5EC; font-size: 16px; font-weight: 600; line-height: 1.3; cursor: pointer; display: flex; flex-direction: column; gap: 8px; align-items: flex-start"><span class="px" style="font-size: 10px; color: #FF836C">▶ {{ 'ABC'[k] }}</span>{{ a.texto }}</button>
+                  <button type="button" class="gbtn" (click)="answer(a)" style="text-align: left; min-height: 96px; padding: 12px 14px; border: 2px solid #F2D9D1; background: #FFF5F2; color: #231417; font-size: 18px; font-weight: 600; line-height: 1.3; cursor: pointer; display: flex; flex-direction: column; gap: 8px; align-items: flex-start"><span class="px" style="width: 30px; height: 30px; border-radius: 6px; background: #FF836C; color: #1A0609; font-size: 15px; display: flex; align-items: center; justify-content: center">{{ 'ABC'[k] }}</span>{{ a.texto }}</button>
                 }
               </div>
             </div>
@@ -93,16 +91,16 @@ const ST = DATA as {
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap">
               <div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 320px">
                 <span [style.color]="deltaC()" style="font-size: 18px; font-weight: 700">{{ deltaText() }}</span>
-                <span style="font-size: 14px; color: #C9B8A6"><strong style="color: #FFD3C9">Evalúa:</strong> {{ cur().evalua }}</span>
+                <span style="font-size: 14px; color: #5C4A4D"><strong style="color: #8A1428">Evalúa:</strong> {{ cur().evalua }}</span>
               </div>
               <button type="button" class="gbtn glow" (click)="next()" style="min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 10px">▶ {{ i() < total - 1 ? 'SIGUIENTE' : 'VER LA OFERTA' }}</span></button>
             </div>
           }
           @if (phase() === 'end') {
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap">
-              <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 26px; font-weight: 800">{{ dealTitle() }}</span><span style="font-size: 15px; color: #E9DCCF">{{ deals() > 0 ? final.conTrato : final.sinTrato }}</span></div>
+              <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 26px; font-weight: 800">{{ dealTitle() }}</span><span style="font-size: 15px; color: #5C4A4D">{{ deals() > 0 ? final.conTrato : final.sinTrato }}</span></div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap">
-                <button type="button" class="gbtn" (click)="restart()" style="min-height: 50px; padding: 0 18px; border: 2px solid #FBF5EC; background: transparent; color: #FBF5EC; font-weight: 800; cursor: pointer">Repetir</button>
+                <button type="button" class="gbtn" (click)="restart()" style="min-height: 50px; padding: 0 18px; border: 2px solid #8A1428; background: transparent; color: #8A1428; font-weight: 800; cursor: pointer">Repetir</button>
                 <a class="gbtn glow" routerLink="/barra" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 10px">▶ VER TU BARRA</span></a>
               </div>
             </div>
@@ -113,9 +111,9 @@ const ST = DATA as {
   `,
   styles: `
     a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px} button{font-family:inherit}
-    .set{height:450px}
-    .stage{position:relative;height:100%;max-width:1280px;margin:0 auto;box-sizing:border-box;padding:36px 32px 33px 66px;display:flex;gap:71px;align-items:flex-end}
-    .pitch{width:320px;height:372px;flex-shrink:0;align-self:flex-start}
+    .set{height:540px;margin-top:-90px}
+    .stage{position:relative;height:100%;max-width:1280px;margin:0 auto;box-sizing:border-box;padding:126px 32px 33px 66px;display:flex;gap:71px;align-items:flex-end}
+    .pitch{width:320px;min-height:372px;flex-shrink:0;align-self:flex-start}
     .sharks{flex:1;min-width:0;height:407px}
     .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
     @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
@@ -147,6 +145,7 @@ export class InversionPage {
   get total() {
     return this.preguntas().length;
   }
+  help = signal(false);
   i = signal(0);
   phase = signal<'ask' | 'react' | 'end'>('ask');
   interest = signal(ST.inversionistas.map(() => ST.interesInicial));
@@ -165,7 +164,7 @@ export class InversionPage {
     const name = ST.inversionistas[this.who()].nombre;
     return l.tipo === 'greenwashing' || l.d < 0 ? '▼ ' + name + ' pierde interés. Sin datos, suena a Brillo.' : l.d > 0 ? '▲ ' + name + ' se interesa.' : '■ ' + name + ' no se mueve. Faltan cifras.';
   });
-  deltaC = computed(() => (!this.last() ? '#FBF5EC' : this.last()!.d > 0 ? '#56C02B' : this.last()!.d < 0 ? '#FF836C' : '#FBF5EC'));
+  deltaC = computed(() => (!this.last() ? '#231417' : this.last()!.d > 0 ? '#2C5E31' : this.last()!.d < 0 ? '#AC0B32' : '#231417'));
 
   sharks = computed(() =>
     ST.inversionistas.map((s, k) => {
@@ -181,7 +180,7 @@ export class InversionPage {
         say: this.phase() === 'react' && this.last() ? '«' + this.last()!.r + '»' : this.cur().pregunta,
         glow: talk ? '0.45' : '0.08',
         aria: s.nombre + ', inversionista ' + s.tipo.toLowerCase() + ': ' + state.toLowerCase(),
-        stamped: ended, state, stC: v >= invierte ? '#56C02B' : v <= seRetira ? '#FF836C' : '#FBF5EC',
+        stamped: ended, state, stC: v >= invierte ? '#56C02B' : v <= seRetira ? '#FF836C' : '#FFD3C9',
         coins: [0, 1, 2, 3, 4].map((n) => (n < filled ? '#FF836C' : '#4A2A2F')),
         meterAria: 'Interés ' + filled + ' de 5',
       };

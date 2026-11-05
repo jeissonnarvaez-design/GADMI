@@ -9,7 +9,7 @@
   --vino: #ac0b32;
   --bordo: #8a1428;
   --rojo-uao: #ff051e; /* solo textos grandes o decoración */
-  --coral: #ff836c;
+  --coral: #FBF5EC; /* antes coral #FF836C: ahora crema (paleta UAO) */
   --coral-claro: #ffe9e2;
   --blanco: #ffffff;
   --tinta: #231417;
@@ -429,10 +429,13 @@ details.why > div {
 }
 
 /* ===================================================================
- * Estilo videojuego (pantallas de diseño GADMI): globales obligatorios
+ * Estilo videojuego (rediseño GADMI aprobado): globales obligatorios
  * =================================================================== */
+/* Rótulos tipo videojuego: Pixelify Sans (sí tiene mayúsculas con tilde). */
 .px {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Pixelify Sans', monospace;
+  font-size-adjust: 0.62;
+  font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.5;
 }
@@ -442,51 +445,38 @@ details.why > div {
   border-radius: 8px !important;
 }
 @keyframes glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 131, 108, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 22px 4px rgba(255, 131, 108, 0.45);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 131, 108, 0.6); }
+  50% { box-shadow: 0 0 22px 4px rgba(255, 131, 108, 0.45); }
 }
-.glow {
-  animation: glow 1.8s ease-in-out infinite;
-}
+.glow { animation: glow 1.8s ease-in-out infinite; }
 .gbtn {
   border-radius: 6px !important;
   box-shadow: 4px 4px 0 #8a1428;
-  transition:
-    transform 0.12s,
-    box-shadow 0.12s;
+  transition: transform 0.12s, box-shadow 0.12s;
 }
-.gbtn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #8a1428;
-}
-.gbtn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #8a1428;
-}
+.gbtn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #8a1428; }
+.gbtn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #8a1428; }
+.gbtn:disabled { transform: none; box-shadow: 4px 4px 0 #8a1428; }
 @media (prefers-reduced-motion: reduce) {
-  .glow {
-    animation: none;
-  }
-  .gbtn {
-    transition: none;
-  }
+  .glow { animation: none; }
+  .gbtn { transition: none; }
 }
-/* Fondo de juego con cuadrícula coral de 32 px */
+/* Fondo del juego «vino suave»: vino + brillo arriba a la izquierda + cuadrícula de 32 px. */
 .game-bg {
   min-height: 100vh;
-  background-color: #1a0609;
+  background-color: #5a2230;
   background-image:
-    linear-gradient(rgba(255, 131, 108, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 131, 108, 0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
+    radial-gradient(ellipse at 20% -10%, #7a3242 0%, transparent 55%),
+    linear-gradient(rgba(255, 211, 201, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 211, 201, 0.07) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
   display: flex;
   flex-direction: column;
   font-family: 'DM Sans', Arial, sans-serif;
+}
+.game-bg h1,
+.game-bg h2 {
+  color: inherit;
 }
 .game-bg button,
 .game-bg input,

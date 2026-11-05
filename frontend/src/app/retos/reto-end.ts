@@ -26,7 +26,7 @@ import { Personaje, Who } from '../shared/personaje';
   styles: `
     @keyframes pop{0%{opacity:0;transform:scale(.6)}70%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
     .pop{animation:pop .45s cubic-bezier(.2,.7,.2,1) both}
-    a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
+    a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FBF5EC;outline-offset:3px;box-shadow:0 0 0 6px #231417;}
     @media (prefers-reduced-motion: reduce){.pop{animation:none}}
   `,
 })
