@@ -1,0 +1,23 @@
+{
+  "id": "m1-metas", "code": "1.4", "title": "Metas e indicadores", "template": "metas", "max": 60,
+  "who": "chispa",
+  "prompt": "Un objetivo sin indicador es un buen deseo. Dale a cada uno cómo medirlo, una meta y un plazo.",
+  "catalog": [
+    { "id": "", "text": "Elige un indicador…" },
+    { "id": "kwh", "text": "kWh consumidos / toneladas procesadas" },
+    { "id": "fam", "text": "Familias capacitadas / total de familias" },
+    { "id": "ven", "text": "Crecimiento de ventas (%)" },
+    { "id": "hit", "text": "Hitos de gobernanza cumplidos (de 3)" },
+    { "id": "redes", "text": "Seguidores en redes sociales" },
+    { "id": "reun", "text": "Número de reuniones de gerencia" },
+    { "id": "horas", "text": "Horas de funcionamiento de la planta" }
+  ],
+  "horizons": ["Corto", "Mediano", "Largo"],
+  "points": { "indicator": 8, "meta": 5, "horizon": 2 },
+  "objectives": [
+    { "id": "energia", "name": "Energía", "dim": "AMBIENTAL", "dimBg": "#3F7E44", "goal": "Reducir el consumo de energía por tonelada.", "indicator": "kwh", "max": 50, "step": 1, "unit": "% menos", "lo": 10, "hi": 30, "horizons": ["Corto", "Mediano"] },
+    { "id": "familias", "name": "Familias", "dim": "SOCIAL", "dimBg": "#FF836C", "goal": "Capacitar a las familias proveedoras.", "indicator": "fam", "max": 100, "step": 5, "unit": "%", "lo": 80, "hi": 100, "horizons": ["Corto"] },
+    { "id": "ventas", "name": "Ventas", "dim": "ECONÓMICA", "dimBg": "#231417", "goal": "Aumentar las ventas en el mercado nacional.", "indicator": "ven", "max": 40, "step": 1, "unit": "% más", "lo": 5, "hi": 20, "horizons": ["Corto"] },
+    { "id": "gobernanza", "name": "Gobernanza", "dim": "GOBERNANZA", "dimBg": "#8A1428", "goal": "Código de ética, canal de denuncias e informe.", "indicator": "hit", "max": 3, "step": 1, "unit": " de 3 hitos", "lo": 3, "hi": 3, "horizons": ["Mediano"] }
+  ]
+}

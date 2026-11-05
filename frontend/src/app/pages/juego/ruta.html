@@ -1,0 +1,144 @@
+<div class="game-bg" style="min-height: 100vh; display: flex; flex-direction: column; color: #231417">
+  <!-- HUD superior -->
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 28px; background: #2A0B12; border-bottom: 3px solid #FF836C; color: #FBF5EC">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <span style="background: #FFFFFF; border-radius: 6px; padding: 6px 10px; display: inline-flex"><img src="/assets/logo-uao.png" alt="UAO" style="height: 18px; width: auto"></span>
+      <div style="display: flex; flex-direction: column; gap: 5px"><span class="px" style="font-size: 10px; color: #FF836C">CACAO RAÍZ</span><span style="font-size: 18px; font-weight: 800">{{ curYear() }} · {{ curPhase() }}</span></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+      <span class="px" [attr.aria-label]="overall().points + ' granos'" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 2px solid #FF836C; border-radius: 6px; font-size: 10px"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="7" ry="9" fill="#9A5B2E" transform="rotate(-20 12 12)"></ellipse><path d="M13 4c-2 5-2 11-3 16" stroke="#FF836C" stroke-width="1.5" fill="none"></path></svg>{{ overall().points }}</span>
+      <span class="px" style="padding: 8px 12px; border-radius: 6px; background: #FF836C; color: #1A0609; font-size: 10px">{{ overall().level.name }}</span>
+      @for (t of tools(); track t.key) {
+        @if (t.href) {
+          <a [routerLink]="t.href" class="gbtn tool" [attr.aria-label]="t.label" [title]="t.label" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 2px solid #FF836C; background: #2A0B12; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="t.icon"></path></svg></a>
+        } @else {
+          <button type="button" (click)="tool(t.key)" class="gbtn tool" [attr.aria-label]="t.label" [title]="t.label" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 2px solid #FF836C; background: #2A0B12; cursor: pointer; padding: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="t.icon"></path></svg></button>
+        }
+      }
+      <app-accesibilidad #menu tone="dark" data-tour="accesibilidad">
+        <button type="button" class="menu-x" (click)="repeatTour(menu)"><span aria-hidden="true">▶</span> Repetir recorrido guiado</button>
+        <button type="button" class="menu-x" (click)="logout()"><span aria-hidden="true">⎋</span> Salir</button>
+      </app-accesibilidad>
+    </div>
+  </header>
+
+  <!-- Línea del tiempo -->
+  <nav aria-label="Tus años como gerente" data-tour="tiempo" style="display: flex; justify-content: center; padding: 14px 16px 4px; align-self: center">
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; align-items: flex-start">
+      @for (y of years(); track y.yr) {
+        <li style="display: flex; align-items: flex-start">
+          @if (y.line) { <span aria-hidden="true" class="linea" [style.background]="y.lineC" style="width: 64px; height: 4px; margin-top: 20px"></span> }
+          <div class="nodo" data-keep style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 92px">
+            @if (y.past) {
+              <button type="button" class="node" (click)="pickYear(y.i)" (mouseenter)="tip.set('y' + y.i)" (mouseleave)="unhover()" (focus)="tip.set('y' + y.i)" (blur)="unhover()" [attr.aria-pressed]="y.viewing ? 'true' : 'false'" [attr.aria-label]="y.aria" [attr.aria-describedby]="y.tip ? 'tip-y' + y.i : null" [style.background]="y.bg" style="width: 44px; height: 44px; border-radius: 999px; border: 3px solid #FF836C; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" [attr.stroke]="y.ic" stroke-width="2.4" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+            }
+            @if (y.now) {
+              <button type="button" class="node glow" (click)="pickYear(y.i)" [attr.aria-pressed]="y.viewing ? 'true' : 'false'" [attr.aria-label]="y.aria" style="width: 44px; height: 44px; border-radius: 999px; border: 3px solid #FBF5EC; background: #FF836C; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0"><span class="px" style="font-size: 10px; color: #1A0609">HOY</span></button>
+            }
+            @if (y.future) {
+              <span tabindex="0" role="img" (click)="tip.set('y' + y.i)" (mouseenter)="tip.set('y' + y.i)" (mouseleave)="unhover()" (focus)="tip.set('y' + y.i)" (blur)="unhover()" [attr.aria-label]="y.aria" style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 999px; border: 3px dashed #4A2A2F; background: #1A0609; display: flex; align-items: center; justify-content: center; cursor: help"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5458" stroke-width="2.4" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
+            }
+            <span class="px" [style.color]="y.c" style="font-size: 10px">{{ y.yr }}</span>
+            <span [style.color]="y.c2" style="font-size: 12px">{{ y.phase }}</span>
+            @if (y.tip) {
+              <span class="up" role="tooltip" [id]="'tip-y' + y.i" style="position: absolute; top: 88px; z-index: 5; width: 200px; padding: 8px 10px; border-radius: 6px; background: #FBF5EC; color: #231417; font-size: 13px; font-weight: 700; text-align: center; box-shadow: 4px 4px 0 #8A1428">{{ y.tipText }}</span>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  </nav>
+
+  <main style="flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 10px 28px 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; justify-content: center">
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+      <!-- MAPA -->
+      <section class="gpanel mapa" aria-label="Mapa de tu empresa" style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; padding: 10px; position: relative; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+        <div data-tour="mapa" style="position: relative; flex: 1; min-height: 0">
+          <app-mapa-ilustracion [anio]="viewYear()" [zonas]="zoneStates()" [capas]="scene()" [recuerdo]="memory()" />
+          @if (memory()) {
+            <div style="position: absolute; inset: 0; border-radius: 16px; box-shadow: inset 0 0 0 6px #9A5B2E; pointer-events: none"></div>
+            <div class="up" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 14px; border-radius: 6px; background: #231417; color: #FBF5EC; box-shadow: 4px 4px 0 #9A5B2E; white-space: nowrap">
+              <span class="px" style="font-size: 10px; color: #FFD3C9">RECUERDO · {{ viewYear() }}</span>
+              <button type="button" (click)="view.set(null)" style="min-height: 34px; padding: 0 12px; border-radius: 4px; border: none; background: #FF836C; color: #1A0609; font-weight: 800; font-size: 13px; cursor: pointer">Volver a hoy</button>
+            </div>
+          } @else {
+            @for (z of zones(); track z.id) {
+              <div data-keep [style.left]="'clamp(58px, ' + z.x + ', calc(100% - 58px))'" [style.top]="z.y" [style.z-index]="z.zi" style="position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center">
+                <!-- El menú y el mensaje cuelgan debajo del botón, sin moverlo -->
+                <button type="button" class="pin" (click)="pickZone(z.i)" (mouseenter)="tip.set('z' + z.i)" (mouseleave)="unhover()" (focus)="tip.set('z' + z.i)" (blur)="unhover()" [attr.aria-pressed]="z.sel ? 'true' : 'false'" [attr.aria-expanded]="z.st !== 'locked' || z.inOrder ? (z.menu ? 'true' : 'false') : null" [attr.aria-haspopup]="z.st !== 'locked' || z.inOrder ? 'menu' : null" [attr.aria-label]="z.aria"
+                  [style.border]="'3px solid ' + z.bd" [style.background]="z.bg" [style.color]="z.fg" [style.opacity]="z.op"
+                  style="display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 999px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 rgba(35,20,23,0.35); white-space: nowrap">
+                  <span [class.pulse]="z.st === 'open'" [style.background]="z.dot" style="width: 30px; height: 30px; border-radius: 999px; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="z.pinIcon"></path></svg></span>
+                  {{ z.name }}
+                  @if (z.st === 'open') { <span class="px" style="font-size: 10px; padding: 4px 6px; border-radius: 4px; background: #AC0B32; color: #FFFFFF">NUEVO</span> }
+                </button>
+                @if (z.showTip) {
+                  <span class="up" role="tooltip" style="position: absolute; top: 100%; margin-top: 8px; width: 210px; padding: 8px 10px; border-radius: 6px; background: #231417; color: #FBF5EC; font-size: 13px; font-weight: 700; text-align: center; box-shadow: 4px 4px 0 #8A1428">{{ z.tipText }}</span>
+                }
+                @if (z.menu) {
+                  <div class="up" role="menu" [attr.aria-label]="'Retos de ' + z.name" style="position: absolute; top: 100%; margin-top: 8px; width: 250px; padding: 8px; border-radius: 6px; background: #231417; box-shadow: 4px 4px 0 #8A1428; display: flex; flex-direction: column; gap: 6px">
+                    @for (r of z.items; track r.name) {
+                      @if (r.state === 'open') { <a role="menuitem" [routerLink]="r.link" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border-radius: 4px; background: #FF836C; color: #1A0609; font-size: 13px; font-weight: 800; text-decoration: none">{{ r.name }}<span>▶ {{ r.pts }}</span></a> }
+                      @if (r.state === 'done') { <span role="menuitem" aria-disabled="true" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; color: #56C02B; font-size: 13px; font-weight: 700">{{ r.name }}<span aria-label="hecho">✓</span></span> }
+                      @if (r.state === 'locked') { <span role="menuitem" aria-disabled="true" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; color: #8C7A7D; font-size: 13px; font-weight: 600">{{ r.name }}<span aria-label="bloqueado">🔒</span></span> }
+                    }
+                  </div>
+                }
+              </div>
+            }
+            @if (boardMessage(); as msg) {
+              <button type="button" data-keep class="pin bounce" (click)="toggleEvent()" [attr.aria-expanded]="event() ? 'true' : 'false'" [attr.aria-label]="'Novedad: ' + msg.titulo" style="position: absolute; left: 44%; top: 18%; width: 46px; height: 46px; border-radius: 10px; border: 3px solid #FBF5EC; background: #FF836C; color: #1A0609; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #8A1428; padding: 0"><span class="px" style="font-size: 16px">!</span></button>
+              @if (event()) {
+                <div class="up" role="status" data-keep style="position: absolute; left: 44%; top: calc(18% + 58px); transform: translateX(-50%); z-index: 6; width: 260px; padding: 10px 12px; border-radius: 6px; background: #231417; color: #FBF5EC; box-shadow: 4px 4px 0 #8A1428; display: flex; flex-direction: column; gap: 6px"><span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 2px">{{ msg.titulo }}</span><span style="font-size: 14px; line-height: 1.35">{{ msg.texto }}</span></div>
+              }
+            }
+          }
+        </div>
+        <div aria-label="Siguiente misión" role="group" data-tour="mision" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 8px 8px 8px 14px; border-radius: 6px; background: #2A0B12; color: #FBF5EC">
+          <span class="px" style="font-size: 10px; color: #FF836C">SIGUIENTE MISIÓN</span>
+          <span style="flex: 1 1 220px; font-size: 16px; font-weight: 800">{{ mission().text }}</span>
+          <div [attr.aria-label]="'Módulo ' + cur() + ' de 4'" role="img" style="display: flex; gap: 4px">
+            @for (p of modPips(); track $index) { <span [style.background]="p" style="width: 22px; height: 10px; border-radius: 2px"></span> }
+          </div>
+          <a class="gbtn glow" [routerLink]="mission().link" style="display: inline-flex; align-items: center; min-height: 46px; padding: 0 20px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 11px">▶ CONTINUAR</span></a>
+        </div>
+      </section>
+
+      <!-- LATERAL -->
+      <aside class="lado" style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 18px; box-sizing: border-box">
+        <section class="gpanel" aria-labelledby="tab" data-tour="tablero" style="flex: 1; min-height: 0; background: #2A0B12; color: #FBF5EC; padding: 18px 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h2 id="tab" class="px" style="margin: 0 0 6px; font-size: 10px; font-weight: 400; color: #FF836C">TABLERO · {{ viewYear() }}</h2></div>
+          @for (m of meters(); track m.label) {
+            <button type="button" (click)="meter.set(m.open ? null : m.label)" [attr.aria-expanded]="m.open ? 'true' : 'false'" [attr.aria-label]="m.aria" style="border: none; background: transparent; color: inherit; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px">
+              <div style="display: flex; align-items: center; gap: 10px; width: 100%">
+                <span [style.background]="m.c" style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 6px; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="m.icon"></path></svg></span>
+                <span style="flex: 1; font-size: 14px; font-weight: 700">{{ m.label }}</span>
+                <span [style.color]="m.tc" style="font-size: 12px; font-weight: 800">{{ m.trend }}</span>
+                <span class="px" style="font-size: 10px; min-width: 36px; text-align: right">{{ m.v }}</span>
+              </div>
+              <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; width: 100%; height: 8px">
+                @for (c of m.cells; track $index) { <span [style.background]="c" style="height: 8px; border-radius: 2px"></span> }
+              </span>
+              @if (m.open) { <span class="up" style="font-size: 13px; color: #FFD3C9; line-height: 1.35">{{ m.tip }}</span> }
+            </button>
+          }
+        </section>
+        <ul aria-label="ODS que vas logrando" style="list-style: none; margin: 0; padding: 4px 6px 10px; display: flex; justify-content: space-between">
+          @for (o of ods(); track o.n) {
+            <li class="float" [style.animation-delay]="o.delay"><span role="img" [attr.aria-label]="o.aria" [title]="o.aria" [style.background]="o.bg" [style.border]="'1.5px solid ' + o.bd" [style.color]="o.fg" style="width: 52px; height: 52px; border-radius: 999px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1"><span style="font-size: 7px; font-weight: 700; letter-spacing: 0.12em; opacity: 0.85">ODS</span><span style="font-size: 15px; font-weight: 800">{{ o.n }}</span></span></li>
+          }
+        </ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+@if (objetivo()) {
+  <div role="dialog" aria-modal="true" aria-label="Objetivo del curso" (click)="objetivo.set(false)" style="position: fixed; inset: 0; z-index: 900; background: rgba(26,6,9,0.8); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; overflow-y: auto">
+    <div (click)="$event.stopPropagation()" style="width: 100%; max-width: 760px; display: flex; justify-content: center">
+      <app-objetivo-curso (ok)="objetivo.set(false)" />
+    </div>
+  </div>
+}
+
+<app-tour [steps]="tourSteps" (closed)="tourClosed()" />

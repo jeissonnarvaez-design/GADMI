@@ -1,0 +1,42 @@
+{
+  "id": "m3-comunicacion", "code": "3.3", "title": "Comunicar con datos", "template": "partes", "max": 30,
+  "who": "nibi",
+  "endTitles": { "perfect": "¡Mensaje claro!", "first": "Buen comienzo.", "second": "Misión cumplida." },
+  "parts": [
+    {
+      "key": "A", "type": "choice", "layout": "rows", "optionStyle": "stack",
+      "prompt": "¿Qué mensaje das en cada caso? Sin exagerar ni ocultar.",
+      "hint": "¿Dice la verdad completa, sin exagerar logros ni ocultar información?",
+      "items": [
+        { "id": "s1", "text": "Informar a los trabajadores sobre el nuevo esquema de turnos", "answer": "m2", "points": 7, "explanation": "Explica el porqué, qué cambia, desde cuándo y a quién preguntar.",
+          "options": [
+            { "id": "m1", "label": "Somos la empresa con el mejor clima laboral de la región, y los nuevos turnos lo confirman." },
+            { "id": "m2", "label": "Desde el 1 de diciembre cambian los turnos para acabar con las jornadas extendidas: qué cambia, desde cuándo y a quién preguntar." },
+            { "id": "m3", "label": "Por razones ajenas a la colectividad, los turnos se modificarán. Su cumplimiento es obligatorio." } ] },
+        { "id": "s2", "text": "Avisar al cliente europeo que un pedido llegará con cinco días de retraso", "answer": "m3", "points": 7, "explanation": "Reconoce el retraso, da la causa sin excusas, propone fecha firme y una compensación.",
+          "options": [
+            { "id": "m1", "label": "Por razones ajenas a nuestra voluntad, el pedido presenta novedades en su despacho." },
+            { "id": "m2", "label": "Nuestro compromiso con la calidad es tan alto que preferimos tomarnos unos días más." },
+            { "id": "m3", "label": "Su pedido llega cinco días tarde por una falla en la tostadora. Fecha firme: 18 de marzo, con 5 % de descuento." } ] },
+        { "id": "s3", "text": "Contar a la comunidad vecina los resultados del compostaje", "answer": "m1", "points": 7, "explanation": "Da la cifra real de residuos aprovechados e invita a una visita.",
+          "options": [
+            { "id": "m1", "label": "En 2027 aprovechamos el 44 % de los residuos y la cascarilla ya es compost. Les invitamos a visitar la planta." },
+            { "id": "m2", "label": "Somos la empresa más verde de la región: ¡cero residuos!" },
+            { "id": "m3", "label": "Por razones ajenas a la colectividad no podemos compartir cifras." } ] }
+      ]
+    },
+    {
+      "key": "B", "type": "choice", "layout": "rows", "optionStyle": "stack",
+      "prompt": "¿Por qué canal lo comunicas?",
+      "hint": "¿El canal llega a quien debe enterarse y deja constancia?",
+      "items": [
+        { "id": "s1", "text": "Nuevo esquema de turnos", "answer": "c2", "points": 3, "explanation": "Reunión presencial seguida de un comunicado escrito.",
+          "options": [ { "id": "c1", "label": "Publicación en redes sociales" }, { "id": "c2", "label": "Reunión presencial y comunicado escrito" }, { "id": "c3", "label": "Aviso en la cartelera, sin reunión" } ] },
+        { "id": "s2", "text": "Retraso al cliente europeo", "answer": "c1", "points": 3, "explanation": "Llamada y confirmación por correo.",
+          "options": [ { "id": "c1", "label": "Llamada y confirmación por correo" }, { "id": "c2", "label": "Mensaje de chat sin confirmación" }, { "id": "c3", "label": "Esperar a que pregunte" } ] },
+        { "id": "s3", "text": "Resultados del compostaje", "answer": "c3", "points": 3, "explanation": "Encuentro comunitario o cartelera local.",
+          "options": [ { "id": "c1", "label": "Nota de prensa nacional" }, { "id": "c2", "label": "Correo interno a gerencia" }, { "id": "c3", "label": "Encuentro comunitario o cartelera local" } ] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "_nota": "Contenido PROVISIONAL de la ronda de inversión. Reemplazar por el contenido aprobado por la profe. «personaje» es el SVG de public/assets/personajes (ST1 = laura, ST2 = andres, ST3 = klaus).",
+  "pitch": {
+    "titulo": "Infusión de cascarilla de cacao",
+    "descripcion": "El residuo de la planta se vuelve producto.",
+    "pides": "COP 600 M · 10 %"
+  },
+  "interesInicial": 40,
+  "umbrales": {
+    "invierte": 60,
+    "seRetira": 30
+  },
+  "inversionistas": [
+    {
+      "nombre": "Laura",
+      "tipo": "Impacto",
+      "personaje": "laura"
+    },
+    {
+      "nombre": "Andrés",
+      "tipo": "Financiero",
+      "personaje": "andres"
+    },
+    {
+      "nombre": "Klaus",
+      "tipo": "Comprador europeo",
+      "personaje": "klaus"
+    }
+  ],
+  "preguntas": [
+    {
+      "inversionista": 0,
+      "pregunta": "¿Cómo sé que esto ayuda de verdad a las familias?",
+      "respuestas": [
+        {
+          "texto": "Les compramos la cascarilla y medimos su ingreso extra cada año.",
+          "interes": 30,
+          "reaccion": "Eso es medible. Me interesa."
+        },
+        {
+          "texto": "Somos una empresa muy comprometida con lo social.",
+          "interes": -10,
+          "reaccion": "Eso lo dicen todos. ¿Y los datos?"
+        },
+        {
+          "texto": "Las familias se van a sentir orgullosas.",
+          "interes": 0,
+          "reaccion": "Bonito, pero no me convence."
+        }
+      ]
+    },
+    {
+      "inversionista": 1,
+      "pregunta": "Tus ventas crecieron 12 %. ¿Por qué invertiría en algo nuevo?",
+      "respuestas": [
+        {
+          "texto": "Porque está de moda lo saludable.",
+          "interes": 0,
+          "reaccion": "La moda pasa."
+        },
+        {
+          "texto": "Usa un residuo que hoy no cuesta nada: el margen es alto.",
+          "interes": 30,
+          "reaccion": "Ahora hablamos el mismo idioma."
+        },
+        {
+          "texto": "Porque vamos a ser los más verdes del país.",
+          "interes": -15,
+          "reaccion": "Eso suena a greenwashing…"
+        }
+      ]
+    },
+    {
+      "inversionista": 2,
+      "pregunta": "¿Puedes probar que nada viene de zonas deforestadas?",
+      "respuestas": [
+        {
+          "texto": "Confiamos en nuestros proveedores.",
+          "interes": -10,
+          "reaccion": "Confiar no es probar."
+        },
+        {
+          "texto": "Lo estamos revisando.",
+          "interes": 0,
+          "reaccion": "Vuelve cuando lo tengas."
+        },
+        {
+          "texto": "Sí: cada lote está georreferenciado y documentado.",
+          "interes": 30,
+          "reaccion": "Con eso puedo vender en Europa."
+        }
+      ]
+    }
+  ],
+  "final": {
+    "conTrato": "Tus datos convencieron. La infusión sale al mercado en 2031.",
+    "sinTrato": "Sin pruebas no hay inversión. Revisa tus datos."
+  }
+}

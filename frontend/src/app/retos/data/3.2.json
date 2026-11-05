@@ -1,0 +1,23 @@
+{
+  "id": "m3-crisis", "code": "3.2", "title": "Liderar en crisis", "template": "cartas", "max": 90,
+  "meters": [ { "label": "Clima laboral", "color": "#FF836C" }, { "label": "Productividad", "color": "#FCC30B" }, { "label": "Reputación", "color": "#56C02B" } ],
+  "start": [58, 60, 60],
+  "flags": { "sinGreenwashing": { "scenario": "C", "not": "4" } },
+  "scenarios": [
+    { "id": "A", "who": "nibi", "whoName": "Nibi te escribe", "text": "6 semanas de jornadas extendidas. Clima laboral: 58 %. Tres operarios renunciaron.", "options": [
+      { "label": "Escuchar al equipo, ajustar turnos y reconocer el esfuerzo", "delta": [20, 10, 5], "points": 30, "title": "Óptima · liderazgo participativo", "text": "Atacaste la causa y el equipo lo siente." },
+      { "label": "Pagar un bono único a todos", "delta": [8, 0, 0], "points": 18, "title": "Aceptable", "text": "Alivia, pero no resuelve la causa." },
+      { "label": "Enviar un memorando: cumplan el contrato", "delta": [-15, -5, -5], "points": 0, "title": "Contraproducente · autoritario", "text": "El clima empeora y se van más personas." },
+      { "label": "Esperar a que pase la temporada alta", "delta": [-8, -10, 0], "points": 5, "title": "Débil · laissez-faire", "text": "No decidir también es una decisión." } ] },
+    { "id": "B", "who": "teo", "whoName": "Teo trae noticias del Pacífico", "text": "Las familias suspenden entregas: pagos atrasados y precio bajo.", "options": [
+      { "label": "Mesa de diálogo, pagar lo atrasado y proponer precio mínimo", "delta": [10, 10, 15], "points": 30, "title": "Óptima · diálogo y corresponsabilidad", "text": "Recuperas la confianza y el cacao vuelve." },
+      { "label": "Pagar lo atrasado sin abrir conversación", "delta": [0, 10, 3], "points": 18, "title": "Aceptable", "text": "Vuelve el cacao, no la confianza." },
+      { "label": "Comprar a intermediarios sin verificar el origen", "delta": [0, 5, -20], "points": 0, "title": "Contraproducente", "text": "Rompes la trazabilidad que exige Europa." },
+      { "label": "Advertir que se terminarán los contratos", "delta": [-10, -10, -10], "points": 0, "title": "Contraproducente", "text": "Las familias se van con la competencia." } ] },
+    { "id": "C", "who": "chispa", "whoName": "Chispa con datos del cliente", "text": "El cliente europeo (35 % de las ventas) exige probar en 6 meses que el cacao no viene de zonas deforestadas.", "options": [
+      { "label": "Formar un equipo para georreferenciar fincas y documentar cada lote", "delta": [5, 5, 20], "points": 30, "title": "Óptima · construye capacidad", "text": "Ahora la empresa sabe hacerlo sola." },
+      { "label": "Contratar un consultor y dejarle todo", "delta": [0, 5, 8], "points": 18, "title": "Aceptable", "text": "Resuelve, pero no deja capacidad instalada." },
+      { "label": "Buscar otro cliente sin cambiar nada", "delta": [0, -10, -5], "points": 5, "title": "Débil", "text": "El problema te seguirá a otros mercados." },
+      { "label": "Declarar que cumplimos aunque no podamos probarlo", "delta": [0, 0, -25], "points": 0, "title": "Contraproducente · greenwashing", "text": "¡Brillo te engañó! Es riesgo legal y de reputación.", "brillo": true } ] }
+  ]
+}

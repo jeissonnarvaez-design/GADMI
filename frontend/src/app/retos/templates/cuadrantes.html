@@ -1,0 +1,63 @@
+<div class="game-bg" style="color: #231417">
+  <app-game-header back="/ruta" [kicker]="'MÓDULO ' + data().code.charAt(0) + ' · RETO ' + data().code + ' · PASO ' + paso()" [title]="data().title">
+    <app-granos [value]="score() + ' / ' + data().max" />
+  </app-game-header>
+
+  <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 22px 28px 30px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 22px">
+    @if (phase() !== 'end') {
+      <section style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <app-personaje [who]="data().who ?? 'teo'" [size]="76" />
+          <div class="gpanel" style="flex: 1; background: #2A0B12; color: #FBF5EC; padding: 12px 16px; font-size: 16px; font-weight: 700">{{ teoSays() }}</div>
+        @for (k of [teoSays()]; track k) { <app-escuchar [who]="data().who" [text]="teoSays()" /> }
+        </div>
+
+        @if (phase() === 'cards') {
+          <div class="up gpanel" style="background: #FBF5EC; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; justify-content: space-between; align-items: center"><span class="px" style="font-size: 10px; color: #AC0B32">TARJETA {{ num() }}/{{ data().cards.length }}</span><span title="ODS relacionado" [attr.aria-label]="'ODS ' + cur().ods" style="width: 40px; height: 40px; border-radius: 999px; border: 2px solid #8A1428; color: #8A1428; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{ cur().ods }}</span></div>
+            <span style="font-size: 21px; font-weight: 800; line-height: 1.3; min-height: 84px">{{ cur().text }}</span>
+            <div role="group" aria-label="¿A qué cuadrante va?" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+              @for (q of data().quadrants; track q.id) {
+                <button type="button" class="gbtn" (click)="pick(q)" [style.background]="q.bg" style="min-height: 52px; border: none; color: #FFFFFF; font-weight: 800; font-size: 15px; cursor: pointer">{{ q.label }}</button>
+              }
+            </div>
+            @if (fb(); as f) { <span class="pop" aria-live="polite" style="font-size: 14px; font-weight: 700" [style.color]="f.ok ? '#2C5E31' : '#8A1428'">{{ f.msg }}</span> }
+          </div>
+        }
+
+        @if (phase() === 'strategy') {
+          <div class="up" style="display: flex; flex-direction: column; gap: 10px">
+            <span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 4px">PASO 2 · ESTRATEGIA FO</span>
+            @for (s of data().strategy.options; track s.id) {
+              <button type="button" class="gbtn" (click)="pickStrategy(s.id)" [style.border]="'3px solid ' + stratBd(s.id, s.correct)" [style.background]="stratBg(s.id, s.correct)" style="text-align: left; min-height: 60px; padding: 10px 14px; color: #231417; font-size: 15px; font-weight: 700; cursor: pointer">{{ s.text }}</button>
+            }
+            @if (stratChosen()) {
+              <span class="pop" aria-live="polite" style="font-size: 15px; font-weight: 700; color: #FBF5EC">{{ stratText() }}</span>
+              <button type="button" class="gbtn glow pop" (click)="finish()" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border: none; background: #FF836C; color: #1A0609; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    @if (phase() === 'end') {
+      <section style="flex: 1 1 360px; min-width: 0; display: flex; justify-content: center">
+        <app-reto-end [title]="endTitle(score(), attempts().length)" [line]="right() + ' de ' + data().cards.length + ' tarjetas · ' + score() + ' granos'"
+          [note]="stratChosen() ? (stratOk() ? 'Estrategia FO: correcta.' : 'Estrategia FO: por mejorar.') : ''"
+          [canRetry]="canRetry()" [retryLabel]="'Segundo intento (' + (wrongCards().length + (stratOk() ? 0 : 1)) + ')'" (retry)="retry()"
+          [next]="after().link" [nextLabel]="after().closes ? 'Cerrar el módulo' : 'Siguiente reto'" />
+      </section>
+    }
+
+    <section aria-label="Matriz FODA" style="flex: 1.3 1 480px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      @for (b of board(); track b.q.id) {
+        <div class="gpanel" style="background: #2A0B12; padding: 12px; min-height: 230px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; justify-content: space-between; align-items: center"><span class="px" style="font-size: 10px" [style.color]="b.q.board">{{ b.q.label.toUpperCase() }}</span><span style="font-size: 11px; color: #C9B8A6">{{ b.q.scope }}</span></div>
+          @for (it of b.items; track it.t) {
+            <span class="pop" style="font-size: 13px; font-weight: 600; line-height: 1.3; padding: 7px 9px; border-radius: 6px; color: #231417" [style.background]="it.ok ? '#FBF5EC' : '#FFE3DC'">{{ it.t }}</span>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.angular/
+backend/.env
+backend/cache-voz/
+firebase-key.json
+backend/firebase-key.json
+*-firebase-adminsdk-*.json
+.vercel/
+.env
+*.zip

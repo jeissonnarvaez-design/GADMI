@@ -1,0 +1,64 @@
+<div class="game-bg" style="color: #231417">
+  <app-game-header back="/ruta" [kicker]="'MÓDULO ' + data().code.charAt(0) + ' · RETO ' + data().code + ' · PASO ' + paso()" [title]="data().title">
+    <app-granos [value]="score() + ' / ' + data().max" />
+  </app-game-header>
+
+  <main style="flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 24px 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px; align-items: center; justify-content: center">
+    <div style="display: flex; align-items: center; gap: 14px; align-self: stretch">
+      <app-personaje [who]="data().who ?? 'teo'" [size]="96" />
+      <div style="flex: 1; background: #FFFFFF; border-radius: 20px 20px 20px 4px; padding: 14px 18px; font-size: 19px; font-weight: 600; box-shadow: 0 2px 8px rgba(35,20,23,0.06)">{{ prompt() }}</div>
+      @for (k of [prompt()]; track k) { <app-escuchar [who]="data().who" [text]="data().listen && prompt() === data().prompt ? data().listen : prompt()" /> }
+    </div>
+
+    @if (phase() !== 'end' && cur(); as c) {
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center" [attr.aria-label]="'Tarjeta ' + (pos() + 1) + ' de ' + queue().length">
+          @for (d of dots(); track $index) { <span style="width: 26px; height: 8px; border-radius: 999px" [style.background]="d"></span> }
+        </div>
+
+        @for (k of [pos()]; track k) {
+          <div class="cardIn gpanel" style="position: relative; width: 100%; min-height: 190px; box-sizing: border-box; background: #FFFFFF; border-radius: 24px; padding: 32px 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; box-shadow: 0 2px 4px rgba(35,20,23,0.05), 0 18px 40px rgba(35,20,23,0.10)"
+            [style.border]="'3px solid ' + (phase() === 'fb' ? (lastOk() ? '#3F7E44' : '#AC0B32') : '#FFFFFF')">
+            @if (c.card.group) { <span class="px" style="font-size: 10px; color: #AC0B32">{{ c.card.group }}</span> }
+            <p style="margin: 0; font-size: 26px; line-height: 1.35; font-weight: 600">{{ c.card.text }}</p>
+            @if (phase() === 'fb' && lastOk()) {
+              <span class="float" style="position: absolute; right: 22px; top: 14px; font-size: 22px; font-weight: 800; color: #3F7E44">+{{ c.card.points }}</span>
+            }
+          </div>
+        }
+
+        @if (phase() === 'play') {
+          <div role="group" aria-label="¿Dónde va?" style="display: grid; gap: 12px; width: 100%" [style.grid-template-columns]="zoneCols()">
+            @for (z of c.round.zones; track z.id) {
+              <button type="button" class="zone gbtn" (click)="pick(z.id)"
+                [style.border]="'2px solid ' + (z.plain ? '#D9CBBB' : '#AC0B32')" [style.background]="z.plain ? '#FFFFFF' : '#AC0B32'" [style.color]="z.plain ? '#231417' : '#FFFFFF'"
+                [style.min-height.px]="data().compact ? 92 : 130"
+                style="border-radius: 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px">
+                <svg [attr.width]="data().compact ? 28 : 40" [attr.height]="data().compact ? 28 : 40" viewBox="0 0 24 24" fill="none" [attr.stroke]="z.plain ? '#231417' : '#FFFFFF'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="z.icon"></path></svg>
+                <span [style.font-size.px]="data().compact ? 16 : 20" style="font-weight: 800">{{ z.label }}</span>
+                @if (z.sub) { <span style="font-size: 13px; opacity: 0.9">{{ z.sub }}</span> }
+              </button>
+            }
+          </div>
+        }
+
+        @if (phase() === 'fb') {
+          <div class="pop gpanel" aria-live="polite" style="display: flex; align-items: center; gap: 16px; width: min(100%, 720px); border-radius: 22px; padding: 16px 20px; box-sizing: border-box" [style.background]="lastOk() ? '#EAF4E6' : '#FFF0EC'">
+            <app-personaje who="chispa" [size]="84" />
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 20px; font-weight: 800" [style.color]="lastOk() ? '#2C5E31' : '#8A1428'">{{ fbTitle() }}</span>
+              <span style="font-size: 16px; line-height: 1.4">{{ fbText() }}</span>
+            </div>
+            <button type="button" (click)="next()" style="min-height: 50px; padding: 0 22px; border-radius: 999px; border: none; background: #231417; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Siguiente</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (phase() === 'end') {
+      <app-reto-end [title]="endTitle(score(), attempts().length)" [line]="right() + ' de ' + flat().length + ' en su lugar · ' + score() + ' granos'"
+        [canRetry]="canRetry()" [retryLabel]="'Segundo intento (' + wrong().length + ')'" (retry)="retry()"
+        [next]="after().link" [nextLabel]="after().closes ? 'Cerrar el módulo' : 'Siguiente reto'" />
+    }
+  </main>
+</div>

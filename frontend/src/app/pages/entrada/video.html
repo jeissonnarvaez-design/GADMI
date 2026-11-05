@@ -1,0 +1,119 @@
+<div style="min-height: 100vh; background: #231417; display: flex; flex-direction: column; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 32px">
+    <a routerLink="/bienvenida" aria-label="Volver a la bienvenida" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #5C4A4D"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></a>
+    <span style="color: #FBF5EC; font-size: 15px; font-weight: 600">Bienvenida · {{ time() }}</span>
+    <span style="width: 44px" aria-hidden="true"></span>
+  </header>
+
+  <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; justify-content: center">
+    <section #stage aria-label="Video de bienvenida" class="stage" [style.height.px]="560 * k()" style="position: relative; height: 560px; border-radius: 22px; overflow: hidden; background: #FBF5EC">
+      <!-- Video real: /assets/video/bienvenida.mp4 con subtítulos .vtt. Si aún no existe, se ve la versión animada. -->
+      <video #vid [hidden]="!videoReady()" src="/assets/video/bienvenida.mp4" preload="metadata" playsinline
+        (loadedmetadata)="onVideoReady()" (error)="videoReady.set(false)" (timeupdate)="onTime()" (seeking)="onSeeking()" (play)="playing.set(true)" (pause)="playing.set(false)" (ended)="onEnded()"
+        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #231417">
+        <track kind="captions" src="/assets/video/bienvenida.vtt" srclang="es" label="Español" default>
+      </video>
+      @if (videoReady()) {
+        @if (ended()) {
+          <a class="up" routerLink="/carta" style="position: absolute; right: 28px; bottom: 28px; display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; border-radius: 999px; background: #FFFFFF; color: #8A1428; font-weight: 800; font-size: 19px; text-decoration: none">Acepto el reto <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        }
+      } @else {
+      <!-- Escenas animadas: se dibujan a 1132 × 560 y se escalan al ancho de la pantalla (celular). -->
+      <div class="escala" [style.transform]="k() < 1 ? 'scale(' + k() + ')' : null" style="position: absolute; left: 0; top: 0; width: 1132px; height: 560px; transform-origin: 0 0">
+      @switch (scene()) {
+        @case (0) {
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 30px 60px 120px; box-sizing: border-box">
+            <svg viewBox="0 0 420 380" style="width: 420px; height: 380px; flex-shrink: 0" aria-hidden="true">
+              <rect x="0" y="0" width="150" height="380" fill="#FFE3DC"></rect>
+              <path d="M14 80 q16 -9 32 0 t32 0 t32 0 M14 180 q16 -9 32 0 t32 0 t32 0 M14 280 q16 -9 32 0 t32 0 t32 0" fill="none" stroke="#FF836C" stroke-width="3"></path>
+              <path class="draw" d="M150 0 C 128 70, 172 110, 140 180 S 118 300, 168 380" fill="none" stroke="#8A1428" stroke-width="4"></path>
+              <circle class="pop d2" cx="300" cy="190" r="16" fill="#AC0B32"></circle>
+              <text class="up d3" x="276" y="160" font-size="20" font-weight="800" fill="#231417">Cali</text>
+              <path class="draw d3" d="M170 220 C 220 180, 250 230, 290 196" fill="none" stroke="#AC0B32" stroke-width="3" stroke-dasharray="7 8"></path>
+            </svg>
+            <div class="pop d1" style="position: absolute; left: 180px; top: 150px"><app-personaje who="teo" [size]="190" /></div>
+            <h2 class="up d2" style="margin: 0; font-size: 54px; line-height: 1; font-weight: 800; max-width: 380px; color: #231417">Pacífico colombiano</h2>
+          </div>
+        }
+        @case (1) {
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 48px; padding: 30px 60px 120px; box-sizing: border-box">
+            <svg viewBox="0 0 320 260" style="width: 340px; height: 280px; flex-shrink: 0" aria-hidden="true">
+              <path class="draw" d="M10 240 H310 M30 240 V130 L90 96 V130 L150 96 V130 L210 96 V240 M210 240 V50 H240 V240 M100 240 V196 H140 V240" fill="none" stroke="#8A1428" stroke-width="5" stroke-linejoin="round"></path>
+              <path class="draw d2" d="M222 40 c -10 -14 10 -18 0 -32 M232 40 c -10 -14 10 -18 0 -32" fill="none" stroke="#FF836C" stroke-width="4"></path>
+            </svg>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+              <div class="pop d1" style="display: flex; flex-direction: column; align-items: center; gap: 6px"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#AC0B32" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="7" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 20v-1a6 6 0 0 1 12 0v1M15 20v-1a4 4 0 0 1 6-3.5"></path></svg><span style="font-size: 44px; font-weight: 800; color: #8A1428">48</span></div>
+              <div class="pop d2" style="display: flex; flex-direction: column; align-items: center; gap: 6px"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#AC0B32" stroke-width="1.8" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"></path></svg><span style="font-size: 44px; font-weight: 800; color: #8A1428">120</span></div>
+              <div class="pop d3" style="display: flex; flex-direction: column; align-items: center; gap: 6px"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#AC0B32" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"></path></svg><span style="font-size: 44px; font-weight: 800; color: #8A1428">35 %</span></div>
+            </div>
+          </div>
+        }
+        @case (2) {
+          <div class="flash" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 48px; padding: 30px 60px 120px; box-sizing: border-box">
+            <div class="pop"><app-personaje who="chispa" [size]="200" /></div>
+            <div style="flex: 0 1 460px; display: flex; flex-direction: column; gap: 18px">
+              @for (m of meters; track m[0]) {
+                <div style="display: flex; align-items: center; gap: 14px">
+                  <span style="width: 120px; font-size: 18px; font-weight: 700">{{ m[0] }}</span>
+                  <div style="flex: 1; height: 18px; border-radius: 999px; background: #EADFD0; overflow: hidden"><div class="grow" style="height: 18px; border-radius: 999px; background: #FF051E" [style.width]="m[1]"></div></div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @case (3) {
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 30px 60px 120px; box-sizing: border-box">
+            <div class="pop"><app-personaje who="nibi" [size]="220" /></div>
+            <div class="up d1" style="background: #FFFFFF; border-radius: 22px 22px 22px 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(35,20,23,0.12); min-width: 320px">
+              <div style="display: flex; gap: 18px; justify-content: center">
+                <span style="width: 70px; height: 70px; border-radius: 16px; background: #FBF5EC; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg></span>
+                <span style="width: 70px; height: 70px; border-radius: 16px; background: #FBF5EC; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2" aria-hidden="true"><path d="M12 3l9 16H3z"></path><path d="M12 10v4M12 17v.5"></path></svg></span>
+                <span style="width: 70px; height: 70px; border-radius: 16px; background: #FBF5EC; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9"></path></svg></span>
+              </div>
+              <div style="display: flex; gap: 6px; justify-content: center" aria-hidden="true"><span class="dot" style="width: 9px; height: 9px; border-radius: 999px; background: #AC0B32"></span><span class="dot dot2" style="width: 9px; height: 9px; border-radius: 999px; background: #AC0B32"></span><span class="dot dot3" style="width: 9px; height: 9px; border-radius: 999px; background: #AC0B32"></span></div>
+            </div>
+          </div>
+        }
+        @case (4) {
+          <div style="position: absolute; inset: 0; background: #8A1428; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 30px 60px 120px; box-sizing: border-box">
+            <div class="pop"><app-personaje who="teo" [size]="200" /></div>
+            <div style="display: flex; flex-direction: column; gap: 22px; align-items: flex-start">
+              <h2 class="up d1" style="margin: 0; font-size: 54px; line-height: 1; font-weight: 800; color: #FFFFFF; max-width: 520px">Desde hoy eres gerente.</h2>
+              <a class="up d2" routerLink="/carta" style="display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; border-radius: 999px; background: #FFFFFF; color: #8A1428; font-weight: 800; font-size: 19px; text-decoration: none">Acepto el reto <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+            </div>
+            <div class="pop d3" style="position: absolute; right: 50px; top: 40px; display: flex; flex-direction: column; align-items: center; gap: 4px"><app-personaje who="brillo" [size]="110" /><span style="font-size: 13px; color: #FBF5EC">¿Y este quién es?</span></div>
+          </div>
+        }
+      }
+      </div>
+
+      }
+      @if (captions() && !videoReady()) {
+        <p aria-live="polite" style="position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(86%, 820px); box-sizing: border-box; margin: 0; padding: 14px 20px; border-radius: 14px; background: rgba(20,10,12,0.9); color: #FFFFFF; font-size: 20px; line-height: 1.4; text-align: center"><strong style="color: #FF836C">{{ speaker() }}:</strong> {{ caption() }}</p>
+      }
+    </section>
+
+    <div style="height: 6px; border-radius: 999px; background: #3D2C2F; overflow: hidden" aria-hidden="true"><div style="height: 6px; background: #FF836C" [style.width]="progress()"></div></div>
+
+    <div class="ctrls" style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px">
+      <span style="color: #C9B8A6; font-size: 14px; font-variant-numeric: tabular-nums">{{ time() }}</span>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <button type="button" (click)="prev()" aria-label="Retroceder una escena" style="width: 48px; height: 48px; border-radius: 999px; border: 1px solid #5C4A4D; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"></path></svg></button>
+        <button type="button" (click)="togglePlay()" [attr.aria-label]="playing() ? 'Pausar' : 'Reproducir'" style="width: 64px; height: 64px; border-radius: 999px; border: none; background: #FF836C; cursor: pointer; display: flex; align-items: center; justify-content: center">
+          @if (playing()) { <svg width="24" height="24" viewBox="0 0 24 24" fill="#231417" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg> }
+          @else { <svg width="24" height="24" viewBox="0 0 24 24" fill="#231417" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg> }
+        </button>
+        <button type="button" (click)="next()" aria-label="Adelantar una escena (solo lo ya visto)" [attr.aria-disabled]="canNext() ? 'false' : 'true'" [title]="canNext() ? 'Adelantar' : 'Primero mira esta parte'" [style.cursor]="canNext() ? 'pointer' : 'not-allowed'" [style.opacity]="canNext() ? '1' : '0.35'" style="width: 48px; height: 48px; border-radius: 999px; border: 1px solid #5C4A4D; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"></path></svg></button>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <button type="button" (click)="toggleCC()" [attr.aria-pressed]="captions() ? 'true' : 'false'" aria-label="Subtítulos" [style.background]="captions() ? '#FBF5EC' : 'transparent'" [style.color]="captions() ? '#231417' : '#FBF5EC'" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 2px solid #FBF5EC; font-size: 14px; font-weight: 800; cursor: pointer">CC</button>
+        <button type="button" (click)="tr.set(!tr())" [attr.aria-pressed]="tr() ? 'true' : 'false'" [attr.aria-expanded]="tr() ? 'true' : 'false'" aria-controls="transcripcion" [style.background]="tr() ? '#FBF5EC' : 'transparent'" [style.color]="tr() ? '#231417' : '#FBF5EC'" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 2px solid #FBF5EC; font-size: 14px; font-weight: 700; cursor: pointer">Transcripción</button>
+      </div>
+    </div>
+    @if (tr()) {
+      <section id="transcripcion" aria-label="Transcripción del video" style="background: #2A1A1D; border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; color: #FBF5EC; font-size: 15px">
+        @for (l of transcript; track $index) { <span><strong style="color: #FF836C">{{ l[0] }}:</strong> {{ l[1] }}</span> }
+      </section>
+    }
+  </main>
+</div>
