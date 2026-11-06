@@ -1,92 +1,106 @@
-# GADMI Sost-Empresarial · Prototipo (v2)
+# GADMI Sost-Empresarial
 
-Simulador por temporadas: el estudiante lleva **CACAO Raíz del Pacífico S.A.S.** de 2026 a 2030 por 4 módulos (cada módulo es un año). Al final hay un Shark Tank y la barra-certificado. Implementa el *Documento maestro v2*.
+**Gestión Organizacional Sostenible**: aplicativo web gamificado de la Universidad Autónoma de Occidente (UAO), Facultad de Ciencias Empresariales y Jurídicas.
 
-```
-gadmi-app/
-├── frontend/          Angular 22
-├── backend/           API Express + MySQL (ingreso docente y estudiante separados)
-├── database/          schema.sql + seed.sql
-└── docker-compose.yml MySQL 8 con el esquema precargado
-```
+El estudiante dirige **CACAO Raíz S.A.S.**, una empresa de chocolate del Pacífico colombiano, de 2026 a 2030. Cada año es un módulo y corresponde a una fase del proceso administrativo:
 
-## Cómo ejecutarlo (Windows · PowerShell)
-Necesitas Node.js 20+ y Docker Desktop (o MySQL instalado). Ejecuta cada comando por separado: PowerShell 5 no acepta `&&`.
+| Módulo | Fase | Retos |
+|---|---|---|
+| 1 | Planeación | 1.1 La brújula · 1.2 Valores que dejan huella · 1.3 FODA · 1.4 Metas e indicadores |
+| 2 | Organización | 2.1 Organigrama · 2.2 Funciones · 2.3 Presupuesto de talento humano · 2.4 Grupos de interés · 2.5 Presupuesto verde |
+| 3 | Dirección | 3.1 Dilemas · 3.2 Liderar en crisis · 3.3 Comunicación · 3.4 Tablero de clima |
+| 4 | Control | 4.1 Tablero ESG · 4.2 Cuellos de botella · 4.3 Plan de acción · 4.4 Cerrar el círculo |
 
-```powershell
-docker compose up -d            # 1. MySQL (desde la carpeta gadmi-app)
+- Cada módulo vale 250 granos, 1000 en total.
+- Cada reto tiene dos intentos y cuenta el mejor. Después del primer intento hay pistas; después del segundo, la solución.
+- Cada módulo cierra con una bitácora reflexiva de 3 preguntas y la temporada del año.
+- Al final hay una ronda de inversión y el certificado («Tu barra»), con código y QR verificables.
+
+## Aplicativo publicado
+
+**[PEGA AQUÍ EL ENLACE DE VERCEL](https://vercel.com)**
+
+## Usuarios de prueba
+
+En la pantalla de ingreso, el selector **Docente / Estudiante** llena solo estos datos:
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Estudiante | `estudiante.prueba@uao.edu.co` | `Prueba2026*` |
+| Docente | `docente@uao.edu.co` | `Docente2026*` |
+
+- El botón **«Reiniciar»**, junto a «Accesibilidad», es solo para pruebas. Borra el progreso del estudiante para empezar de cero.
+- La API crea los dos usuarios al arrancar. Se configuran en `backend/.env` con `DOCENTE_*` y `DEMO_ESTUDIANTE_*`.
+
+## Integración con Moodle
+
+- **Ingreso:** en el curso real, el estudiante entra **directo desde Moodle, sin contraseña**, por LTI. Moodle le dice al aplicativo quién es y en qué curso y grupo está.
+- **Notas:** los **granos y las notas** (escala 1 a 5) llegan al **libro de calificaciones** del curso. Mientras tanto, el panel docente exporta las notas en CSV.
+- **Informe:** el estudiante descarga su **informe final en PDF**, certificado incluido, y lo **sube a una tarea del curso**. El docente verifica el código o el QR en `/verificar`.
+- **Demostración:** sin Moodle se usa el **acceso de prueba** de la sección anterior. No hay registro abierto: las cuentas vienen de Moodle o las crea un administrador con `npm run crear-usuarios` (lista CSV exportada de Moodle).
+
+## Tecnologías
+
+| Parte | Tecnología |
+|---|---|
+| Aplicativo | **Angular 22** (componentes standalone, signals), TypeScript, SVG animado |
+| API | Node.js 24 + Express |
+| Base de datos | **Firebase Cloud Firestore**. El prototipo empezó en MySQL; `npm run migrar-mysql` pasa los datos viejos. |
+| Voz y subtítulos | Gemini (voz de Teo, dictado en la bitácora, generador de subtítulos `.vtt`) |
+| PDF y QR | jsPDF y qrcode |
+| Publicación | Vercel (frontend y API como función) |
+
+## Cómo ejecutarlo
+
+Requisitos: Node.js 24 o superior y un proyecto de Firebase con Firestore (o el emulador de Firestore).
+
+```bash
 cd backend
-Copy-Item .env.example .env
+cp .env.example .env
 npm install
-npm start                       # 2. API en http://localhost:3000/api (MySQL de Docker en el puerto 3307)
+npm start
 ```
+
+- Pon en `.env` la clave de la cuenta de servicio (`firebase-key.json` o `FIREBASE_SERVICE_ACCOUNT_JSON`) y, si quieres voz, `GEMINI_API_KEY`.
+- `npm start` levanta la API en http://localhost:3000/api.
+
 En otra terminal:
-```powershell
+
+```bash
 cd frontend
 npm install
-npm start                       # 3. App en http://localhost:4200
+npm start
 ```
-> Si tu MySQL tiene tablas de la versión anterior, la API las actualiza sola al arrancar (`✔ Base de datos actualizada…`), sin borrar datos. Las cuentas antiguas no tienen contraseña: usa «Crear cuenta» con el mismo código y correo.
-> Sin Docker: ejecuta `database/schema.sql` y `database/seed.sql` en tu MySQL y ajusta `backend/.env`.
 
-**Docente inicial** (se crea al arrancar la API, configurable en `backend/.env`): `docente@uao.edu.co` / `Docente2026*`.
-**Docentes nuevos**: en el ingreso eligen «1 · Docente» y luego «¿Eres docente nuevo? Regístrate». Escriben su nombre, su correo @uao.edu.co, una contraseña de 8 caracteres o más y el **código de registro docente** (`DOCENTE_CODIGO_REGISTRO` en `backend/.env`, por defecto `GADMI-DOCENTE-2026`). El código evita que cualquiera cree una cuenta docente y vea las notas. Si se deja vacío, el registro queda deshabilitado.
-**Estudiantes**: «Crear cuenta» en el ingreso de estudiante. Sin API, el estudiante puede seguir en modo sin conexión; el docente no.
+El aplicativo queda en http://localhost:4200.
 
-## Pantallas de diseño integradas (GADMI_pantallas_sistemas)
-Las 22 pantallas `.dc.html` del equipo están en Angular y reproducen fielmente el diseño: estilos, animaciones y bloque `prefers-reduced-motion`.
+Para publicar en Vercel, el repositorio ya trae `vercel.json` y `api/index.js`. En Vercel solo se configura la variable `FIREBASE_SERVICE_ACCOUNT_JSON` y, opcionalmente, `GEMINI_API_KEY`.
 
-| Pantalla | Ruta | Archivo |
-|---|---|---|
-| Conectando | `/conectando` | `pages/entrada/conectando.ts` |
-| Login (docente y estudiante) | `/ingreso` | `pages/entrada/login.ts` |
-| Primera vez | `/primera-vez` | `pages/entrada/primera-vez.ts` |
-| Bienvenida (Main) | `/bienvenida` | `pages/entrada/bienvenida.ts` |
-| Video (Intro, 30 s) | `/video` | `pages/entrada/video.*` |
-| Carta de la junta | `/carta` | `pages/entrada/carta.ts` |
-| Ruta (Mapa) | `/ruta` | `pages/juego/ruta.*` |
-| Intro de módulo | `/modulo/:n` | `pages/juego/intro-modulo.ts` |
-| Retos | `/reto/:codigo` (1.1 … 4.3) | `retos/` |
-| Bitácora | `/bitacora/:n` | `pages/juego/bitacora.ts` |
-| Temporada | `/temporada/:n` | `pages/juego/temporada.ts` |
-| Mis logros | `/logros` | `pages/juego/logros.ts` |
-| Shark Tank | `/inversion` | `pages/final/inversion.ts` |
-| Barra / certificado | `/barra` | `pages/final/barra.ts` |
-| Informe | `/informe` | `pages/final/informe.ts` |
-| Verificar (pública, QR) | `/verificar/:codigo` | `pages/final/verificar.ts` |
-| Docente | `/docente` | `pages/docente/panel.ts` |
-| Docente · detalle | `/docente/estudiante/:id` | `pages/docente/detalle.ts` |
+**Comandos útiles (en `backend/`):**
+- `npm run crear-usuarios -- estudiantes lista.csv`: crea cuentas desde un CSV con las columnas `nombre;codigo;correo;grupo;password`.
+- `npm run subtitulos -- video.mp4 salida.vtt`: genera los subtítulos de un video. De ese mismo archivo sale la transcripción.
 
-**Componentes compartidos:** `app-personaje` (SVG oficiales con sus animaciones SMIL), `app-accesibilidad` (subtítulos, voz, texto grande, alto contraste y menos movimiento; se guardan por estudiante en MySQL), `app-game-header` y `app-granos`. Las clases `.px`, `.gpanel`, `.gbtn` y `.glow` son globales (`styles.scss`). Las fuentes son DM Sans y Press Start 2P. La voz está aislada en `core/services/speech.service.ts`, para cambiarla luego por la API de Gemini. El servicio elige una voz en español (es-CO si existe) y corrige los fallos de Chrome y Edge que dejaban mudo el altavoz. Todos los retos, la intro de módulo y la bitácora tienen el botón 🔊, que también sirve para detener la lectura. El video se narra por defecto (botón «Voz» para apagarlo). La preferencia «Voz» del menú de accesibilidad lee automáticamente las instrucciones al abrir cada pantalla.
+## Estructura
 
-**Retos en JSON (plantillas reutilizables):** el contenido de cada reto vive en `retos/data/<codigo>.json`: textos, opciones, respuestas, pistas, puntos y banderas para insignias.
+```
+frontend/   Angular. Pantallas en src/app/pages, retos en src/app/retos (contenido en retos/data/*.json)
+backend/    API Express + Firestore (src/), scripts de administración (scripts/)
+api/        Entrada de la API para Vercel
+diseno/     Editables: mapa-ruta.svg, personajes y pantallas exportadas del prototipo
+```
 
-| Plantilla | Diseño base | Retos que la usan |
-|---|---|---|
-| `tarjetas` (tarjeta por tarjeta) | Ejercicio11 | 1.1, 2.2, 3.1 |
-| `partes` (clasificar por partes) | Reto12 | 1.2, 3.3, 4.1 |
-| `cuadrantes` | Reto13 | 1.3 |
-| `metas` (deslizadores) | Reto14 | 1.4 |
-| `cartas` (escenario) | Cartas | 3.2 |
-| Propios (organigrama y formularios) | — | 2.1, 2.5, 4.2, 4.3, en `exercises/` con el marco de juego |
+## Accesibilidad (WCAG 2.2 AA)
 
-## Dos ingresos separados
-La pantalla de ingreso conserva el diseño con un selector **1 · Docente / 2 · Estudiante**. El estudiante puede crear su cuenta o, sin conexión, seguir en modo local. Cada rol tiene su propio token y las rutas están protegidas.
+- Menú de accesibilidad: subtítulos, voz, texto grande, alto contraste y menos movimiento.
+- Videos con subtítulos `.vtt` y transcripción.
+- Todo se maneja con teclado.
+- Se respeta `prefers-reduced-motion`.
+- Contraste AA.
 
-**Flujo del estudiante:** Ingreso → Conectando → (primera vez) Primera vez → Bienvenida → Video → Carta → Ruta. Si ya empezó: Conectando → Ruta.
-**Cada módulo:** Intro → retos → Bitácora → Temporada → Ruta, con el siguiente módulo desbloqueado.
-**Final:** Shark Tank → Barra → Informe. El docente entra a Panel → Detalle (bitácoras, comentario, nota opcional de 1 a 5, «Marcar como revisada») → Exportar CSV.
+## Licencia y créditos
 
-**Escala 1–5:** nota = 1 + 4 × (PE obtenidos / PE posibles). 1 es la más baja, 3 la mínima aprobatoria y 5 la máxima. Cuenta el mejor de 2 intentos: pistas después del primero y explicación después del segundo.
-
-## Lo que sigue pendiente (no va en el prototipo)
-- **PDF del certificado y del informe (jsPDF):** los botones muestran el aviso «pendiente». El certificado ya genera su **código único** en MySQL y la página `/verificar/:codigo` funciona.
-- **QR real:** la etiqueta muestra un patrón derivado del código y enlaza a la verificación.
-- **Envío de notas a Moodle:** el botón está deshabilitado (función a futuro).
-- **Fondo artístico del organigrama y reporte GRI en PDF:** se mantienen los recuadros «Omitido en el prototipo».
-
-## Pendientes por decidir (sección 15)
-- Orden de los módulos: obligatorio por defecto. Se cambia con `SEQUENTIAL_MODULES` en `frontend/src/app/core/config.ts`.
-- Discapacidad de Nibi: el texto ya no la fija.
-- Requisito del certificado: el documento pide 600 de 1.000 PE (60 %, nota 3,4). La nota mínima aprobatoria de la escala sigue siendo 3,0.
-- Shark Tank: es una capa nueva, por validar con la profe.
+- Licencia **CC BY-NC-SA 4.0**: ver [LICENSE](LICENSE). El logo de la UAO es marca institucional y queda fuera de esta licencia.
+- **Contenido académico:** Profa. Ana Judith Paredes Chacín.
+- **Fuentes:** DM Sans y Baloo 2 (Google Fonts, licencia SIL OFL 1.1).
+- **Personajes, mapa e ilustraciones:** equipo del proyecto.
+- Los créditos completos están en el aplicativo, en el enlace **«Créditos y licencia»** del pie de página.

@@ -48,7 +48,7 @@ const TOUR: TourStep[] = [
   { target: 'ods', text: 'Estos son los ODS. Brillan cuando los logras al cerrar un módulo.' },
   { target: 'tiempo', text: 'Cada módulo que cierras suma un año. Toca un año pasado para ver cómo estaba tu empresa.' },
   { target: 'mision', text: 'Aquí está tu siguiente reto. Toca CONTINUAR para ir directo.' },
-  { target: 'accesibilidad', text: 'Aquí activas subtítulos, voz, texto grande o menos movimiento. También cierras sesión.' },
+  { target: 'accesibilidad', text: 'Aquí activas subtítulos, voz, texto grande o menos movimiento. El botón «Reiniciar» es solo para pruebas: borra tu progreso para empezar de cero.' },
 ];
 type RetoState = 'open' | 'done' | 'locked';
 

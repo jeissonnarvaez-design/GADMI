@@ -18,3 +18,13 @@ export const MAX_ATTEMPTS = 2;
  * true = cada módulo se abre al terminar los retos del anterior.
  */
 export const SEQUENTIAL_MODULES = true;
+
+/**
+ * Acceso de prueba (demostración sin Moodle): el selector Docente / Estudiante del ingreso
+ * llena estos datos. Deben coincidir con los usuarios que crea el backend al arrancar
+ * (DOCENTE_CORREO / DOCENTE_PASSWORD y DEMO_ESTUDIANTE_CORREO / DEMO_ESTUDIANTE_PASSWORD).
+ */
+export const ACCESO_PRUEBA = {
+  estudiante: { correo: 'estudiante.prueba@uao.edu.co', password: 'Prueba2026*' },
+  docente: { correo: 'docente@uao.edu.co', password: 'Docente2026*' },
+} as const;

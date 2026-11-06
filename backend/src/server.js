@@ -243,13 +243,13 @@ const limpiar = (t) => sinTildes(t).toUpperCase().replace(/[^A-Z0-9]/g, '');
 const normalizarCodigo = (c) => String(c ?? '').toUpperCase().replace(/\s+/g, '');
 
 /**
- * Emite el certificado si el estudiante ya completó el módulo 4 y aún no tiene uno.
+ * Emite el certificado (una sola vez) si cumple los requisitos: 4 módulos, 600 granos o más, 4 bitácoras e informe descargado.
  * Formato: periodo-grupo-iniciales-XXXXXX (p. ej. 2026-2-G1-MGR-K7Q4X9).
  * Si ya existe, lo reutiliza (y, si sigue válido, actualiza el puntaje con su mejor intento).
  */
 async function ensureCertificate(estudianteId) {
   const prev = await store.certificateOf(estudianteId);
-  const { s, puntos, modulo4 } = await store.certificateFacts(estudianteId);
+  const { s, puntos, elegible } = await store.certificateFacts(estudianteId);
   const nivel = levelFor(toGrade(puntos, MAX_TOTAL));
   if (prev) {
     if (prev.estado === 'valido' && (prev.puntaje !== puntos || prev.nivel !== nivel)) {
@@ -258,7 +258,7 @@ async function ensureCertificate(estudianteId) {
     }
     return prev;
   }
-  if (!modulo4 || !s) return null;
+  if (!elegible || !s) return null;
   const periodo = s.periodo ?? periodoActual();
   const grupo = limpiar(s.grupo) || 'G';
   return store.createCertificate(estudianteId, () => ({
@@ -272,10 +272,13 @@ const certJson = (c) => ({
   nota: toGrade(c.puntaje, MAX_TOTAL), nivel: c.nivel, estado: c.estado,
 });
 
-/** Certificado del estudiante. Si aún no completa el módulo 4, responde 409. */
+/** Certificado del estudiante. Si aún no cumple los requisitos, responde 409 con lo que le falta (constancia de participación). */
 app.post('/api/estudiante/certificado', estudiante, wrap(async (req, res) => {
   const c = await ensureCertificate(req.userId);
-  if (!c) return res.status(409).json({ error: 'El certificado se emite al completar el módulo 4.' });
+  if (!c) {
+    const { requisitos } = await store.certificateFacts(req.userId);
+    return res.status(409).json({ error: 'Aún no cumples los requisitos del certificado: por ahora recibes la constancia de participación.', requisitos });
+  }
   res.json(certJson(c));
 }));
 
@@ -307,13 +310,45 @@ const MENSAJES_INICIALES = [
   { anio: 2027, titulo: 'Correo de la junta', texto: 'La junta quiere ver los valores de la marca antes de fin de mes. Ve al Mercado.' },
 ];
 
-/** Crea el docente inicial si no hay docentes. */
+/**
+ * Docente de prueba (acceso de demostración): se asegura en cada arranque que exista
+ * DOCENTE_CORREO con la contraseña DOCENTE_PASSWORD, aunque ya haya otros docentes.
+ */
 async function ensureDefaultTeacher() {
-  if ((await store.countTeachers()) > 0) return;
   const correo = (process.env.DOCENTE_CORREO ?? 'docente@uao.edu.co').trim().toLowerCase();
   const password = process.env.DOCENTE_PASSWORD ?? 'Docente2026*';
-  await store.createTeacher({ nombre: process.env.DOCENTE_NOMBRE ?? 'Docente GADMI', correo, passwordHash: hashPassword(password) });
-  console.log(`✔ Docente inicial creado: ${correo}`);
+  if (!correo) return;
+  const d = await store.teacherByEmail(correo);
+  if (!d) {
+    await store.createTeacher({ nombre: process.env.DOCENTE_NOMBRE ?? 'Docente de Prueba', correo, passwordHash: hashPassword(password) });
+    console.log(`✔ Docente de prueba creado: ${correo}`);
+  } else if (!verifyPassword(password, d.passwordHash)) {
+    await store.setPasswordHash('docente', d.id, hashPassword(password));
+    console.log(`✔ Contraseña del docente de prueba actualizada: ${correo}`);
+  }
+}
+
+/**
+ * Estudiante de prueba para la demostración sin Moodle (lo llena solo el ingreso de respaldo).
+ * Se crea si no existe. Para desactivarlo, deja DEMO_ESTUDIANTE_CORREO vacío en el .env.
+ */
+async function ensureDemoStudent() {
+  const correo = (process.env.DEMO_ESTUDIANTE_CORREO ?? 'estudiante.prueba@uao.edu.co').trim().toLowerCase();
+  if (!correo) return;
+  const password = process.env.DEMO_ESTUDIANTE_PASSWORD ?? 'Prueba2026*';
+  const e = await store.studentByEmail(correo);
+  if (e) {
+    if (!verifyPassword(password, e.passwordHash)) {
+      await store.setPasswordHash('estudiante', e.id, hashPassword(password));
+      console.log(`✔ Contraseña del estudiante de prueba actualizada: ${correo}`);
+    }
+    return;
+  }
+  await crearEstudiante({
+    nombre: process.env.DEMO_ESTUDIANTE_NOMBRE ?? 'Estudiante de Prueba', codigo: process.env.DEMO_ESTUDIANTE_CODIGO ?? 'PRUEBA-01',
+    correo, grupo: 'G1', password,
+  });
+  console.log(`✔ Estudiante de prueba creado: ${correo}`);
 }
 
 /** Códigos gRPC de Firestore → mensaje claro. */
@@ -337,7 +372,8 @@ function prepararDatos() {
   arranque ??= (async () => {
     await store.ping();
     console.log(`✔ Conectado a Firebase (Firestore)${process.env.FIRESTORE_EMULATOR_HOST ? ' · emulador ' + process.env.FIRESTORE_EMULATOR_HOST : ''}`);
-    await ensureDefaultTeacher();
+    await ensureDefaultTeacher().catch((e) => console.warn('Docente de prueba:', e.message));
+    await ensureDemoStudent().catch((e) => console.warn('Estudiante de prueba:', e.message));
     if (await store.seedMessages(MENSAJES_INICIALES)) console.log('✔ Mensajes de la junta iniciales creados');
   })().catch((e) => {
     arranque = null;

@@ -143,7 +143,7 @@ export class Reto44 extends DcReto {
       y += 26;
     });
     txt('Generado el ' + new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · Licencia CC BY-NC-SA 4.0', L, 285, 8, '#6E5458');
-    pdf.setProperties({ title: 'Informe final GADMI · ' + nombre, author: 'GADMI Sost-Empresarial · UAO' });
+    pdf.setProperties({ title: 'Informe final GADMI Sost-Empresarial · ' + nombre, author: 'GADMI Sost-Empresarial · UAO' });
     pdf.save('informe-final-gadmi.pdf');
   }
   renderVals() {

@@ -22,7 +22,7 @@ const TEXT = 'Te nombramos gerente general. Haz crecer la empresa sin dañar a n
       </header>
 
       <main style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; gap: 36px; padding: 0 32px 40px; flex-wrap: wrap">
-        <div style="align-self: center"><app-personaje who="teo" [size]="210" /></div>
+        <div class="teo-carta" style="align-self: center; margin-left: -40px; margin-right: 10px"><app-personaje who="teo" [size]="340" /></div>
 
         <article class="in" style="position: relative; width: 600px; max-width: 100%; box-sizing: border-box; border: 4px solid #FFD3C9; border-radius: 6px; box-shadow: 8px 8px 0 #8A1428, 0 30px 60px rgba(0,0,0,0.5); padding: 30px 32px 26px; display: flex; flex-direction: column; gap: 16px; background-color: #FFD3C9; color: #5A2230">
           <span class="px" style="position: absolute; top: -16px; left: 22px; background: #FF836C; color: #1A0609; font-size: 11px; padding: 8px 10px">NUEVA MISIÓN</span>
@@ -63,6 +63,7 @@ const TEXT = 'Te nombramos gerente general. Haz crecer la empresa sin dañar a n
     .draw{stroke-dasharray:600;animation:draw 1.2s ease-out both}
     .pop{animation:pop .35s ease-out both}
     @media (prefers-reduced-motion: reduce){.in,.blink,.tw,.draw,.glow,.pop{animation:none}}
+    @media (max-width: 900px){.teo-carta{margin:0 !important;transform:scale(.6);transform-origin:center bottom;margin-bottom:-120px !important}}
   `,
 })
 export class CartaPage implements OnInit, OnDestroy {

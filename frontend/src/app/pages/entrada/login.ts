@@ -1,3 +1,4 @@
+import { ACCESO_PRUEBA } from '../../core/config';
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -65,7 +66,7 @@ type Rol = 'docente' | 'estudiante';
           }
           <a href="#recuperar" (click)="$event.preventDefault(); forgot.set(true)" style="font-size: 14px; align-self: center">¿Olvidaste tu contraseña?</a>
           @if (forgot()) { <span role="status" style="font-size: 13px; color: #5C4A4D; align-self: center; text-align: center">Pide a tu docente o a soporte que restablezca tu contraseña.</span> }
-          <p style="margin: 8px 0 0; padding: 14px 16px; border-radius: 14px; background: #FFFFFF; font-size: 14px; color: #3D2C2F">Las cuentas se crean desde el curso en Moodle con tu correo institucional. Si entras desde Moodle, te reconocemos automáticamente y no necesitas esta pantalla.</p>
+          <p style="margin: 8px 0 0; padding: 14px 16px; border-radius: 14px; background: #FFFFFF; font-size: 14px; color: #3D2C2F">En el curso real entras directo desde Moodle. Para esta demostración usa el acceso de prueba.</p>
         </form>
       </section>
     </div>
@@ -99,11 +100,19 @@ export class LoginPage {
 
   ngOnInit() {
     if (this.preset()) this.rol.set(this.preset()!);
+    this.autollenar(this.rol());
   }
 
   setRol(r: Rol) {
     this.rol.set(r);
     this.error.set('');
+    this.autollenar(r);
+  }
+
+  /** Acceso de prueba: al elegir Docente o Estudiante se llenan su correo y contraseña (siguen siendo editables). */
+  private autollenar(r: Rol) {
+    this.correo = ACCESO_PRUEBA[r].correo;
+    this.password = ACCESO_PRUEBA[r].password;
   }
 
   private validate(): string {

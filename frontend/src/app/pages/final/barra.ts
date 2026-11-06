@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { getModule } from '../../core/data/modules';
 import { ApiService, Certificate, apiError } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { metersAt } from '../../core/services/company';
 import { ProgressService } from '../../core/services/progress.service';
 import { Hud } from '../../shared/hud';
 import { LogoUao } from '../../shared/logo-uao';
+import { INSIGNIA_UI, STAR } from '../../core/data/insignias';
 
 const ODS: [number, string, string][] = [[7, 'Energía asequible y no contaminante', 'm2-presupuesto-verde'], [8, 'Trabajo decente y crecimiento económico', 'm3-crisis'], [12, 'Producción y consumo responsables', 'm1-valores'], [13, 'Acción por el clima', 'm4-cuellos-botella'], [15, 'Vida de ecosistemas terrestres', 'm1-foda']];
 const MODS: [string, string, string][] = [['Planeación', 'Brújula estratégica', '#AC0B32'], ['Organización', 'Arquitectura verde', '#8A1428'], ['Dirección', 'Liderazgo con propósito', '#9A5B2E'], ['Control', 'Mirada ESG', '#231417']];
@@ -12,7 +14,8 @@ const fmt = (n: number) => n.toLocaleString('es-CO');
 
 /**
  * Tu barra (Certificado.dc.html, ruta /barra): certificado e informe en un solo recuadro.
- * El código se genera en el backend al completar el módulo 4 y se reutiliza en cada descarga.
+ * El código lo genera el backend cuando se cumplen los requisitos (4 módulos, 600 granos o más,
+ * 4 bitácoras e informe descargado) y se reutiliza en cada descarga. Si no, es constancia de participación.
  */
 @Component({
   selector: 'app-barra',
@@ -29,73 +32,60 @@ const fmt = (n: number) => n.toLocaleString('es-CO');
             </div>
             <div class="wrap" [style.transform]="open() ? 'translateX(82%)' : 'translateX(0)'" style="position: relative; background: #8A1428; padding: 16px; box-sizing: border-box">
               <article [attr.aria-hidden]="open() ? 'true' : null" style="position: relative; background: #FBF5EC; color: #231417; border-radius: 12px; padding: 28px 30px; display: flex; flex-direction: column; gap: 18px">
-                <!-- 1. quién -->
+                <!-- 1. Encabezado: logos, título, quién -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 14px">
-                  <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                  <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
                     <app-logo-uao size="sm" style="align-self: flex-start" />
-                    <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: #AC0B32">CACAO RAÍZ · EDICIÓN 2030</span>
-                    <span style="font-size: 30px; font-weight: 800; line-height: 1.05">{{ nombre() }}</span>
-                    <span style="font-size: 14px; color: #5C4A4D">{{ subtitle() }}</span>
+                    <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #AC0B32; line-height: 1.35">{{ elegible() ? 'CERTIFICADO DE RECORRIDO ACADÉMICO' : 'CONSTANCIA DE PARTICIPACIÓN' }}</span>
+                    <span style="font-size: 15px; font-weight: 800; color: #8A1428; line-height: 1.3">GADMI Sost-Empresarial: Gestión Organizacional Sostenible</span>
+                    <span style="font-size: 30px; font-weight: 800; line-height: 1.05; margin-top: 4px">{{ nombre() }}</span>
+                    <span style="font-size: 14px; color: #5C4A4D">Código estudiantil {{ codigoEst() }}{{ grupoTxt() }}</span>
                   </div>
-                  <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0">
-                    <div role="img" [attr.aria-label]="cert() ? 'Código QR de verificación: lleva a ' + verifyUrl() : 'Código QR: se genera al completar el módulo 4'" style="width: 70px; height: 70px; border: 2px solid #231417; padding: 3px; box-sizing: border-box; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
-                      @if (qr()) { <img [src]="qr()" alt="" style="width: 100%; height: 100%; image-rendering: pixelated"> }
-                      @else { <span style="font-size: 22px; color: #C9B8A6" aria-hidden="true">?</span> }
-                    </div>
-                    <span style="font-family: ui-monospace, Consolas, monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap">{{ code() }}</span>
-                  </div>
-                </div>
-
-                <!-- 2. resultado -->
-                <div style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 10px; background: #FFF5F2; flex-wrap: wrap">
-                  <span style="font-size: 20px; font-weight: 800; color: #8A1428; white-space: nowrap">{{ nivel() }}</span>
-                  <div style="flex: 1; min-width: 80px; height: 10px; border-radius: 999px; background: #EADFD0"><div [style.width]="pct() + '%'" style="height: 10px; border-radius: 999px; background: #AC0B32"></div></div>
-                  <span style="font-size: 16px; font-weight: 800; white-space: nowrap">{{ fmt(puntos()) }} / {{ fmt(overall().max) }} granos</span>
-                </div>
-
-                <!-- 3. módulos y poderes -->
-                <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #EFE6E6; padding-top: 16px">
-                  <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: #5C4A4D">TUS 4 MÓDULOS</span>
-                  <div class="g4" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
-                    @for (m of mods(); track m.name) {
-                      <div style="background: transparent; padding: 0 0 0 12px; display: flex; flex-direction: column; gap: 4px; border-left: 2px solid #EFE6E6">
-                        <span style="font-size: 13px; font-weight: 800">{{ m.name }}</span>
-                        <span style="font-size: 12px; color: #5C4A4D; line-height: 1.25; min-height: 30px">{{ m.power }}</span>
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px">
-                          <strong style="font-size: 15px">{{ m.pts }}</strong>
-                          <span role="img" [attr.aria-label]="m.aria" style="display: flex; gap: 3px">@for (x of m.pips; track $index) { <span [style.background]="x" style="width: 14px; height: 8px; border-radius: 999px"></span> }</span>
-                        </div>
+                  @if (elegible()) {
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0">
+                      <div role="img" [attr.aria-label]="cert() ? 'Código QR de verificación: lleva a ' + verifyUrl() : 'Código QR: se genera al emitir el certificado'" style="width: 70px; height: 70px; border: 2px solid #231417; padding: 3px; box-sizing: border-box; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+                        @if (qr()) { <img [src]="qr()" alt="" style="width: 100%; height: 100%; image-rendering: pixelated"> }
+                        @else { <span style="font-size: 22px; color: #C9B8A6" aria-hidden="true">?</span> }
                       </div>
-                    }
-                  </div>
+                      <span style="font-family: ui-monospace, Consolas, monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap">{{ code() }}</span>
+                    </div>
+                  }
                 </div>
 
-                <!-- 4. empresa -->
-                <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #EFE6E6; padding-top: 16px">
-                  <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: #5C4A4D">TU EMPRESA EN 2030</span>
-                  <div class="g4" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 14px">
-                    @for (m of meters(); track m.label) {
-                      <div style="display: flex; flex-direction: column; gap: 4px"><div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700"><span>{{ m.label }}</span><span>{{ m.v }}</span></div><div style="height: 8px; border-radius: 999px; background: #EADFD0"><div [style.background]="m.c" [style.width]="m.v" style="height: 8px; border-radius: 999px"></div></div></div>
-                    }
-                  </div>
-                </div>
-
-                <!-- 5. ODS en burbujas -->
-                <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #EFE6E6; padding-top: 16px">
-                  <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: #5C4A4D">ODS QUE TRABAJASTE</span>
-                  @if (ods().length) {
-                    <ul aria-label="ODS trabajados" style="list-style: none; margin: 0; padding: 4px 0 0; display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap">
-                      @for (o of ods(); track o.n) {
-                        <li style="text-align: center">
-                          <span role="img" [attr.aria-label]="o.aria" [title]="o.aria" style="width: 50px; height: 50px; box-sizing: border-box; border-radius: 999px; background: #FFFFFF; border: 2px solid #B5A9A6; color: #6E5458; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1">
-                            <span style="font-size: 9px; font-weight: 800; letter-spacing: 0.12em; opacity: 0.9">ODS</span>
-                            <span style="font-size: 20px; font-weight: 800">{{ o.n }}</span>
-                          </span>
-                        </li>
-                      }
+                @if (elegible()) {
+                  <!-- 2. Texto del certificado -->
+                  <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #231417">Completó el recorrido por las cuatro fases del proceso administrativo (planeación, organización, dirección y control) aplicadas a la gestión sostenible de una empresa, con un desempeño de <strong>{{ fmt(puntos()) }} granos</strong>, nivel <strong>{{ nivel() }}</strong>.</p>
+                  @if (puntos() >= 850) {
+                    <span style="align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: #8A1428; color: #FFFFFF; font-size: 13px; font-weight: 800; letter-spacing: 0.04em">★ MENCIÓN · LÍDER DE IMPACTO</span>
+                  }
+                  <!-- 3. Competencias -->
+                  <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #EFE6E6; padding-top: 14px">
+                    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: #5C4A4D">COMPETENCIAS</span>
+                    <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 1.4">
+                      @for (c of competencias; track c) { <li>{{ c }}</li> }
                     </ul>
-                  } @else {
-                    <span style="font-size: 13px; color: #5C4A4D">Aún no hay ODS logrados.</span>
+                  </div>
+                } @else {
+                  <!-- Constancia: módulos completados e invitación a retomar -->
+                  <p style="margin: 0; font-size: 16px; line-height: 1.55">Participó en el recorrido de GADMI Sost-Empresarial y completó {{ completados().length === 0 ? 'ninguno de los módulos todavía' : (completados().length === 1 ? 'el módulo de ' : 'los módulos de ') + completadosTxt() }}, con {{ fmt(puntos()) }} granos.</p>
+                  <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #EFE6E6; padding-top: 14px">
+                    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: #5C4A4D">PARA OBTENER EL CERTIFICADO</span>
+                    @for (r of requisitos(); track r.t) {
+                      <span style="display: flex; gap: 8px; align-items: baseline; font-size: 14px"><strong [style.color]="r.ok ? '#2C5E31' : '#8A1428'">{{ r.ok ? '✓' : '○' }}</strong>{{ r.t }}</span>
+                    }
+                  </div>
+                  <p style="margin: 0; font-size: 15px; font-weight: 700; color: #8A1428">Te invitamos a retomar el recorrido en la Ruta: tu avance está guardado.</p>
+                }
+
+                <!-- 4. Pie: intensidad, fecha, insignias -->
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; border-top: 1px solid #EFE6E6; padding-top: 12px; font-size: 13px; color: #5C4A4D">
+                  <span>Intensidad estimada: <strong style="color: #231417">8 horas</strong> · {{ fecha() }}</span>
+                  @if (insignias().length) {
+                    <span role="list" aria-label="Insignias obtenidas" style="display: flex; gap: 6px; flex-wrap: wrap">
+                      @for (b of insignias(); track b.id) {
+                        <span role="listitem" [title]="b.name" [attr.aria-label]="'Insignia: ' + b.name" style="width: 26px; height: 26px; border-radius: 999px; background: #8A1428; display: inline-flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="b.icon"></path></svg></span>
+                      }
+                    </span>
                   }
                 </div>
               </article>
@@ -189,6 +179,42 @@ export class BarraPage {
     return ODS.filter(([, , ex]) => (this.progress.best(ex)?.grade ?? 0) >= 3).map(([n, name], i) => ({ n, aria: 'ODS ' + n + ': ' + name, delay: i * -1.1 + 's' }));
   });
 
+  readonly competencias = [
+    'Formula objetivos e indicadores con criterio de sostenibilidad.',
+    'Diseña estructuras y presupuestos coherentes con la estrategia.',
+    'Decide ante dilemas éticos y crisis con criterios de liderazgo responsable.',
+    'Evalúa el desempeño con indicadores ESG y propone planes de mejora.',
+  ];
+  codigoEst = computed(() => this.auth.student()?.codigo ?? '—');
+  grupoTxt = computed(() => {
+    const g = this.cert()?.grupo ?? this.auth.student()?.grupo ?? '';
+    const p = this.cert()?.periodo ?? '';
+    return (g ? ' · Grupo ' + g : '') + (p ? ' · Periodo ' + p : '');
+  });
+  fecha = computed(() => {
+    const c = this.cert();
+    const d = c ? new Date(c.fechaEmision) : new Date();
+    return (c ? 'Emitido el ' : 'Fecha: ') + d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+  });
+  /** Requisitos: 4 módulos completos, 600 granos o más, 4 bitácoras e informe descargado (reto 4.4). */
+  informeDescargado = computed(() => (this.progress.moduleStats(), this.progress.attempts('m4-cerrar-circulo').some((a) => (a.answers as { estado?: { dl?: boolean } })?.estado?.dl === true)));
+  completados = computed(() => this.progress.moduleStats().filter((s) => s.done).map((s) => s.module.phase.split(' ')[0].toLowerCase()));
+  /** «planeación, organización y control» */
+  completadosTxt = computed(() => { const c = this.completados(); return c.length > 1 ? c.slice(0, -1).join(', ') + ' y ' + c[c.length - 1] : (c[0] ?? ''); });
+  requisitos = computed(() => {
+    const st = this.progress.moduleStats();
+    const bit = st.filter((s) => this.progress.isReflectionComplete(s.module.id)).length;
+    return [
+      { t: 'Completar los cuatro módulos (' + st.filter((s) => s.done).length + ' de 4)', ok: st.every((s) => s.done) },
+      { t: 'Reunir 600 granos o más (tienes ' + fmt(this.overall().points) + ')', ok: this.overall().points >= 600 },
+      { t: 'Responder las cuatro bitácoras (' + bit + ' de 4)', ok: bit === 4 },
+      { t: 'Descargar el informe final en el reto 4.4', ok: this.informeDescargado() },
+    ];
+  });
+  /** Con certificado emitido por el backend, manda el backend; si no, los requisitos locales. */
+  elegible = computed(() => !!this.cert() || this.requisitos().every((r) => r.ok));
+  insignias = computed(() => this.progress.badges().filter((b) => b.earned).map((b) => ({ id: b.id, name: b.name, icon: INSIGNIA_UI[b.id]?.[1] ?? STAR })));
+
   ngOnInit() {
     if (!this.auth.token()) return this.msg.set('Sin conexión: el código del certificado se genera al conectarte.');
     this.api.certificado().subscribe({
@@ -233,17 +259,18 @@ export class BarraPage {
   }
 
   /**
-   * Un solo PDF con el mismo contenido del recuadro (certificado e informe),
-   * dibujado con jsPDF: texto nítido y seleccionable, QR y enlace de verificación.
+   * Un solo PDF (jsPDF, texto nítido y seleccionable):
+   * página 1 = certificado (o constancia de participación); página 2 = informe con granos y bitácoras.
    */
   async download() {
     const c = this.cert();
-    if (!c) {
-      this.msg.set('El PDF lleva tu código de verificación: se genera al completar el módulo 4.');
-      return;
-    }
+    const cert = this.elegible() && !!c;
     if (!this.nombreOk()) {
       this.msg.set('Antes de descargar, escribe tu nombre y tus apellidos completos.');
+      return;
+    }
+    if (this.elegible() && !c) {
+      this.msg.set('Tu certificado se está generando. Intenta de nuevo en unos segundos.');
       return;
     }
     this.busy.set(true);
@@ -254,7 +281,7 @@ export class BarraPage {
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const W = pdf.internal.pageSize.getWidth();
       const H = pdf.internal.pageSize.getHeight();
-      const X = 14, CW = W - 28, P = 8;
+      const X = 14, CW = W - 28, P = 9;
       const L = X + P, R = X + CW - P, IW = R - L;
       const text = (t: string, x: number, y: number, size: number, color: string, opts: { bold?: boolean; align?: 'left' | 'right' | 'center'; mono?: boolean } = {}) => {
         pdf.setFont(opts.mono ? 'courier' : 'helvetica', opts.bold ? 'bold' : 'normal');
@@ -262,101 +289,124 @@ export class BarraPage {
         pdf.setTextColor(color);
         pdf.text(t, x, y, { align: opts.align ?? 'left' });
       };
-      const bar = (x: number, y: number, w: number, h: number, pct: number, color: string) => {
-        pdf.setFillColor('#EADFD0');
-        pdf.roundedRect(x, y, w, h, h / 2, h / 2, 'F');
-        if (pct > 0) {
-          pdf.setFillColor(color);
-          pdf.roundedRect(x, y, Math.max(h, (w * Math.min(100, pct)) / 100), h, h / 2, h / 2, 'F');
-        }
+      /** Párrafo con salto de línea; devuelve la y siguiente. */
+      const parrafo = (t: string, x: number, y: number, w: number, size: number, color: string, bold = false, lh = 1.45) => {
+        pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+        pdf.setFontSize(size);
+        pdf.setTextColor(color);
+        const lines = pdf.splitTextToSize(t, w) as string[];
+        pdf.text(lines, x, y, { lineHeightFactor: lh });
+        return y + lines.length * size * 0.3528 * lh;
       };
-      // Fondo bordó (envoltura) y etiqueta crema
-      pdf.setFillColor('#8A1428');
-      pdf.rect(0, 0, W, H, 'F');
-      pdf.setFillColor('#FBF5EC');
-      pdf.roundedRect(X, 16, CW, 178, 4, 4, 'F');
-      // 1. Quién
-      const lw = (logo.w / logo.h) * 6;
-      pdf.addImage(logo.data, 'PNG', L, 24, lw, 6);
-      pdf.setDrawColor('#8A1428');
-      pdf.setLineWidth(0.35);
-      pdf.line(L + lw + 3, 23.3, L + lw + 3, 30.7);
-      text('FACULTAD DE CIENCIAS', L + lw + 6, 26.4, 6.5, '#8A1428', { bold: true });
-      text('EMPRESARIALES Y JURÍDICAS', L + lw + 6, 29.6, 6.5, '#8A1428', { bold: true });
       const sep = (y: number) => {
         pdf.setDrawColor('#EFE6E6');
         pdf.setLineWidth(0.25);
         pdf.line(L, y, R, y);
       };
-      text('CACAO RAÍZ · EDICIÓN 2030', L, 37, 9, '#AC0B32', { bold: true });
-      text(this.nombre(), L, 48, 24, '#231417', { bold: true });
-      text(this.subtitle(), L, 55, 10.5, '#5C4A4D');
-      if (this.qr()) {
+      const fondo = () => {
+        pdf.setFillColor('#8A1428');
+        pdf.rect(0, 0, W, H, 'F');
+        pdf.setFillColor('#FBF5EC');
+        pdf.roundedRect(X, 14, CW, H - 34, 4, 4, 'F');
+      };
+      const encabezado = () => {
+        const lw = (logo.w / logo.h) * 6;
+        pdf.addImage(logo.data, 'PNG', L, 22, lw, 6);
+        pdf.setDrawColor('#8A1428');
+        pdf.setLineWidth(0.35);
+        pdf.line(L + lw + 3, 21.3, L + lw + 3, 28.7);
+        text('FACULTAD DE CIENCIAS', L + lw + 6, 24.4, 6.5, '#8A1428', { bold: true });
+        text('EMPRESARIALES Y JURÍDICAS', L + lw + 6, 27.6, 6.5, '#8A1428', { bold: true });
+      };
+
+      // ---------- Página 1: certificado o constancia
+      fondo();
+      encabezado();
+      text(cert ? 'CERTIFICADO DE RECORRIDO ACADÉMICO' : 'CONSTANCIA DE PARTICIPACIÓN', L, 38, 9.5, '#AC0B32', { bold: true });
+      text('GADMI Sost-Empresarial: Gestión Organizacional Sostenible', L, 44, 11, '#8A1428', { bold: true });
+      text(this.nombre(), L, 56, 22, '#231417', { bold: true });
+      text('Código estudiantil ' + this.codigoEst() + this.grupoTxt(), L, 62.5, 10, '#5C4A4D');
+      if (cert && this.qr()) {
         pdf.setDrawColor('#231417');
         pdf.setLineWidth(0.6);
-        pdf.rect(R - 24, 22, 24, 24);
-        pdf.addImage(this.qr()!, 'PNG', R - 23, 23, 22, 22);
-        pdf.link(R - 24, 22, 24, 24, { url: this.verifyUrl() });
+        pdf.rect(R - 26, 30, 26, 26);
+        pdf.addImage(this.qr()!, 'PNG', R - 25, 31, 24, 24);
+        pdf.link(R - 26, 30, 26, 26, { url: this.verifyUrl() });
+        text(c!.codigo, R - 13, 60, 7, '#231417', { bold: true, mono: true, align: 'center' });
       }
-      text(c.codigo, R - 12, 50, 7.5, '#231417', { bold: true, mono: true, align: 'center' });
-      // 2. Resultado
-      pdf.setFillColor('#FFF5F2');
-      pdf.roundedRect(L, 62, IW, 15, 2.5, 2.5, 'F');
-      text(this.nivel(), L + 5, 71.5, 14, '#8A1428', { bold: true });
-      const pts = fmt(this.puntos()) + ' / ' + fmt(this.overall().max) + ' granos';
-      text(pts, R - 5, 71.5, 12, '#231417', { bold: true, align: 'right' });
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(14);
-      const bx = L + 9 + pdf.getTextWidth(this.nivel());
-      pdf.setFontSize(12);
-      bar(bx, 68.5, R - 9 - pdf.getTextWidth(pts) - bx, 2.6, this.pct(), '#AC0B32');
-      // 3. Módulos y poderes
-      sep(81);
-      text('TUS 4 MÓDULOS', L, 86, 8, '#5C4A4D', { bold: true });
-      const gw = (IW - 3 * 3) / 4;
-      this.mods().forEach((m, i) => {
-        const x = L + i * (gw + 3);
-        pdf.setDrawColor('#EFE6E6');
-        pdf.setLineWidth(0.5);
-        pdf.line(x, 89, x, 117);
-        text(m.name, x + 3, 96, 10, '#231417', { bold: true });
-        text(m.power, x + 3, 101, 8, '#5C4A4D');
-        text(m.pts, x + 3, 112, 11, '#231417', { bold: true });
-        m.pips.forEach((col, k) => {
-          pdf.setFillColor(col);
-          pdf.roundedRect(x + gw - 3 - (3 - k) * 5, 109.6, 4.2, 2.4, 1.2, 1.2, 'F');
+      let y = 74;
+      if (cert) {
+        y = parrafo(`Completó el recorrido por las cuatro fases del proceso administrativo (planeación, organización, dirección y control) aplicadas a la gestión sostenible de una empresa, con un desempeño de ${fmt(this.puntos())} granos, nivel ${this.nivel()}.`, L, y, IW, 12, '#231417');
+        if (this.puntos() >= 850) {
+          pdf.setFillColor('#8A1428');
+          pdf.roundedRect(L, y, 70, 8, 4, 4, 'F');
+          text('MENCIÓN · LÍDER DE IMPACTO', L + 35, y + 5.4, 9, '#FFFFFF', { bold: true, align: 'center' });
+          y += 13;
+        }
+        sep(y); y += 7;
+        text('COMPETENCIAS', L, y, 8.5, '#5C4A4D', { bold: true }); y += 6;
+        for (const comp of this.competencias) { y = parrafo('•  ' + comp, L, y, IW, 11, '#231417') + 1.5; }
+      } else {
+        const comp = this.completados();
+        y = parrafo(`Participó en el recorrido de GADMI Sost-Empresarial y completó ${comp.length ? (comp.length === 1 ? 'el módulo de ' : 'los módulos de ') + this.completadosTxt() : 'ninguno de los módulos todavía'}, con ${fmt(this.overall().points)} granos.`, L, y, IW, 12, '#231417');
+        sep(y); y += 7;
+        text('PARA OBTENER EL CERTIFICADO', L, y, 8.5, '#5C4A4D', { bold: true }); y += 6;
+        for (const r of this.requisitos()) { y = parrafo((r.ok ? 'Cumplido: ' : 'Falta: ') + r.t, L, y, IW, 11, r.ok ? '#2C5E31' : '#8A1428') + 1.5; }
+        y = parrafo('Te invitamos a retomar el recorrido en la Ruta: tu avance está guardado.', L, y + 3, IW, 11.5, '#8A1428', true);
+      }
+      // pie: intensidad, fecha, insignias
+      const pieY = H - 44;
+      sep(pieY - 6);
+      text('Intensidad estimada: 8 horas  ·  ' + this.fecha(), L, pieY, 9.5, '#5C4A4D');
+      const ins = this.insignias();
+      if (ins.length) {
+        text('Insignias:', L, pieY + 9, 8.5, '#5C4A4D', { bold: true });
+        let bx = L + 17;
+        for (const b of ins.slice(0, 12)) {
+          const img = iconoPng(b.icon);
+          if (img) pdf.addImage(img, 'PNG', bx, pieY + 4.8, 6, 6);
+          bx += 7.5;
+        }
+      }
+      if (cert) {
+        text('Verifica este certificado en:', L, pieY + 17, 8.5, '#5C4A4D');
+        pdf.setTextColor('#8A1428');
+        pdf.textWithLink(this.verifyUrl(), L + 40, pieY + 17, { url: this.verifyUrl() });
+      }
+      text('Entrégalo en Moodle: descarga este PDF, abre la tarea del curso y súbelo' + (cert ? ' con tu código ' + c!.codigo : '') + '.', X, H - 10, 8.5, '#FBF5EC');
+
+      // ---------- Página 2: informe (granos por módulo y bitácoras)
+      pdf.addPage();
+      fondo();
+      encabezado();
+      text('INFORME FINAL · CACAO RAÍZ S.A.S.', L, 38, 9.5, '#AC0B32', { bold: true });
+      text(this.nombre(), L, 46, 14, '#231417', { bold: true });
+      y = 56;
+      text('GRANOS POR MÓDULO', L, y, 8.5, '#5C4A4D', { bold: true }); y += 6;
+      for (const st of this.progress.moduleStats()) {
+        text('Módulo ' + st.module.id + ' · ' + st.module.phase, L, y, 10.5, '#231417');
+        text('Ganaste ' + st.points + ' de ' + st.max + ' granos', R, y, 10.5, '#231417', { bold: true, align: 'right' });
+        y += 6;
+      }
+      text('Total: ' + fmt(this.overall().points) + ' de ' + fmt(this.overall().max) + ' granos', R, y + 1, 11, '#8A1428', { bold: true, align: 'right' });
+      y += 9;
+      sep(y); y += 7;
+      text('BITÁCORAS REFLEXIVAS', L, y, 8.5, '#5C4A4D', { bold: true }); y += 6;
+      const limite = H - 26;
+      for (const m of [1, 2, 3, 4]) {
+        const mod = getModule(m);
+        const resp = this.progress.reflection(m);
+        if (y > limite - 20) { pdf.addPage(); fondo(); encabezado(); y = 38; }
+        text('Módulo ' + m + ' · ' + (mod?.phase ?? ''), L, y, 11, '#8A1428', { bold: true }); y += 5.5;
+        (mod?.reflections ?? []).forEach((q, k) => {
+          if (y > limite - 14) { pdf.addPage(); fondo(); encabezado(); y = 38; }
+          y = parrafo(q, L, y, IW, 9.5, '#5C4A4D', true, 1.3) + 0.5;
+          y = parrafo((resp[k] ?? '').trim() || 'Sin respuesta.', L, y, IW, 10, '#231417', false, 1.35) + 3;
         });
-      });
-      // 4. Empresa
-      sep(122);
-      text('TU EMPRESA EN 2030', L, 127, 8, '#5C4A4D', { bold: true });
-      this.meters().forEach((m, i) => {
-        const x = L + i * (gw + 3);
-        text(m.label, x, 133, 9, '#231417', { bold: true });
-        text(m.v, x + gw, 133, 9, '#231417', { bold: true, align: 'right' });
-        bar(x, 135.5, gw, 2.4, parseInt(m.v, 10), m.c);
-      });
-      // 5. ODS en burbujas
-      sep(142);
-      text('ODS QUE TRABAJASTE', L, 147, 8, '#5C4A4D', { bold: true });
-      const ods = this.ods();
-      if (!ods.length) text('Aún no hay ODS logrados.', L, 156, 9, '#5C4A4D');
-      ods.forEach((o, i) => {
-        const cx = L + (IW / ods.length) * (i + 0.5);
-        pdf.setFillColor('#FFFFFF');
-        pdf.setDrawColor('#B5A9A6');
-        pdf.setLineWidth(0.5);
-        pdf.circle(cx, 163, 8, 'FD');
-        text('ODS', cx, 160.5, 6, '#6E5458', { bold: true, align: 'center' });
-        text(String(o.n), cx, 167, 13, '#6E5458', { bold: true, align: 'center' });
-      });
-      text('Verifica este certificado en:', L, 184, 8.5, '#5C4A4D');
-      pdf.setTextColor('#8A1428');
-      pdf.textWithLink(this.verifyUrl(), L + 40, 184, { url: this.verifyUrl() });
-      // Pie: cómo entregarlo
-      text('Entrégalo en Moodle: 1. Descarga este PDF. 2. Abre la tarea de la profe. 3. Sube el PDF y pega tu código: ' + c.codigo, X, 204, 8.5, '#FBF5EC');
-      pdf.setProperties({ title: 'Certificado GADMI · ' + c.codigo, author: 'GADMI Sost-Empresarial · UAO', subject: 'Certificado e informe CACAO Raíz 2030' });
-      pdf.save(`certificado-gadmi-${c.codigo}.pdf`);
+        y += 2;
+      }
+      pdf.setProperties({ title: (cert ? 'Certificado' : 'Constancia') + ' GADMI Sost-Empresarial · ' + this.nombre(), author: 'GADMI Sost-Empresarial · UAO', subject: 'Certificado e informe final' });
+      pdf.save(cert ? 'certificado-gadmi-' + c!.codigo + '.pdf' : 'constancia-gadmi.pdf');
     } catch (e) {
       console.error(e);
       this.msg.set('No se pudo generar el PDF. Intenta de nuevo.');
@@ -367,6 +417,23 @@ export class BarraPage {
 }
 
 /** Carga una imagen como data URL (para el PDF). */
+/** Dibuja el ícono de una insignia (ruta SVG 24×24) en un círculo vino y lo devuelve como PNG. */
+function iconoPng(d: string): string | null {
+  try {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 96;
+    const g = cv.getContext('2d');
+    if (!g) return null;
+    g.fillStyle = '#8A1428';
+    g.beginPath(); g.arc(48, 48, 48, 0, Math.PI * 2); g.fill();
+    g.translate(24, 24); g.scale(2, 2);
+    g.strokeStyle = '#FFFFFF'; g.lineWidth = 2; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.stroke(new Path2D(d));
+    return cv.toDataURL('image/png');
+  } catch {
+    return null;
+  }
+}
 function loadImage(src: string): Promise<{ data: string; w: number; h: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();

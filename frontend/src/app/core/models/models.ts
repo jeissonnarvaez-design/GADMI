@@ -1,4 +1,4 @@
-/** Tipos compartidos del aplicativo GADMI-Sost-Empresarial (prototipo). */
+/** Tipos compartidos del aplicativo GADMI Sost-Empresarial. */
 
 export type ModuleId = 1 | 2 | 3 | 4;
 

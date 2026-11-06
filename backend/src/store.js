@@ -54,6 +54,11 @@ export async function teacherByEmail(correo) {
   return q.empty ? null : q.docs[0].data();
 }
 
+/** Cambia la contraseña de una cuenta (lo usa el arranque para dejar listas las cuentas de prueba). */
+export async function setPasswordHash(rol, id, passwordHash) {
+  await (rol === 'docente' ? D() : E()).doc(String(id)).update({ passwordHash });
+}
+
 export async function countTeachers() {
   const q = await D().limit(1).get();
   return q.size;
@@ -386,7 +391,14 @@ export async function certificateFacts(id) {
   const s = await getStudent(id);
   const puntos = Object.values(s?.progreso ?? {}).reduce((sum, p) => sum + (p.puntos ?? 0), 0);
   const m4 = INCLUIDOS.filter((e) => e.modulo === 4).length;
-  return { s, puntos, modulo4: (s?.progreso?.['4']?.completados ?? 0) >= m4 };
+  // Requisitos del certificado: 4 módulos completos, 600 granos o más, 4 bitácoras e informe descargado (reto 4.4).
+  const modulos = [1, 2, 3, 4].filter((m) => (s?.progreso?.[String(m)]?.completados ?? 0) >= INCLUIDOS.filter((e) => e.modulo === m).length);
+  const bitacoras = [1, 2, 3, 4].filter((m) => s?.bitacoras?.[String(m)]?.completa);
+  const intentos44 = s ? (await est(id).collection('intentos').where('ejercicioId', '==', 'm4-cerrar-circulo').get()).docs : [];
+  const informe = intentos44.some((d) => d.data()?.respuestas?.estado?.dl === true);
+  const requisitos = { modulos, granos: puntos, bitacoras, informe };
+  const elegible = modulos.length === 4 && puntos >= 600 && bitacoras.length === 4 && informe;
+  return { s, puntos, modulo4: (s?.progreso?.['4']?.completados ?? 0) >= m4, requisitos, elegible };
 }
 
 // ------------------------------------------------------------------ Mensajes de la junta («!» de la Ruta)

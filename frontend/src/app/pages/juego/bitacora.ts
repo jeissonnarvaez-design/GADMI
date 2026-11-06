@@ -36,11 +36,12 @@ import { Personaje } from '../../shared/personaje';
                 @if (i() < 2) {
                   <button type="button" (click)="i.set(i() + 1)" class="gbtn" style="min-height: 50px; padding: 0 24px; border-radius: 999px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Siguiente</button>
                 } @else {
-                  <button type="button" (click)="close()" [disabled]="!complete()" class="gbtn glow" [style.background]="complete() ? '#AC0B32' : '#C9B8A6'" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 24px; border-radius: 999px; border: none; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Guardar y cerrar el año</button>
+                  <button type="button" (click)="close()" [attr.aria-describedby]="falta() ? 'falta-bitacora' : null" class="gbtn glow" style="background: #AC0B32; display: inline-flex; align-items: center; min-height: 50px; padding: 0 24px; border-radius: 999px; border: none; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Guardar y cerrar el año</button>
                 }
               </div>
             </div>
-            @if (i() === 2 && !complete()) { <span role="status" style="font-size: 13px; color: #8A1428; font-weight: 700">Responde las tres preguntas (mínimo 10 caracteres cada una).</span> }
+            @if (falta()) { <span id="falta-bitacora" role="alert" style="font-size: 14px; color: #8A1428; font-weight: 700">{{ falta() }}</span> }
+            @else if (i() === 2 && !complete()) { <span role="status" style="font-size: 13px; color: #8A1428; font-weight: 700">Responde las tres preguntas (mínimo 10 caracteres cada una).</span> }
           </section>
         }
         <p style="margin: 0; font-size: 14px; color: #C9B8A6; text-align: center">La bitácora no suma granos. Es necesaria para el certificado y la profe puede leerla.</p>
@@ -68,6 +69,7 @@ export class BitacoraPage {
   }
 
   setAnswer(v: string) {
+    if (this.falta()) this.falta.set('');
     this.a.update((arr) => arr.map((x, j) => (j === this.i() ? v : x)));
   }
 
@@ -77,7 +79,16 @@ export class BitacoraPage {
     this.setAnswer(prev ? prev + ' ' + t : t);
   }
 
+  /** Mensaje si falta responder algo (el botón siempre responde). */
+  falta = signal('');
   close() {
+    const k = this.a().findIndex((t) => t.trim().length < 10);
+    if (k >= 0) {
+      this.i.set(k);
+      this.falta.set(`Falta la pregunta ${k + 1}: escribe al menos 10 caracteres para guardar y cerrar el año.`);
+      return;
+    }
+    this.falta.set('');
     this.progress.saveReflection(Number(this.id()), this.a());
     this.router.navigate(['/temporada', this.id()]);
   }

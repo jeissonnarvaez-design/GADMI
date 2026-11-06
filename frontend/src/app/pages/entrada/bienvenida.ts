@@ -14,8 +14,8 @@ const ODS: [number, string][] = [
 ];
 const HI: [string, string, string, string, string][] = [
   ['TEO', '¡Hola! Soy Teo. Te acompaño en este recorrido.', '110px', '2%', 'auto'],
-  ['CHISPA', 'Soy Chispa. Yo te muestro lo que dicen los datos.', '160px', 'auto', '2%'],
-  ['NIBI', 'Soy Nibi. Mira un momento el mundo desde aquí.', '160px', 'auto', '2%'],
+  ['CHISPA', 'Soy Chispa. Yo te muestro lo que dicen los datos.', '150px', 'auto', 'calc(3% + 108px)'],
+  ['NIBI', 'Soy Nibi y tengo daltonismo: algunos colores los veo distinto. Así ve el mundo alguien como yo.', '118px', 'auto', '1%'],
 ];
 
 /** Bienvenida (Main.dc.html): foto con velo, personajes con saludo y ODS. */
@@ -97,10 +97,10 @@ export class BienvenidaPage implements OnInit, OnDestroy {
   readonly ods = ODS;
   who = signal(0);
   auto = signal(true);
-  fx = signal(false);
+  /** Filtro de color de Nibi: activo solo mientras se muestra su texto. */
+  fx = computed(() => this.who() === 2);
   pick = signal<number | null>(null);
   private timer: ReturnType<typeof setInterval> | null = null;
-  private fxT: ReturnType<typeof setTimeout> | null = null;
   name = computed(() => this.auth.student()?.nombre.split(' ')[0] ?? '');
   hi = computed(() => HI[this.who()]);
   odsLabel = computed(() => (this.pick() === null ? '' : 'ODS ' + ODS[this.pick()!][0] + ' · ' + ODS[this.pick()!][1]));
@@ -110,26 +110,16 @@ export class BienvenidaPage implements OnInit, OnDestroy {
       if (!this.auto() || this.encima) return;
       const next = (this.who() + 1) % 3;
       this.who.set(next);
-      if (next === 2) this.nibiFx();
     }, 4500);
   }
   ngOnDestroy() {
     if (this.timer) clearInterval(this.timer);
-    if (this.fxT) clearTimeout(this.fxT);
-  }
-  private nibiFx() {
-    if (this.fxT) clearTimeout(this.fxT);
-    this.fx.set(true);
-    this.fxT = setTimeout(() => this.fx.set(false), 4000);
   }
   /** Al pasar el mouse (o el foco) por un personaje se muestra su texto; la rotación se pausa. */
   private encima = false;
   mirar(i: number) {
     this.encima = true;
-    if (this.who() !== i) {
-      this.who.set(i);
-      if (i === 2) this.nibiFx();
-    }
+    this.who.set(i);
   }
   /** Al salir, sigue la rotación automática (si no se eligió uno con clic). */
   soltar() {
@@ -138,7 +128,5 @@ export class BienvenidaPage implements OnInit, OnDestroy {
   greet(i: number) {
     this.who.set(i);
     this.auto.set(false);
-    this.fx.set(false);
-    if (i === 2) this.nibiFx();
   }
 }

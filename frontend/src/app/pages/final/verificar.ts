@@ -21,7 +21,7 @@ const fecha = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('e
   template: `
     <div style="min-height: 100vh; background: #FBF5EC; display: flex; flex-direction: column; align-items: center; padding: 48px 32px; box-sizing: border-box; gap: 24px; font-family: 'DM Sans', Arial, sans-serif; color: #231417">
       <app-logo-uao size="lg" />
-      <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; text-align: center">Verificar un certificado GADMI</h1>
+      <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; text-align: center">Verificar un certificado de GADMI Sost-Empresarial</h1>
       <form (submit)="$event.preventDefault(); check()" style="display: flex; gap: 10px; width: 100%; max-width: 520px">
         <label style="flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 700">Código del certificado
           <input type="text" [value]="code()" (input)="code.set($any($event.target).value); estado.set(null)" autocomplete="off" spellcheck="false" style="min-height: 52px; border-radius: 14px; border: 1.5px solid #D9CBBB; padding: 0 16px; font-size: 17px; letter-spacing: 0.06em; background: #FFFFFF; min-width: 0">

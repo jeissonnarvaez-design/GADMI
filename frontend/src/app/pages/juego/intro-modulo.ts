@@ -52,9 +52,9 @@ const VIDEOS: Record<number, string[]> = {
               </ol>
               <div class="up d4" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; min-height: 58px">
                 @if (seen()) {
-                  <a class="gbtn glow" [routerLink]="cta().link" style="display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 13px">▶ {{ cta().label }}</span></a>
+                  <a class="gbtn glow comenzar" [routerLink]="cta().link" style="display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; background: #FF836C; color: #1A0609; text-decoration: none"><span class="px" style="font-size: 13px">▶ {{ cta().label }}</span></a>
                 } @else {
-                  <span style="align-self: center; font-size: 15px; color: #FFD3C9">Mira el video para empezar.</span>
+                  <button type="button" class="mira glow" (click)="play()" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 22px 0 10px; border-radius: 999px; border: 3px solid #FF836C; background: #FFD3C9; color: #5A2230; font-family: inherit; font-size: 19px; font-weight: 800; cursor: pointer; box-shadow: 4px 4px 0 #8A1428"><span aria-hidden="true" style="width: 38px; height: 38px; border-radius: 999px; background: #AC0B32; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M8 5v14l11-7z"></path></svg></span>Mira el video para empezar</button>
                 }
               </div>
             }
@@ -85,7 +85,7 @@ const VIDEOS: Record<number, string[]> = {
         <div role="dialog" aria-modal="true" [attr.aria-label]="'Video del módulo ' + m.id" class="cine" (keydown.escape)="close()">
           <div style="position: relative; width: min(92vw, 150vh); aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #7A3242, #2A0B12 75%); box-shadow: 0 30px 80px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center">
             <video #vid [hidden]="!hasVideo()" playsinline autoplay preload="auto"
-              (loadedmetadata)="onReady()" (ended)="markSeen()" (timeupdate)="onTime()"
+              (loadedmetadata)="onReady()" (ended)="terminado()" (timeupdate)="onTime()"
               style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #1A0609">
               @for (f of fuentes(); track f; let last = $last) {
                 <source [src]="'/assets/video/' + f" (error)="last && hasVideo.set(false)">
@@ -200,8 +200,12 @@ export class IntroModuloPage {
   }
   ccLine = computed(() => this.transcript().replace(/^[^:]+:\s*/, '').split(/(?<=[.!?])\s/)[0]);
 
+  private cargado = false;
   play() {
     this.hasVideo.set(true);
+    this.cargado = false;
+    // Si en 8 s no cargó ningún archivo (no existe o el navegador no lo reproduce), se muestra el aviso y la transcripción.
+    setTimeout(() => { if (this.playing() && !this.cargado) this.hasVideo.set(false); }, 8000);
     this.playing.set(true);
     this.prog.set(0);
     afterNextRender(() => this.host.nativeElement.querySelector('.cerrar')?.focus(), { injector: this.injector });
@@ -213,6 +217,7 @@ export class IntroModuloPage {
     if (!this.hasVideo()) this.markSeen();
   }
   onReady() {
+    this.cargado = true;
     const track = this.vid()?.nativeElement.textTracks?.[0];
     if (track) track.mode = this.cc() ? 'showing' : 'hidden';
     this.leerVtt();
@@ -226,6 +231,12 @@ export class IntroModuloPage {
   toggleCc() {
     this.cc.set(!this.cc());
     this.onReady();
+  }
+  /** Al terminar el video se cierra el modo cine solo y aparece «COMENZAR». */
+  terminado() {
+    this.markSeen();
+    this.playing.set(false);
+    afterNextRender(() => (this.host.nativeElement.querySelector('.comenzar') as HTMLElement | null)?.focus(), { injector: this.injector });
   }
   markSeen() {
     this.visto.set(true);

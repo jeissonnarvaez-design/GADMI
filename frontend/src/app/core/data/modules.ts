@@ -245,8 +245,8 @@ export const MODULES: ModuleMeta[] = [
     omitted: [],
     reflections: [
       '¿Cuál de las crisis te pareció más difícil y qué tipo de líder quisiste ser en ella?',
-      '¿Recuerdas un caso real (una empresa o tu entorno) parecido a alguno de los dilemas?',
-      '¿Qué decisión de liderazgo te gustaría practicar más y por qué?',
+      '¿Recuerdas un caso real (de una empresa o de tu entorno) parecido a alguno de los dilemas?',
+      '¿Qué indicador de tu tablero revisarías primero cada lunes y por qué?',
     ],
     closingMessage:
       'Terminaste la Dirección. Cacao Raíz tiene un liderazgo que decide con ética y comunica con datos. Ahora toca controlar.',
@@ -320,8 +320,8 @@ export const MODULES: ModuleMeta[] = [
     omitted: [],
     reflections: [
       '¿Qué decisión tomada en un módulo anterior cambió lo que viste en el módulo 4?',
-      'Si tuvieras que explicar a la junta directiva en un minuto cómo va CACAO Raíz S.A.S., ¿qué dirías?',
-      '¿Qué te llevarás de esta experiencia para tu formación profesional?',
+      'Si tuvieras que explicarle a la Junta Directiva en un minuto cómo va CACAO Raíz S.A.S., ¿qué dirías?',
+      '¿Qué te llevas de esta experiencia para tu formación profesional?',
     ],
     closingMessage:
       'Terminaste el Control. Tu barra de chocolate está lista: Cacao Raíz mide, aprende y mejora.',
