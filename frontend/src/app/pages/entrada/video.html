@@ -6,7 +6,7 @@
   </header>
 
   <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; justify-content: center">
-    <section #stage aria-label="Video de bienvenida" class="stage" [style.height.px]="560 * k()" style="position: relative; height: 560px; border-radius: 22px; overflow: hidden; background: #FBF5EC">
+    <section #stage aria-label="Video de bienvenida" class="stage" [style.height.px]="560 * k()" [style.background]="videoReady() || probando() ? '#231417' : '#FBF5EC'" style="position: relative; height: 560px; border-radius: 22px; overflow: hidden">
       <!-- Video real de bienvenida (ya trae su propia voz: aquí nunca se usa la voz del navegador ni la de IA).
            Se prueba primero bienvenida.mp4 (si lo conviertes) y luego IMG_7890.MOV. Subtítulos: bienvenida.vtt -->
       <video #vid [hidden]="!videoReady()" preload="auto" playsinline
@@ -20,6 +20,9 @@
         @if (ended()) {
           <a class="up" routerLink="/carta" style="position: absolute; right: 28px; bottom: 28px; display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 30px; border-radius: 999px; background: #FFFFFF; color: #8A1428; font-weight: 800; font-size: 19px; text-decoration: none">Acepto el reto <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A1428" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
         }
+      } @else if (probando()) {
+        <!-- Mientras carga el video nuevo no se muestra nada de la versión anterior -->
+        <div role="status" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; color: #C9B8A6; font-size: 16px; font-weight: 600"><span class="dot">●</span><span class="dot dot2">●</span><span class="dot dot3">●</span><span style="margin-left: 6px">Cargando video…</span></div>
       } @else {
       <!-- Escenas animadas: se dibujan a 1132 × 560 y se escalan al ancho de la pantalla (celular). -->
       <div class="escala" [style.transform]="k() < 1 ? 'scale(' + k() + ')' : null" style="position: absolute; left: 0; top: 0; width: 1132px; height: 560px; transform-origin: 0 0">
@@ -91,7 +94,7 @@
       </div>
 
       }
-      @if (captions() && !videoReady()) {
+      @if (captions() && !videoReady() && !probando()) {
         <p aria-live="polite" style="position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(86%, 820px); box-sizing: border-box; margin: 0; padding: 14px 20px; border-radius: 14px; background: rgba(20,10,12,0.9); color: #FFFFFF; font-size: 20px; line-height: 1.4; text-align: center"><strong style="color: #FBF5EC">{{ speaker() }}:</strong> {{ caption() }}</p>
       }
     </section>

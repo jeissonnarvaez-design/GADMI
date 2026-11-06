@@ -70,7 +70,7 @@ export class VideoPage implements OnInit, OnDestroy {
   seen = signal(0);
   videoReady = signal(false);
   /** Mientras se averigua si hay video real, la versión animada espera (y no habla). */
-  private probando = signal(true);
+  probando = signal(true);
   private sinVideoTimer: ReturnType<typeof setTimeout> | null = null;
   /** Líneas de la transcripción del video real, leídas del .vtt («Quién: texto» o solo texto). */
   private lineasVtt = signal<[string, string][]>([]);
@@ -93,7 +93,7 @@ export class VideoPage implements OnInit, OnDestroy {
   speaker = computed(() => SC[this.scene()][0]);
   caption = computed(() => SC[this.scene()][1]);
   elapsed = computed(() => (this.videoReady() ? this.vTime() : DUR.slice(0, this.scene()).reduce((a, b) => a + b, 0) + this.t()));
-  total = computed(() => (this.videoReady() ? this.vDur() : TOTAL));
+  total = computed(() => (this.videoReady() ? this.vDur() : this.probando() ? 0 : TOTAL));
   progress = computed(() => ((this.elapsed() / (this.total() || 1)) * 100).toFixed(1) + '%');
   time = computed(() => fmt(this.elapsed()) + ' / ' + fmt(this.total()));
   canNext = computed(() => (this.videoReady() ? this.vTime() + 1 < this.seen() : this.scene() < this.seen()));
@@ -117,9 +117,9 @@ export class VideoPage implements OnInit, OnDestroy {
         this.seen.set(DUR.length - 1);
       }
     }, 200);
-    // Si en 8 s el video no ha cargado ni fallado, se muestra la versión animada.
-    // (Si el video llega después, se cambia a él y se calla la voz).
-    this.sinVideoTimer = setTimeout(() => this.sinVideo(), 8000);
+    // La versión animada solo aparece si el video no existe o no se puede reproducir (error),
+    // o como último recurso si en 30 s no ha cargado nada.
+    this.sinVideoTimer = setTimeout(() => this.sinVideo(), 30000);
   }
   ngOnDestroy() {
     this.ro?.disconnect();
