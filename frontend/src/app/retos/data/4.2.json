@@ -1,0 +1,107 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m4-cuellos-botella",
+  "code": "4.2",
+  "title": "Cuellos de botella",
+  "max": 60,
+  "CONSIGNA": "Este es el reporte de CACAO Raíz al cierre de 2027. Marca los tres cuellos de botella y elige una estrategia para cada uno.",
+  "T": [
+    [
+      "Energía por tonelada",
+      "505 kWh/t",
+      "416 kWh/t (−20 %)",
+      "r"
+    ],
+    [
+      "Residuos aprovechados",
+      "44 %",
+      "70 %",
+      "r"
+    ],
+    [
+      "Accidentalidad",
+      "5,8 por cada 100",
+      "≤ 3",
+      "r"
+    ],
+    [
+      "Ventas nacionales",
+      "+12 %",
+      "+15 %",
+      "y"
+    ],
+    [
+      "Rotación",
+      "19 %",
+      "≤ 15 %",
+      "y"
+    ],
+    [
+      "Familias capacitadas",
+      "95 %",
+      "100 %",
+      "g"
+    ],
+    [
+      "Código de ética y canal de denuncias",
+      "Implementados",
+      "3 de 3 hitos",
+      "g"
+    ]
+  ],
+  "ST": {
+    "r": [
+      "#FF5A4E",
+      "Rojo"
+    ],
+    "y": [
+      "#FCC30B",
+      "Amarillo"
+    ],
+    "g": [
+      "#56C02B",
+      "Verde"
+    ]
+  },
+  "S": [
+    [
+      "Energía por tonelada",
+      [
+        "Medir el consumo por máquina y priorizar el cambio de la tostadora con mayor gasto.",
+        "Pedir al personal que apague las luces al salir.",
+        "Subir el precio del chocolate para cubrir la factura de energía."
+      ],
+      [
+        2,
+        0,
+        1
+      ]
+    ],
+    [
+      "Residuos aprovechados",
+      [
+        "Convertir la cascarilla en compost o en producto (infusión o abono) con un aliado local.",
+        "Poner más canecas de colores en la planta.",
+        "Pagar más al recolector para que se lleve todo."
+      ],
+      [
+        1,
+        2,
+        0
+      ]
+    ],
+    [
+      "Accidentalidad",
+      [
+        "Investigar cada accidente con el comité de seguridad y salud en el trabajo y atacar las tres causas más frecuentes.",
+        "Hacer una campaña de concienciación, sin análisis de causas.",
+        "Poner carteles de «cuidado» en toda la planta."
+      ],
+      [
+        0,
+        1,
+        2
+      ]
+    ]
+  ]
+}

@@ -207,7 +207,7 @@ export class Reto14 extends DcReto {
     const fbOf = (o: any, x: any, p: any) => (!p.ind ? '↺ Ese indicador no mide este objetivo.' : !p.inRange ? (x.meta < o.lo ? '↺ Meta poco ambiciosa.' : '↺ Meta difícil de alcanzar con los recursos actuales.') : !p.hz ? '↺ Revisa el plazo.' : '✓ Medible, realista y con plazo.');
     return {
       score, maxScore: DATA.max, scoreAria: score + ' granos de 60',
-      steps: O.map((_, k) => (k === cur && !checked ? '#FF836C' : complete(v[k]) ? '#8A1428' : '#4A2A2F')),
+      steps: O.map((_, k) => (k === cur && !checked ? '#FF836C' : complete(v[k]) ? '#FFD3C9' : '#4A2A2F')),
       progText: checked ? 'PLAN COMPLETO' : 'OBJETIVO ' + (cur + 1) + ' DE 4',
       sitLabel: 'SITUACIÓN · LA JUNTA FIRMA EL PLAN 2027', sitText: SIT, listen: () => this.speak(SIT),
       config: !checked, evalView: checked,

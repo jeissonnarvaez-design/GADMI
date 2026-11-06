@@ -1,6 +1,6 @@
 import { Component, ElementRef, computed, effect, inject, input, signal } from '@angular/core';
 
-export type Who = 'teo' | 'teo-casual' | 'chispa' | 'nibi' | 'brillo' | 'laura' | 'andres' | 'klaus';
+export type Who = 'teo' | 'teo-casual' | 'chispa' | 'nibi' | 'laura' | 'andres' | 'klaus';
 export type Mood = 'happy' | 'mid' | 'sad';
 
 const LABELS: Record<Who, string> = {
@@ -8,7 +8,6 @@ const LABELS: Record<Who, string> = {
   'teo-casual': 'Teo, una semilla de cacao, el guía del juego',
   chispa: 'Chispa, un bombillo con sombrero y gafas',
   nibi: 'Nibi, una semilla de cacao con gafas rosadas y un lazo',
-  brillo: 'Brillo, un virus verde: el greenwashing',
   laura: 'Laura, inversionista de impacto',
   andres: 'Andrés, inversionista financiero',
   klaus: 'Klaus, comprador europeo',

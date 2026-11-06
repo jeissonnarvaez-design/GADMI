@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Hud } from '../../shared/hud';
+import { Feedback } from '../../shared/feedback';
 import { Personaje } from '../../shared/personaje';
 import DATA from '../data/1.1.json';
 import { DcReto } from './dc-reto';
@@ -20,7 +21,7 @@ const stop = (e: Event) => { if (e && e.stopPropagation) e.stopPropagation(); };
 /** Misión 1.1 · La brújula (Ejercicio11.dc.html, rediseño): 2 fases, 2 intentos por fase. */
 @Component({
   selector: 'app-reto-11',
-  imports: [RouterLink, Hud, Personaje],
+  imports: [RouterLink, Hud, Personaje, Feedback],
   template: `<div class="game-bg" style="min-height: 100vh">
   <app-hud [kicker]="'MÓDULO 1 · RETO 1.1'" [title]="titulo" [granos]="(v().score + ' / ' + v().maxScore)" [salida]="salida()">
     <div centro [attr.aria-label]="(v().progText)" style="display: flex; align-items: center; gap: 8px; color: rgb(35, 20, 23)">
@@ -45,7 +46,7 @@ const stop = (e: Event) => { if (e && e.stopPropagation) e.stopPropagation(); };
         
         @if (v().p1) {
           <div style="display: flex; flex-direction: column; gap: 14px">
-            <section aria-label="Notas por ubicar" (click)="v().trayClick?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="v().dropTray?.($event)" style="min-height: 112px; padding: 12px; border-radius: 8px; border: 2px dashed rgba(255,131,108,0.4); display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start">
+            <section aria-label="Notas por ubicar" (click)="v().trayClick?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="v().dropTray?.($event)" style="min-height: 112px; padding: 12px; border-radius: 8px; border: 5px solid #FF836C; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start">
               <span class="px" style="width: 100%; font-size: 10px; color: #FF836C">{{ v().trayLabel }}</span>
               @for (c of v().tray; track $index) {
                 <button type="button" class="card tcard" draggable="true" (dragstart)="c.drag?.($event)" (click)="c.pick?.($event)" [attr.aria-pressed]="(c.pressed)" [attr.aria-label]="(c.aria)" [style]="'width: calc(33.333% - 7px); box-sizing: border-box; text-align: center; justify-content: center; align-items: center; padding: 10px 12px; border-radius: 8px; border: 3px ' + (c.line) + ' ' + (c.bd) + '; background: ' + (c.bg) + '; color: #231417; cursor: grab; transform: ' + (c.lift) + '; box-shadow: ' + (c.sh) + '; display: flex; flex-direction: column; gap: 6px'">
@@ -97,7 +98,7 @@ const stop = (e: Event) => { if (e && e.stopPropagation) e.stopPropagation(); };
             <div role="group" aria-label="Dimensiones de sostenibilidad" style="display: flex; flex-direction: column; gap: 12px">
               <span class="px" style="height: 16px; font-size: 10px; color: #FF836C">DIMENSIONES</span>
               @for (d of v().dims; track $index) {
-                <div role="button" tabindex="0" [attr.aria-label]="(d.aria)" [class]="'zone ' + (d.cls)" (click)="d.pick?.($event)" (keydown)="d.key?.($event)" [style]="'position: relative; height: 96px; box-sizing: border-box; padding: 10px 14px 10px 26px; border-radius: 8px; border: 3px ' + (d.line) + ' #FF836C; background: #2A0B12; color: #FBF5EC; cursor: pointer; display: flex; align-items: center; gap: 12px'">
+                <div role="button" tabindex="0" [attr.aria-label]="(d.aria)" [class]="'zone ' + (d.cls)" (click)="d.pick?.($event)" (keydown)="d.key?.($event)" [style]="'position: relative; height: 96px; box-sizing: border-box; padding: 10px 14px 10px 26px; border-radius: 8px; border: 5px ' + (d.line) + ' #FF836C; background: #2A0B12; color: #FBF5EC; cursor: pointer; display: flex; align-items: center; gap: 12px'">
                   <span aria-hidden="true" [style]="'position: absolute; left: -10px; top: 50%; margin-top: -9px; width: 18px; height: 18px; border-radius: 999px; background: ' + (d.dot) + '; border: 3px solid #1A0609'"></span>
                   <span style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 8px; background: #FF836C; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A0609" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="(d.icon)"></path></svg></span>
                   <div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 18px">{{ d.label }}</strong><span class="px" style="font-size: 10px; color: #FFD3C9">{{ d.count }}</span></div>
@@ -111,10 +112,7 @@ const stop = (e: Event) => { if (e && e.stopPropagation) e.stopPropagation(); };
         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-height: 64px">
           @if (v().p2) {<button type="button" class="gbtn" (click)="v().back?.($event)" aria-label="Volver a la fase 1" style="min-height: 52px; padding: 0 18px; border: 2px solid #FF836C; background: #2A0B12; color: #FBF5EC; cursor: pointer"><span class="px" style="font-size: 10px">◀ FASE 1</span></button>}
           @if (v().fbShow) {
-            <div class="pop gpanel" aria-live="polite" [style]="'flex: 1 1 420px; height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: ' + (v().fbBg) + '; padding: 0 14px 0 6px; overflow: hidden'">
-              <app-personaje who="chispa" [size]="42" />
-              <div style="min-width: 0; font-size: 14px; line-height: 1.25"><strong [style]="'font-size: 15px; color: ' + (v().fbColor)">{{ v().fbTitle }}</strong> <span>{{ v().fbText }}</span></div>
-            </div>
+            <app-feedback class="pop" [ok]="v().fbColor === '#2C5E31'" [titulo]="v().fbTitle" [texto]="v().fbText" />
           }
           <span style="flex: 1"></span>
           @if (v().canClear) {<button type="button" (click)="v().clearAll?.($event)" aria-label="Limpiar: devuelve las respuestas sin comprobar" style="height: 44px; padding: 0 16px; border: 2px solid rgba(255,131,108,0.55); border-radius: 6px; background: transparent; color: #FFD3C9; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD3C9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"></path></svg>Limpiar</button>}
@@ -246,7 +244,7 @@ export class Reto11 extends DcReto {
       sitLabel: p1 ? 'SITUACIÓN · TU PRIMER DÍA' : 'SITUACIÓN · LA JUNTA PREGUNTA',
       sitText: p1 ? 'La junta dejó sus notas revueltas. Arma la brújula: ubica cada nota en su zona.' : 'Cada objetivo cuida una dimensión de la empresa. Une cada uno con su dimensión principal.',
       listen: () => this.speak(p1 ? 'Arrastra o toca cada nota y luego toca su zona: misión, visión, objetivo o no va.' : 'Toca un objetivo y luego la dimensión que más cuida: ambiental, social, económica o gobernanza.'),
-      phases: [p1 ? '#FF836C' : '#8A1428', p2 ? '#FF836C' : '#4A2A2F'],
+      phases: [p1 ? '#FF836C' : '#FFD3C9', p2 ? '#FF836C' : '#4A2A2F'],
       progText: p1 ? 'FASE 1 DE 2' : 'FASE 2 DE 2',
       allowDrop,
       trayLabel: placedN === B.length ? 'TODAS LAS NOTAS ESTÁN UBICADAS' : 'NOTAS DE LA JUNTA · ARRASTRA O TOCA UNA',
@@ -269,7 +267,7 @@ export class Reto11 extends DcReto {
         return {
           label: l, sub, icon, count: items.length ? String(items.length) : '',
           aria: 'Zona ' + l + ', ' + items.length + ' notas.' + (sel != null ? ' Toca para ubicar aquí la nota seleccionada.' : ''),
-          cls: sel != null && !done1 ? 'zpulse' : '', line: sel != null && !done1 ? 'solid' : 'dashed', bg: sel != null && !done1 ? '#3A1019' : '#2A0B12',
+          cls: sel != null && !done1 ? 'zpulse' : '', line: 'solid', bg: sel != null && !done1 ? '#3A1019' : '#2A0B12',
           drop, key: keyAct(drop),
           dropEv: (e: Event) => { allowDrop(e); const i = this.dragI != null ? this.dragI : sel; this.dragI = null; this.placeCard(i, k); },
           items: items.map(({ b, i }) => {
@@ -304,7 +302,7 @@ export class Reto11 extends DcReto {
         return {
           label: DIMS[k][0], icon: DIMS[k][1], count: n ? n + (n === 1 ? ' OBJETIVO' : ' OBJETIVOS') : '',
           aria: 'Dimensión ' + DIMS[k][0] + (selObj != null ? '. Toca para unir el objetivo seleccionado.' : ''),
-          cls: selObj != null ? 'zpulse' : '', line: selObj != null ? 'solid' : 'dashed', dot: n ? '#FF836C' : '#6E5458',
+          cls: selObj != null ? 'zpulse' : '', line: 'solid', dot: n ? '#FF836C' : '#6E5458',
           pick, key: keyAct(pick),
         };
       }),

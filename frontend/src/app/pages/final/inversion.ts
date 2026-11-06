@@ -162,7 +162,7 @@ export class InversionPage {
     const l = this.last();
     if (!l) return '';
     const name = ST.inversionistas[this.who()].nombre;
-    return l.tipo === 'greenwashing' || l.d < 0 ? '▼ ' + name + ' pierde interés. Sin datos, suena a Brillo.' : l.d > 0 ? '▲ ' + name + ' se interesa.' : '■ ' + name + ' no se mueve. Faltan cifras.';
+    return l.tipo === 'greenwashing' || l.d < 0 ? '▼ ' + name + ' pierde interés. Sin datos, suena a greenwashing.' : l.d > 0 ? '▲ ' + name + ' se interesa.' : '■ ' + name + ' no se mueve. Faltan cifras.';
   });
   deltaC = computed(() => (!this.last() ? '#231417' : this.last()!.d > 0 ? '#2C5E31' : this.last()!.d < 0 ? '#AC0B32' : '#231417'));
 

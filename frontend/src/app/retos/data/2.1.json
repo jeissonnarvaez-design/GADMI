@@ -1,0 +1,154 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m2-organigrama",
+  "code": "2.1",
+  "title": "Organigrama",
+  "max": 70,
+  "CONSIGNA": "Diseña la estructura de CACAO Raíz S.A.S. considerando sus 48 colaboradores. La estructura debe ser clara, sin niveles de sobra y tener alguien responsable de la sostenibilidad.",
+  "P": {
+    "as": "Asamblea de accionistas",
+    "jd": "Junta directiva",
+    "gg": "Gerente General",
+    "cs": "Comité de Sostenibilidad",
+    "rf": "Revisoría Fiscal",
+    "pr": "Producción",
+    "co": "Comercial",
+    "af": "Administrativa y financiera",
+    "th": "Talento Humano",
+    "ab": "Abastecimiento sostenible",
+    "vp": "Vicepresidencia de Innovación Global",
+    "rs": "Subgerencia de Redes Sociales",
+    "ds": "Departamento de Sostenibilidad con cinco subdirecciones"
+  },
+  "ORDER": [
+    "gg",
+    "pr",
+    "vp",
+    "as",
+    "th",
+    "cs",
+    "co",
+    "rs",
+    "jd",
+    "ab",
+    "ds",
+    "rf",
+    "af"
+  ],
+  "DISTRACT": [
+    "vp",
+    "rs",
+    "ds"
+  ],
+  "AREAS": [
+    "pr",
+    "co",
+    "af",
+    "th",
+    "ab"
+  ],
+  "SLOTS": [
+    [
+      "s1",
+      410,
+      40
+    ],
+    [
+      "r",
+      660,
+      40
+    ],
+    [
+      "s2",
+      410,
+      135
+    ],
+    [
+      "l",
+      160,
+      230
+    ],
+    [
+      "s3",
+      410,
+      230
+    ],
+    [
+      "x",
+      660,
+      230
+    ],
+    [
+      "a1",
+      90,
+      380
+    ],
+    [
+      "a2",
+      250,
+      380
+    ],
+    [
+      "a3",
+      410,
+      380
+    ],
+    [
+      "a4",
+      570,
+      380
+    ],
+    [
+      "a5",
+      730,
+      380
+    ],
+    [
+      "sub",
+      410,
+      480
+    ]
+  ],
+  "RULES": [
+    [
+      "Asamblea y junta directiva están por encima de la gerencia general.",
+      "El gobierno de la empresa (quién elige y supervisa a la gerencia) va arriba."
+    ],
+    [
+      "Hay una sola gerencia general.",
+      "Dos jefes en la cima diluyen la responsabilidad."
+    ],
+    [
+      "El comité de sostenibilidad está unido a la gerencia por línea punteada (asesoría).",
+      "El comité asesora y coordina; no da órdenes a las áreas."
+    ],
+    [
+      "La revisoría fiscal reporta a la asamblea, no a la gerencia.",
+      "Quien controla no puede depender de quien es controlado."
+    ],
+    [
+      "Las cinco áreas de línea dependen de la gerencia general.",
+      "Producción, comercial, administrativa, talento humano y abastecimiento ejecutan la operación."
+    ],
+    [
+      "El abastecimiento sostenible existe como área propia.",
+      "En esta empresa la relación con 120 familias es estratégica."
+    ],
+    [
+      "No hay más de tres niveles bajo la gerencia y no se usan cajas distractoras.",
+      "Para 48 personas, una estructura alta y con cargos de más encarece y vuelve lenta la empresa."
+    ]
+  ],
+  "SOLUTION": {
+    "s1": "as",
+    "r": "rf",
+    "s2": "jd",
+    "s3": "gg",
+    "x": "cs",
+    "a1": "pr",
+    "a2": "co",
+    "a3": "af",
+    "a4": "th",
+    "a5": "ab"
+  }
+}

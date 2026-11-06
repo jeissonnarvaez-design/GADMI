@@ -8,7 +8,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "migrar-mysql": "node src/migrar-mysql.js"
+    "migrar-mysql": "node src/migrar-mysql.js",
+    "crear-usuarios": "node scripts/crear-usuarios.js",
+    "subtitulos": "node scripts/subtitulos.js"
   },
   "engines": {
     "node": ">=20"

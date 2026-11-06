@@ -5,6 +5,7 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PreferencesService } from '../../core/services/preferences.service';
 import { ObjetivoCurso } from '../../shared/objetivo-curso';
+import { AVISO_PRIVACIDAD } from '../../core/data/aviso-privacidad';
 
 const P: [keyof Preferences, string, string][] = [
   ['subtitulos', 'Subtítulos', 'M3 6h18v12H3zM7 13h4M13 13h4M7 10h10'],
@@ -31,19 +32,29 @@ const P: [keyof Preferences, string, string][] = [
       }
 
       @if (step() === 1) {
-        <section class="up" style="width: 100%; max-width: 680px; background: #FFFFFF; border-radius: 28px; padding: 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
-          <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #231417">Tus datos, cuidados</h1>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
-            @for (d of data; track d) {
-              <div style="display: flex; align-items: center; gap: 10px; padding: 14px; border-radius: 16px; background: #FBF5EC; font-size: 15px; font-weight: 600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F7E44" stroke-width="2.6" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{{ d }}</div>
-            }
+        <section class="up" aria-labelledby="aviso-t" style="width: 100%; max-width: 760px; background: #FFFFFF; border-radius: 28px; padding: 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span class="px" style="font-size: 12px; color: #AC0B32">LEY 1581 DE 2012 · PROTECCIÓN DE DATOS PERSONALES</span>
+            <h1 id="aviso-t" style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #231417">Aviso de privacidad</h1>
           </div>
-          <p style="margin: 0; font-size: 15px; color: #5C4A4D">No guardamos tu documento de identidad. Solo lo necesario para tu progreso y tu certificado.</p>
-          <label style="display: flex; gap: 12px; align-items: center; font-size: 16px; font-weight: 600; cursor: pointer">
-            <input type="checkbox" [checked]="ok()" (change)="ok.set(!ok())" style="width: 22px; height: 22px; accent-color: #AC0B32">
-            Acepto el <a href="#aviso" (click)="$event.preventDefault()">aviso de privacidad</a>
+          <div id="aviso" tabindex="0" role="document" aria-label="Texto del aviso de privacidad" style="max-height: 46vh; overflow: auto; padding: 16px 18px; border-radius: 16px; background: #FBF5EC; display: flex; flex-direction: column; gap: 14px; font-size: 15px; line-height: 1.5; color: #3D2C2F">
+            <p style="margin: 0"><strong>Responsable del tratamiento:</strong> {{ aviso.responsable }}</p>
+            @for (sec of aviso.secciones; track sec.titulo) {
+              <div>
+                <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 800; color: #8A1428">{{ sec.titulo }}</h2>
+                <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px">
+                  @for (it of sec.items; track it) { <li>{{ it }}</li> }
+                </ul>
+              </div>
+            }
+            <p style="margin: 0"><strong>Cómo ejercer tus derechos:</strong> {{ aviso.contacto }}</p>
+            <p style="margin: 0; font-size: 13px; color: #6E5458">Versión {{ aviso.version }}. Al aceptar, se guarda la fecha y la versión de este aviso como prueba de tu autorización. Puedes revocarla en cualquier momento.</p>
+          </div>
+          <label style="display: flex; gap: 12px; align-items: flex-start; font-size: 16px; font-weight: 600; cursor: pointer; line-height: 1.4">
+            <input type="checkbox" [checked]="ok()" (change)="ok.set(!ok())" style="width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; accent-color: #AC0B32">
+            He leído el aviso de privacidad y autorizo el tratamiento de mis datos para las finalidades descritas.
           </label>
-          <button type="button" (click)="ok() && step.set(2)" [disabled]="!ok()" [style.background]="ok() ? '#AC0B32' : '#C9B8A6'" style="min-height: 54px; border-radius: 999px; border: none; color: #FFFFFF; font-weight: 800; font-size: 17px; cursor: pointer">Siguiente</button>
+          <button type="button" (click)="aceptar()" [disabled]="!ok()" [style.background]="ok() ? '#AC0B32' : '#C9B8A6'" style="min-height: 54px; border-radius: 999px; border: none; color: #FFFFFF; font-weight: 800; font-size: 17px; cursor: pointer">Acepto y continúo</button>
         </section>
       }
 
@@ -82,11 +93,20 @@ export class PrimeraVezPage {
   private router = inject(Router);
   step = signal(0);
   ok = signal(false);
-  readonly data = ['Nombre', 'Código estudiantil', 'Correo institucional', 'Tu progreso'];
+  readonly aviso = AVISO_PRIVACIDAD;
+  /** Fecha del consentimiento (se registra al aceptar, con la versión del aviso). */
+  private aceptadoEn: string | null = null;
+
+  aceptar() {
+    if (!this.ok()) return;
+    this.aceptadoEn = new Date().toISOString();
+    if (this.auth.token()) this.api.saveOnboarding({ aceptaPrivacidad: this.aceptadoEn, avisoVersion: this.aviso.version }).subscribe();
+    this.step.set(2);
+  }
   readonly opts = P;
 
   listo() {
-    const now = new Date().toISOString();
+    const now = this.aceptadoEn ?? new Date().toISOString();
     this.auth.updateStudent({ aceptaPrivacidad: now, preferencias: this.prefs.prefs() });
     if (this.auth.token()) this.api.saveOnboarding({ aceptaPrivacidad: now, preferencias: this.prefs.prefs() }).subscribe();
     this.router.navigate(['/bienvenida']);

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LogoUao } from '../../shared/logo-uao';
@@ -19,7 +19,7 @@ const STEPS = ['Verificando tu cuenta', 'Cargando tu progreso', 'Preparando tu e
         <span style="background: #FFFFFF; border-radius: 999px; padding: 8px 16px; display: inline-flex"><app-logo-uao /></span>
         <div style="position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center">
           <svg class="spin" width="200" height="200" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"></circle><path d="M50 4 a46 46 0 0 1 46 46" fill="none" stroke="#FBF5EC" stroke-width="3" stroke-linecap="round"></path></svg>
-          <app-personaje who="teo-casual" [size]="140" />
+          <span class="sigue-mouse" style="display: flex"><app-personaje who="teo-casual" [size]="140" /></span>
         </div>
         <h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF">Conectando con Moodle…</h1>
 
@@ -61,6 +61,41 @@ const STEPS = ['Verificando tu cuenta', 'Cargando tu progreso', 'Preparando tu e
 })
 export class ConectandoPage implements OnInit, OnDestroy {
   private auth = inject(AuthService);
+  private el = inject(ElementRef<HTMLElement>);
+  private base = new WeakMap<SVGGraphicsElement, { ojo: SVGGraphicsElement; ox: number; oy: number; radio: number }>();
+
+  /** Las pupilas (capa propia dentro de cada ojo blanco) siguen al mouse sin salirse del ojo. */
+  @HostListener('document:mousemove', ['$event'])
+  seguirMouse(e: MouseEvent) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('menos-movimiento')) return;
+    const root = this.el.nativeElement.querySelector('.sigue-mouse') as HTMLElement | null;
+    if (!root) return;
+    const ojos = Array.from(root.querySelectorAll('.pj-ojo:not(.pj-pupila)')) as SVGGraphicsElement[];
+    for (const p of Array.from(root.querySelectorAll('.pj-pupila')) as SVGGraphicsElement[]) {
+      // Posición de reposo de la pupila respecto a su ojo (se mide una sola vez, sin desplazamiento)
+      let base = this.base.get(p);
+      if (!base) {
+        p.style.transform = '';
+        const pr0 = p.getBoundingClientRect();
+        const c0 = { x: pr0.left + pr0.width / 2, y: pr0.top + pr0.height / 2 };
+        const ojo0 = ojos.map((o) => ({ o, r: o.getBoundingClientRect() })).sort((a, b) => Math.hypot(a.r.left + a.r.width / 2 - c0.x, a.r.top + a.r.height / 2 - c0.y) - Math.hypot(b.r.left + b.r.width / 2 - c0.x, b.r.top + b.r.height / 2 - c0.y))[0];
+        if (!ojo0 || !pr0.width) continue;
+        base = { ojo: ojo0.o, ox: c0.x - (ojo0.r.left + ojo0.r.width / 2), oy: c0.y - (ojo0.r.top + ojo0.r.height / 2), radio: Math.max(pr0.width, pr0.height) / 2 };
+        this.base.set(p, base);
+      }
+      const ojo = base.ojo.getBoundingClientRect();
+      const oc = { x: ojo.left + ojo.width / 2, y: ojo.top + ojo.height / 2 };
+      const pc = { x: oc.x + base.ox, y: oc.y + base.oy };
+      const max = Math.max(0, Math.min(ojo.width, ojo.height) / 2 - base.radio - 1);
+      const dx = e.clientX - oc.x, dy = e.clientY - oc.y, d = Math.hypot(dx, dy) || 1;
+      const k = Math.min(max, d / 6) / d;
+      // de píxeles de pantalla a unidades del SVG de la pupila
+      const m = p.getScreenCTM();
+      const esc = m ? Math.hypot(m.a, m.b) : 1;
+      const tx = (oc.x + dx * k - pc.x) / esc, ty = (oc.y + dy * k - pc.y) / esc;
+      p.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
+    }
+  }
   private router = inject(Router);
   k = signal(0);
   private timer: ReturnType<typeof setInterval> | null = null;

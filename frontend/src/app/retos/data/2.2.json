@@ -1,36 +1,113 @@
 {
-  "id": "m2-funciones", "code": "2.2", "title": "Perfiles y funciones", "template": "tarjetas", "max": 40,
-  "who": "nibi",
-  "prompt": "Cada área existe para algo. ¿Quién responde por esta función?",
-  "listen": "Cada área existe para algo. ¿Quién responde por esta función?",
-  "compact": true,
-  "endTitles": { "perfect": "¡Cada quien en su lugar!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "rounds": [
-    {
-      "zones": [
-        { "id": "junta", "label": "Junta directiva", "sub": "gobierna", "icon": "M12 3l9 6H3zM5 9v10M19 9v10M3 21h18" },
-        { "id": "gerente", "label": "Gerencia general", "sub": "lidera", "icon": "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM5 21a7 7 0 0 1 14 0" },
-        { "id": "comite", "label": "Comité de sostenibilidad", "sub": "asesora", "icon": "M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" },
-        { "id": "revisoria", "label": "Revisoría fiscal", "sub": "controla", "icon": "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5" },
-        { "id": "produccion", "label": "Producción", "sub": "planta", "icon": "M3 21V11l5-3v3l5-3v3l5-3v13zM3 21h18" },
-        { "id": "comercial", "label": "Comercial", "sub": "clientes", "icon": "M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" },
-        { "id": "admin", "label": "Administrativa y financiera", "sub": "dinero", "icon": "M4 7h16v13H4zM4 11h16" },
-        { "id": "talento", "label": "Talento humano", "sub": "personas", "icon": "M9 7a3 3 0 1 0 0 .01M3 20v-1a6 6 0 0 1 12 0v1" },
-        { "id": "abastecimiento", "label": "Abastecimiento sostenible", "sub": "familias", "icon": "M3 11l9-7 9 7M5 10v10h14V10" }
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m2-funciones",
+  "code": "2.2",
+  "title": "Funciones",
+  "max": 40,
+  "CONSIGNA": "Ya tienes el organigrama. Ahora asigna cada función al cargo o área que la realiza.",
+  "NODES": {
+    "as": "Asamblea de accionistas",
+    "rf": "Revisoría fiscal",
+    "jd": "Junta directiva",
+    "gg": "Gerencia general",
+    "cs": "Comité de sostenibilidad",
+    "pr": "Producción",
+    "co": "Comercial",
+    "af": "Administrativa y financiera",
+    "th": "Talento humano",
+    "ab": "Abastecimiento sostenible"
+  },
+  "ROWS": [
+    [
+      [
+        "as",
+        "rf"
       ],
-      "defaultHint": "¿Esta función es de gobierno, de control, de asesoría o de ejecución?",
-      "cards": [
-        { "id": "f1", "text": "Aprobar la estrategia y evaluar el desempeño de la gerencia", "answer": "junta", "points": 4, "explanation": "Gobernar y supervisar a la gerencia es de la junta." },
-        { "id": "f2", "text": "Coordinar la medición de la huella de carbono y preparar el informe de sostenibilidad", "answer": "comite", "points": 4, "explanation": "El comité coordina la sostenibilidad." },
-        { "id": "f3", "text": "Programar la tostión y vigilar el consumo de energía por lote", "answer": "produccion", "points": 4, "explanation": "Es operación de planta." },
-        { "id": "f4", "text": "Negociar precios y acompañar técnicamente a las familias productoras", "answer": "abastecimiento", "points": 4, "explanation": "La relación con las familias es de abastecimiento sostenible." },
-        { "id": "f5", "text": "Verificar el origen libre de deforestación de cada lote", "answer": "abastecimiento", "points": 4, "explanation": "La trazabilidad del grano empieza en abastecimiento." },
-        { "id": "f6", "text": "Atender a clientes y verificar que la publicidad tenga respaldo en datos", "answer": "comercial", "points": 4, "explanation": "Clientes y publicidad son de comercial." },
-        { "id": "f7", "text": "Elaborar el presupuesto, incluido el presupuesto verde", "answer": "admin", "points": 4, "explanation": "El presupuesto es de administrativa y financiera." },
-        { "id": "f8", "text": "Diseñar el plan de bienestar y de seguridad y salud en el trabajo", "answer": "talento", "points": 4, "explanation": "Bienestar y SST son de talento humano." },
-        { "id": "f9", "text": "Dictaminar sobre los estados financieros", "answer": "revisoria", "points": 4, "explanation": "Quien controla no depende de quien es controlado." },
-        { "id": "f10", "text": "Representar legalmente a la empresa y liderar el equipo directivo", "answer": "gerente", "points": 4, "explanation": "Es la función de la gerencia general." }
-      ]
-    }
+      "520px"
+    ],
+    [
+      [
+        "jd"
+      ],
+      "260px"
+    ],
+    [
+      [
+        "gg",
+        "cs"
+      ],
+      "520px"
+    ],
+    [
+      [
+        "pr",
+        "co",
+        "af",
+        "th",
+        "ab"
+      ],
+      "100%"
+    ]
+  ],
+  "F": [
+    [
+      "Aprobar la estrategia y evaluar el desempeño de la gerencia",
+      "jd"
+    ],
+    [
+      "Coordinar la medición de la huella de carbono y preparar el informe de sostenibilidad",
+      "cs"
+    ],
+    [
+      "Programar la tostión y vigilar el consumo de energía por lote",
+      "pr"
+    ],
+    [
+      "Negociar precios y acompañar técnicamente a las familias productoras",
+      "ab"
+    ],
+    [
+      "Verificar el origen libre de deforestación de cada lote",
+      "ab"
+    ],
+    [
+      "Atender a clientes y verificar que la publicidad tenga respaldo en datos",
+      "co"
+    ],
+    [
+      "Elaborar el presupuesto, incluido el presupuesto verde",
+      "af"
+    ],
+    [
+      "Diseñar el plan de bienestar y de seguridad y salud en el trabajo",
+      "th"
+    ],
+    [
+      "Dictaminar sobre los estados financieros",
+      "rf"
+    ],
+    [
+      "Representar legalmente a la empresa y liderar el equipo directivo",
+      "gg"
+    ]
+  ],
+  "ORDER": [
+    2,
+    8,
+    0,
+    5,
+    9,
+    3,
+    7,
+    1,
+    6,
+    4
+  ],
+  "GOV": [
+    "as",
+    "rf",
+    "jd",
+    "gg",
+    "cs"
   ]
 }

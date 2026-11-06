@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Hud } from '../../shared/hud';
+import { Feedback } from '../../shared/feedback';
 import { Personaje } from '../../shared/personaje';
 import DATA from '../data/1.2.json';
 import { DcReto } from './dc-reto';
@@ -12,8 +13,8 @@ const K = DATA.opciones as unknown as [string, string, string][];
 const TONE: Record<string, string[]> = { v: ['#EAF6E7', '#A9D8A4', '#2C5E31', '#4E9A4A', '#FFFFFF'], a: ['#FDECEC', '#F2B2B2', '#8A1F1F', '#D2504A', '#FFFFFF'], n: ['#FFF7DC', '#F0D88A', '#6B5200', '#F2C744', '#3A2A00'] };
 const C = DATA.ideas as unknown as [string, string, number, string][];
 const ODS = DATA.ods;
-/* Nombres y colores oficiales de los ODS (solo presentación) */
-const ODSN: Record<number, [string, string]> = { 5: ['Igualdad de género', '#FF3A21'], 7: ['Energía asequible y no contaminante', '#FCC30B'], 8: ['Trabajo decente y crecimiento económico', '#A21942'], 12: ['Producción y consumo responsables', '#BF8B2E'], 15: ['Vida de ecosistemas terrestres', '#56C02B'] };
+/* Nombres de los ODS. Los círculos/franjas de ODS son siempre neutros (gris), nunca de colores. */
+const ODSN: Record<number, [string, string]> = { 5: ['Igualdad de género', '#B5A9A6'], 7: ['Energía asequible y no contaminante', '#B5A9A6'], 8: ['Trabajo decente y crecimiento económico', '#B5A9A6'], 12: ['Producción y consumo responsables', '#B5A9A6'], 15: ['Vida de ecosistemas terrestres', '#B5A9A6'] };
 const FB = DATA.retro as Record<string, string>;
 const PA = DATA.puntos.parteA, PB = DATA.puntos.parteB, PC = DATA.puntos.parteC;
 const keyAct = (fn: () => void) => (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } };
@@ -22,7 +23,7 @@ const PROMPT = DATA.consignas as Record<string, string>;
 /** Reto 1.2 · Valores que dejan huella (Reto12.dc.html, rediseño): 3 partes, semáforo, frase bandera. */
 @Component({
   selector: 'app-reto-12',
-  imports: [Hud, Personaje],
+  imports: [Hud, Personaje, Feedback],
   template: `<div class="game-bg" style="min-height: 100vh">
   <app-hud [kicker]="'MÓDULO 1 · RETO 1.2'" [title]="titulo" [granos]="(v().score + ' / ' + v().maxScore)" [salida]="salida()">
     <div centro [attr.aria-label]="(v().progText)" style="display: flex; align-items: center; gap: 8px">@for (p of v().steps; track $index) {<span [style]="'width: 100px; height: 8px; border-radius: 999px; background: ' + (p)"></span>}<span class="px" style="margin-left: 8px; font-size: 10px; color: #FFD3C9">{{ v().progText }}</span></div>
@@ -83,10 +84,7 @@ const PROMPT = DATA.consignas as Record<string, string>;
 
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 14px; min-height: 52px">
           @if (v().aMsgShow) {
-            <div class="pop gpanel" aria-live="polite" [style]="'flex: 1 1 420px; height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: ' + (v().aMsgBg) + '; padding: 0 14px 0 6px; overflow: hidden'">
-              <app-personaje who="chispa" [size]="42" />
-              <strong [style]="'font-size: 15px; color: ' + (v().aMsgC)">{{ v().aMsg }}</strong>
-            </div>
+            <app-feedback class="pop" [ok]="v().aMsgC === '#2C5E31'" [titulo]="v().aMsg" />
           }
           <span style="flex: 1"></span>
           @if (v().aOpen) {<button type="button" class="gbtn" (click)="v().checkA?.($event)" style="min-height: 52px; padding: 0 24px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Revisar ({{ v().placed }}/8)</button>}
@@ -113,7 +111,7 @@ const PROMPT = DATA.consignas as Record<string, string>;
         </svg>
         <div role="group" aria-label="Objetivos de Desarrollo Sostenible" class="g5" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px">
           @for (o of v().odsTiles; track $index) {
-            <div role="button" tabindex="0" [attr.aria-label]="(o.aria)" [class]="'card ' + (o.cls)" (click)="o.pick?.($event)" (keydown)="o.key?.($event)" [style]="'position: relative; overflow: hidden; height: 120px; box-sizing: border-box; border-radius: 10px; border: 3px ' + (o.line) + ' #FF836C; background: #FFFFFF; cursor: pointer; display: flex; flex-direction: column'">
+            <div role="button" tabindex="0" [attr.aria-label]="(o.aria)" [class]="'card ' + (o.cls)" (click)="o.pick?.($event)" (keydown)="o.key?.($event)" [style]="'position: relative; overflow: hidden; height: 120px; box-sizing: border-box; border-radius: 10px; border: 5px ' + (o.line) + ' #FF836C; background: #FFFFFF; cursor: pointer; display: flex; flex-direction: column'">
               <span aria-hidden="true" [style]="'position: absolute; left: 50%; top: -1px; margin-left: -10px; width: 20px; height: 20px; border-radius: 999px; background: ' + (o.dot) + '; border: 3px solid #1A0609; z-index: 1'"></span>
               <div [style]="'height: 10px; background: ' + (o.c)"></div>
               <div style="flex: 1; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; gap: 4px">
@@ -125,10 +123,7 @@ const PROMPT = DATA.consignas as Record<string, string>;
         </div>
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin-top: 22px; min-height: 52px">
           @if (v().bMsgShow) {
-            <div class="pop gpanel" aria-live="polite" [style]="'flex: 1 1 420px; height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: ' + (v().bFbBg) + '; padding: 0 14px 0 6px; overflow: hidden'">
-              <app-personaje who="chispa" [size]="42" />
-              <strong [style]="'font-size: 15px; color: ' + (v().bFbC)">{{ v().bFb }}</strong>
-            </div>
+            <app-feedback class="pop" [ok]="v().bFbC === '#2C5E31'" [titulo]="v().bFb" />
           }
           <span style="flex: 1"></span>
           @if (v().bOpen) {<button type="button" class="gbtn" (click)="v().checkB?.($event)" style="min-height: 52px; padding: 0 24px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer">Revisar ({{ v().linked }}/5)</button>}
@@ -143,8 +138,8 @@ const PROMPT = DATA.consignas as Record<string, string>;
         <label class="gpanel" style="background: #FFFFFF; padding: 24px; display: flex; flex-direction: column; gap: 14px">
           <span class="px" style="font-size: 10px; color: #AC0B32">TU FRASE BANDERA</span>
           <span style="font-size: 15px; color: #5C4A4D">Elige el valor que mejor representa a la marca.</span>
-          <input type="text" maxlength="40" placeholder="Escribe tu frase…" [value]="(v().flag)" (input)="v().setFlag?.($event)" style="min-height: 64px; border-radius: 8px; border: 3px solid #231417; border-bottom-width: 6px; padding: 0 16px; font-size: 22px; font-weight: 800; background: #FFFFFF; color: #231417">
-          <span class="px" style="align-self: flex-end; font-size: 10px; color: #6E5458">{{ v().flagLen }}/40</span>
+          <input type="text" [attr.maxlength]="fraseMax" placeholder="Escribe tu frase…" [value]="(v().flag)" (input)="v().setFlag?.($event)" style="min-height: 64px; border-radius: 8px; border: 3px solid #231417; border-bottom-width: 6px; padding: 0 16px; font-size: 22px; font-weight: 800; background: #FFFFFF; color: #231417">
+          <span class="px" style="align-self: flex-end; font-size: 10px; color: #6E5458">{{ v().flagLen }}/{{ fraseMax }}</span>
           <span style="flex: 1"></span>
           <button type="button" class="gbtn glow" (click)="v().terminar()" style="align-self: flex-end; display: inline-flex; align-items: center; min-height: 52px; padding: 0 24px; background: #AC0B32; color: #FFFFFF; border: none; cursor: pointer"><span class="px" style="font-size: 11px">▶ TERMINAR</span></button>
         </label>
@@ -183,6 +178,8 @@ button,input{font-family:inherit}
 export class Reto12 extends DcReto {
   readonly ejercicioId = DATA.id;
   readonly titulo = DATA.title;
+  /** Frase bandera: máximo 26 caracteres (se escribe en la pancarta del mapa). */
+  readonly fraseMax = DATA.fraseMax;
   private router = inject(Router);
 
   constructor() {
@@ -233,7 +230,7 @@ export class Reto12 extends DcReto {
     const pn = ({ A: 0, B: 1, C: 2 } as Record<string, number>)[part];
     const nRevA = Object.keys(revA).length, nRevB = Object.keys(revB).length;
     return {
-      steps: ['A', 'B', 'C'].map((k, n) => (n === pn ? '#FF836C' : n < pn ? '#8A1428' : '#4A2A2F')),
+      steps: ['A', 'B', 'C'].map((k, n) => (n === pn ? '#FF836C' : n < pn ? '#FFD3C9' : '#4A2A2F')),
       progText: 'PASO ' + (pn + 1) + ' DE 3',
       listen: () => this.speak(PROMPT[part]),
       score, maxScore: DATA.max, scoreAria: score + ' granos de 50',
@@ -304,7 +301,7 @@ export class Reto12 extends DcReto {
         return {
           n, name: ODSN[n][0], c: ODSN[n][1], count: cnt ? '×' + cnt : '',
           aria: 'ODS ' + n + ', ' + ODSN[n][0] + (selV != null ? '. Toca para unir el valor seleccionado.' : ''),
-          cls: selV != null && !bDone ? 'zpulse' : '', line: selV != null && !bDone ? 'solid' : 'dashed',
+          cls: selV != null && !bDone ? 'zpulse' : '', line: 'solid',
           dot: cnt ? '#FF836C' : '#6E5458', pick: pick3, key: keyAct(pick3),
         };
       }),

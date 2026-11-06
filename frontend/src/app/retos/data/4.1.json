@@ -1,49 +1,114 @@
 {
-  "id": "m4-tablero-esg", "code": "4.1", "title": "Tablero ESG", "template": "partes", "max": 70,
-  "who": "chispa",
-  "endTitles": { "perfect": "¡Mirada ESG!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "parts": [
-    {
-      "key": "A", "type": "choice", "layout": "cards",
-      "prompt": "Un buen tablero mide lo que importa. ¿Cuáles son indicadores de sostenibilidad?",
-      "options": [ { "id": "si", "label": "Sí, es de sostenibilidad" }, { "id": "no", "label": "No lo es" } ],
-      "optionFeedback": { "si": "Ayuda a decidir sobre el impacto.", "no": "No mide impacto." },
-      "hint": "¿Ayuda a decidir sobre el impacto ambiental, social, económico o de gobierno?",
-      "items": [
-        { "id": "i1", "text": "Emisiones de alcance 1 y 2 (t CO₂e)", "answer": "si", "points": 2.5, "icon": "M3 21h18M6 21V10l6-4 6 4v11" },
-        { "id": "i2", "text": "Energía consumida por tonelada procesada", "answer": "si", "points": 2.5, "icon": "M13 2L4 14h7l-1 8 9-12h-7z" },
-        { "id": "i3", "text": "Porcentaje de residuos aprovechados", "answer": "si", "points": 2.5, "icon": "M4 7h16l-2 13H6z" },
-        { "id": "i4", "text": "Tasa de accidentalidad", "answer": "si", "points": 2.5, "icon": "M12 3l9 16H3zM12 10v4" },
-        { "id": "i5", "text": "Horas de capacitación por trabajador", "answer": "si", "points": 2.5, "icon": "M4 6h16v10H4zM8 20h8" },
-        { "id": "i6", "text": "Porcentaje de mujeres en cargos directivos", "answer": "si", "points": 2.5, "icon": "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 12v9M9 18h6" },
-        { "id": "i7", "text": "Porcentaje de compras a proveedores locales", "answer": "si", "points": 2.5, "icon": "M3 11l9-7 9 7M5 10v10h14V10" },
-        { "id": "i8", "text": "Margen operativo", "answer": "si", "points": 2.5, "icon": "M4 17l6-6 4 4 6-8" },
-        { "id": "i9", "text": "Porcentaje de miembros independientes en la junta", "answer": "si", "points": 2.5, "icon": "M12 3l9 6H3zM5 9v10M19 9v10" },
-        { "id": "i10", "text": "Casos de corrupción confirmados y medidas tomadas", "answer": "si", "points": 2.5, "icon": "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5" },
-        { "id": "i11", "text": "Número de «me gusta» en redes sociales", "answer": "no", "points": 2.5, "icon": "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" },
-        { "id": "i12", "text": "Cantidad de impresoras en la oficina", "answer": "no", "points": 2.5, "icon": "M6 9V3h12v6M6 17h12v4H6z" }
-      ]
-    },
-    {
-      "key": "B", "type": "choice", "layout": "rows",
-      "prompt": "Ubica en el tablero los que elegiste: ¿qué dimensión mide cada uno?",
-      "fromPart": { "part": "A", "answer": "si" },
-      "options": [ { "id": "economica", "label": "Económica" }, { "id": "social", "label": "Social" }, { "id": "ambiental", "label": "Ambiental" }, { "id": "gobernanza", "label": "Gobernanza" } ],
-      "hint": "¿Qué dimensión mide principalmente?",
-      "items": [
-        { "id": "i1", "text": "Emisiones de alcance 1 y 2 (t CO₂e)", "answer": "ambiental", "points": 4, "explanation": "GRI 305" },
-        { "id": "i2", "text": "Energía consumida por tonelada procesada", "answer": "ambiental", "points": 4, "explanation": "GRI 302" },
-        { "id": "i3", "text": "Porcentaje de residuos aprovechados", "answer": "ambiental", "points": 4, "explanation": "GRI 306" },
-        { "id": "i4", "text": "Tasa de accidentalidad", "answer": "social", "points": 4, "explanation": "GRI 403" },
-        { "id": "i5", "text": "Horas de capacitación por trabajador", "answer": "social", "points": 4, "explanation": "GRI 404" },
-        { "id": "i6", "text": "Porcentaje de mujeres en cargos directivos", "answer": "social", "points": 4, "explanation": "GRI 405" },
-        { "id": "i7", "text": "Porcentaje de compras a proveedores locales", "answer": "economica", "points": 4, "explanation": "GRI 204" },
-        { "id": "i8", "text": "Margen operativo", "answer": "economica", "points": 4, "explanation": "Estados financieros" },
-        { "id": "i9", "text": "Porcentaje de miembros independientes en la junta", "answer": "gobernanza", "points": 4, "explanation": "GRI 2" },
-        { "id": "i10", "text": "Casos de corrupción confirmados y medidas tomadas", "answer": "gobernanza", "points": 4, "explanation": "GRI 205" },
-        { "id": "i11", "text": "Número de «me gusta» en redes sociales", "answer": null, "points": 0, "explanation": "No es de sostenibilidad." },
-        { "id": "i12", "text": "Cantidad de impresoras en la oficina", "answer": null, "points": 0, "explanation": "No es de sostenibilidad." }
-      ]
-    }
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m4-tablero-esg",
+  "code": "4.1",
+  "title": "Tablero ESG",
+  "max": 70,
+  "CONSIGNA": "Marca los indicadores que son de sostenibilidad y luego ubícalos en el tablero según su dimensión.",
+  "I": [
+    [
+      "Emisiones de alcance 1 y 2 (t CO₂e)",
+      "amb",
+      "GRI 305"
+    ],
+    [
+      "Energía consumida por tonelada procesada",
+      "amb",
+      "GRI 302"
+    ],
+    [
+      "Porcentaje de residuos aprovechados",
+      "amb",
+      "GRI 306"
+    ],
+    [
+      "Tasa de accidentalidad",
+      "soc",
+      "GRI 403"
+    ],
+    [
+      "Horas de capacitación por trabajador",
+      "soc",
+      "GRI 404"
+    ],
+    [
+      "Porcentaje de mujeres en cargos directivos",
+      "soc",
+      "GRI 405"
+    ],
+    [
+      "Porcentaje de compras a proveedores locales",
+      "eco",
+      "GRI 204"
+    ],
+    [
+      "Margen operativo",
+      "eco",
+      "Estados financieros"
+    ],
+    [
+      "Porcentaje de miembros independientes en la junta",
+      "gob",
+      "GRI 2"
+    ],
+    [
+      "Casos de corrupción confirmados y medidas tomadas",
+      "gob",
+      "GRI 205"
+    ],
+    [
+      "Número de «me gusta» en redes sociales",
+      null,
+      ""
+    ],
+    [
+      "Cantidad de impresoras en la oficina",
+      null,
+      ""
+    ]
+  ],
+  "ORD": [
+    3,
+    10,
+    0,
+    7,
+    9,
+    5,
+    11,
+    1,
+    6,
+    4,
+    8,
+    2
+  ],
+  "COLS": {
+    "eco": [
+      "Económica",
+      "M4 17l6-6 4 4 6-8M14 7h6v6"
+    ],
+    "soc": [
+      "Social",
+      "M9 7a3 3 0 1 0 0 .1M3 20v-1a6 6 0 0 1 12 0v1M17 11a2.5 2.5 0 1 0 0-.1M15 20v-1a4 4 0 0 1 6-3.5"
+    ],
+    "amb": [
+      "Ambiental",
+      "M12 21v-8M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 13c4 0 6-3 6-7-4 0-6 3-6 7z"
+    ],
+    "gob": [
+      "Gobernanza",
+      "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"
+    ]
+  },
+  "SUS": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
   ]
 }

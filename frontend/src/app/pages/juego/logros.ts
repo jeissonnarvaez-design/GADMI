@@ -20,7 +20,7 @@ const UI: Record<string, [string, string]> = {
   'arquitectura-verde': ['Módulo 2 con el 80 % o más de sus granos.', 'M3 21V11l5-3v3l5-3v3l5-3v13zM3 21h18'],
   'liderazgo-proposito': ['Módulo 3 con el 80 % o más de sus granos.', STAR],
   'mirada-esg': ['Módulo 4 con el 80 % o más de sus granos.', 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z'],
-  'detector-greenwashing': ['Descubre los 4 casos de Brillo.', 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5'],
+  'detector-greenwashing': ['Detecta los casos de greenwashing.', 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5'],
   'presupuesto-equilibrio': ['Cumple el tope en 2.3 y las metas en 2.5.', 'M12 3v18M5 7h14M5 7l-3 7h6zM19 7l-3 7h6z'],
   'a-la-primera': ['80 % de un módulo sin segundos intentos.', 'M13 2L4 14h7l-1 8 9-12h-7z'],
   'mejora-continua': ['Sube 20 granos al reintentar un reto.', 'M4 17l6-6 4 4 6-8M14 7h6v6'],

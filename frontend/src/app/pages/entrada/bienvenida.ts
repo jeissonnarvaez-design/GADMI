@@ -62,12 +62,12 @@ const HI: [string, string, string, string, string][] = [
           </a>
         </section>
 
-        <div class="rise r4 side" style="position: absolute; left: 3%; top: 210px; z-index: 1">
-          <button type="button" class="pj" (click)="greet(0)" aria-label="Teo: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="teo" [size]="220" /></button>
+        <div class="rise r4 side" style="position: absolute; left: 3%; top: 186px; z-index: 1">
+          <button type="button" class="pj" (click)="greet(0)" (mouseenter)="mirar(0)" (mouseleave)="soltar()" (focus)="mirar(0)" (blur)="soltar()" aria-label="Teo: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="teo" [size]="250" /></button>
         </div>
-        <div class="rise r4 side" style="position: absolute; right: 3%; top: 270px; z-index: 1; display: flex; align-items: flex-end; gap: 10px">
-          <button type="button" class="pj" (click)="greet(1)" aria-label="Chispa: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="chispa" [size]="130" /></button>
-          <button type="button" class="pj" (click)="greet(2)" aria-label="Nibi: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="nibi" [size]="140" /></button>
+        <div class="rise r4 side" style="position: absolute; right: 3%; top: 250px; z-index: 1; display: flex; align-items: flex-end; gap: 10px">
+          <button type="button" class="pj" (click)="greet(1)" (mouseenter)="mirar(1)" (mouseleave)="soltar()" (focus)="mirar(1)" (blur)="soltar()" aria-label="Chispa: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="chispa" [size]="152" /></button>
+          <button type="button" class="pj" (click)="greet(2)" (mouseenter)="mirar(2)" (mouseleave)="soltar()" (focus)="mirar(2)" (blur)="soltar()" aria-label="Nibi: saludo" style="background: none; border: none; padding: 0; cursor: pointer"><app-personaje who="nibi" [size]="164" /></button>
         </div>
 
         <div aria-live="polite" class="bubble" [style.top]="hi()[2]" [style.left]="hi()[3]" [style.right]="hi()[4]" style="position: absolute; z-index: 3; width: 260px; box-sizing: border-box; background: #FFFFFF; color: #231417; border-radius: 20px; padding: 12px 16px; box-shadow: 0 14px 34px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 3px">
@@ -107,7 +107,7 @@ export class BienvenidaPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.timer = setInterval(() => {
-      if (!this.auto()) return;
+      if (!this.auto() || this.encima) return;
       const next = (this.who() + 1) % 3;
       this.who.set(next);
       if (next === 2) this.nibiFx();
@@ -121,6 +121,19 @@ export class BienvenidaPage implements OnInit, OnDestroy {
     if (this.fxT) clearTimeout(this.fxT);
     this.fx.set(true);
     this.fxT = setTimeout(() => this.fx.set(false), 4000);
+  }
+  /** Al pasar el mouse (o el foco) por un personaje se muestra su texto; la rotación se pausa. */
+  private encima = false;
+  mirar(i: number) {
+    this.encima = true;
+    if (this.who() !== i) {
+      this.who.set(i);
+      if (i === 2) this.nibiFx();
+    }
+  }
+  /** Al salir, sigue la rotación automática (si no se eligió uno con clic). */
+  soltar() {
+    this.encima = false;
   }
   greet(i: number) {
     this.who.set(i);

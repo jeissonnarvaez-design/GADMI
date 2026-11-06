@@ -6,7 +6,8 @@
 //     ├─ intentos/{ejercicio}_{n}      respuestas, retroalimentacion, puntaje, puntajeMax, nota, fecha
 //     ├─ decisiones/{ejercicio}        última opción elegida (hilo conductor)
 //     ├─ bitacoras/{modulo}            respuestas, calificacion, comentario, revisadaEn
-//     └─ insignias/{insignia}          fecha
+//     ├─ insignias/{insignia}          fecha
+//     └─ consentimientos/{auto}        aviso de privacidad aceptado: fecha, versión (Ley 1581 de 2012)
 //   certificados/{codigo}              codigo, estudianteId, periodo, grupo, fechaEmision, puntaje, nivel, estado ('valido' | 'anulado')
 //   mensajes/{id}                      mensajes de la junta para el «!» de la Ruta: anio, titulo, texto, orden, activo
 //   contadores/{docentes|estudiantes}  siguiente id numérico (las URL del panel usan números)
@@ -113,11 +114,18 @@ export async function updateStudentName(id, nombre) {
 }
 
 /** Privacidad, preferencias y carta de la junta (las fechas solo se guardan la primera vez). */
-export async function updateOnboarding(id, { aceptaPrivacidad, preferencias, cartaFirmada, tourVisto }) {
+export async function updateOnboarding(id, { aceptaPrivacidad, avisoVersion, preferencias, cartaFirmada, tourVisto }) {
   const s = await getStudent(id);
   if (!s) throw new HttpError(404, 'Estudiante no encontrado.');
   const patch = {};
   if (aceptaPrivacidad && !s.aceptaPrivacidadEn) patch.aceptaPrivacidadEn = new Date(aceptaPrivacidad).toISOString();
+  // Registro del consentimiento (Ley 1581 de 2012): fecha y versión del aviso aceptado, con historial.
+  if (aceptaPrivacidad && avisoVersion) {
+    const fecha = new Date(aceptaPrivacidad).toISOString();
+    const version = String(avisoVersion).slice(0, 20);
+    patch.privacidad = { fecha, version, registradoEn: now() };
+    await est(id).collection('consentimientos').add({ tipo: 'aviso-privacidad', fecha, version, registradoEn: now() });
+  }
   if (preferencias) patch.preferencias = preferencias;
   if (cartaFirmada && !s.cartaFirmadaEn) patch.cartaFirmadaEn = new Date(cartaFirmada).toISOString();
   if (tourVisto && !s.tourVistoEn) patch.tourVistoEn = new Date(tourVisto).toISOString();

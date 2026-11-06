@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Hud } from '../../shared/hud';
+import { Feedback } from '../../shared/feedback';
 import { Personaje } from '../../shared/personaje';
 import DATA from '../data/1.3.json';
 import { DcReto } from './dc-reto';
@@ -24,7 +25,7 @@ const stop = (e: any) => { if (e && e.stopPropagation) e.stopPropagation(); };
 /** Reto 1.3 · Análisis FODA (Reto13.dc.html, rediseño): matriz con arrastre o toque, 2 intentos, decisión FO. */
 @Component({
   selector: 'app-reto-13',
-  imports: [Hud, Personaje],
+  imports: [Hud, Personaje, Feedback],
   template: `<div class="game-bg" style="min-height: 100vh">
   <app-hud [kicker]="'MÓDULO 1 · RETO 1.3'" [title]="titulo" [granos]="(v().score + ' / ' + v().maxScore)" [salida]="salida()">
     <div centro [attr.aria-label]="(v().progText)" style="display: flex; align-items: center; gap: 8px">@for (p of v().steps; track $index) {<span [style]="'width: 120px; height: 8px; border-radius: 999px; background: ' + (p)"></span>}<span class="px" style="margin-left: 8px; font-size: 10px; color: #FFD3C9">{{ v().progText }}</span></div>
@@ -41,7 +42,7 @@ const stop = (e: any) => { if (e && e.stopPropagation) e.stopPropagation(); };
     @if (v().pA) {
       <div style="display: flex; flex-direction: column; gap: 16px">
         <div class="g2" style="display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 20px; align-items: start">
-          <section aria-label="Factores por ubicar" (click)="v().trayClick?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="v().dropTray?.($event)" style="height: 575px; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 2px dashed rgba(255,131,108,0.4); display: flex; flex-direction: column; gap: 10px">
+          <section aria-label="Factores por ubicar" (click)="v().trayClick?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="v().dropTray?.($event)" style="height: 575px; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 5px solid #FF836C; display: flex; flex-direction: column; gap: 10px">
             <span class="px" style="font-size: 10px; color: #FF836C">{{ v().trayLabel }}</span>
             <div class="trayscroll" style="height: 520px; overflow-y: auto; scroll-snap-type: y mandatory; display: grid; grid-auto-rows: 96px; gap: 10px; padding-right: 6px">
             @for (c of v().tray; track $index) {
@@ -60,7 +61,7 @@ const stop = (e: any) => { if (e && e.stopPropagation) e.stopPropagation(); };
             @for (row of v().rows; track $index) {
               <span class="px" style="writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: 10px; color: #FFD3C9">{{ row.label }}</span>
               @for (z of row.q; track $index) {
-                <div role="button" tabindex="0" [attr.aria-label]="(z.aria)" [class]="(z.cls)" (click)="z.drop?.($event)" (keydown)="z.key?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="z.dropEv?.($event)" [style]="'height: 270px; overflow-y: auto; box-sizing: border-box; border-radius: 8px; border: 3px ' + (z.line) + ' #FF836C; background: ' + (z.bg) + '; color: #FBF5EC; padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; border-style: solid; border-width: 5px'">
+                <div role="button" tabindex="0" [attr.aria-label]="(z.aria)" [class]="(z.cls)" (click)="z.drop?.($event)" (keydown)="z.key?.($event)" (dragover)="v().allowDrop?.($event)" (drop)="z.dropEv?.($event)" [style]="'height: 270px; overflow-y: auto; box-sizing: border-box; border-radius: 8px; border: 5px ' + (z.line) + ' #FF836C; background: ' + (z.bg) + '; color: #FBF5EC; padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; border-style: solid; border-width: 5px'">
                   <div style="display: flex; align-items: center; gap: 10px">
                     <span style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 6px; background: #FF836C; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A0609" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="(z.icon)"></path></svg></span>
                     <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><strong style="font-size: 17px">{{ z.name }}</strong><span style="font-size: 12px; color: #C9B8A6">{{ z.desc }}</span></div>
@@ -80,10 +81,7 @@ const stop = (e: any) => { if (e && e.stopPropagation) e.stopPropagation(); };
 
         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-height: 52px">
           @if (v().fbShow) {
-            <div class="pop gpanel" aria-live="polite" [style]="'flex: 1 1 420px; height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: ' + (v().fbBg) + '; padding: 0 14px 0 6px; overflow: hidden'">
-              <app-personaje who="chispa" [size]="42" />
-              <div style="min-width: 0; font-size: 14px; line-height: 1.25"><strong [style]="'font-size: 15px; color: ' + (v().fbColor)">{{ v().fbTitle }}</strong> <span>{{ v().fbText }}</span></div>
-            </div>
+            <app-feedback class="pop" [ok]="v().fbColor === '#2C5E31'" [titulo]="v().fbTitle" [texto]="v().fbText" />
           }
           <span style="flex: 1"></span>
           @if (v().canClear) {<button type="button" (click)="v().clearAll?.($event)" aria-label="Limpiar: devuelve las tarjetas sin comprobar" style="height: 44px; padding: 0 16px; border: 2px solid rgba(255,131,108,0.55); border-radius: 6px; background: transparent; color: #FFD3C9; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD3C9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"></path></svg>Limpiar</button>}
@@ -142,10 +140,7 @@ const stop = (e: any) => { if (e && e.stopPropagation) e.stopPropagation(); };
 
         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-height: 52px">
           @if (v().fbBShow) {
-            <div class="pop gpanel" aria-live="polite" [style]="'flex: 1 1 420px; height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: ' + (v().fbBBg) + '; padding: 0 14px 0 6px; overflow: hidden'">
-              <app-personaje who="chispa" [size]="42" />
-              <strong [style]="'font-size: 15px; color: ' + (v().fbBC)">{{ v().fbB }}</strong>
-            </div>
+            <app-feedback class="pop" [ok]="v().fbBC === '#2C5E31'" [titulo]="v().fbB" />
           }
           <span style="flex: 1"></span>
           @if (v().canConfirm) {<button type="button" class="gbtn" (click)="v().confirm?.($event)" [attr.aria-disabled]="(v().confDis)" [style]="'min-height: 52px; padding: 0 24px; border: none; background: ' + (v().confBg) + '; color: ' + (v().confFg) + '; font-weight: 800; font-size: 16px; cursor: ' + (v().confCur)">Confirmar decisión</button>}
@@ -249,7 +244,7 @@ export class Reto13 extends DcReto {
       return {
         name, desc, c, icon, count: items.length ? String(items.length) : '',
         aria: 'Cuadrante ' + name + ', ' + items.length + ' tarjetas.' + (on ? ' Toca para ubicar aquí la tarjeta seleccionada.' : ''),
-        cls: on ? 'zpulse' : '', line: on ? 'solid' : 'dashed', bg: on ? '#3A1019' : '#2A0B12',
+        cls: on ? 'zpulse' : '', line: 'solid', bg: on ? '#3A1019' : '#2A0B12',
         drop, key: keyAct(drop),
         dropEv: (e: any) => { allowDrop(e); const i = this.dragI != null ? this.dragI : sel; this.dragI = null; this.placeCard(i, k); },
         items: items.map(({ t, i }) => {
@@ -268,7 +263,7 @@ export class Reto13 extends DcReto {
     };
     return {
       score, maxScore: DATA.max, scoreAria: score + ' granos de 80', siguiente: () => this.siguiente(), pA, pB,
-      steps: [pA ? '#FF836C' : '#8A1428', pB ? '#FF836C' : '#4A2A2F'], progText: pA ? 'PASO 1 DE 2' : 'PASO 2 DE 2',
+      steps: [pA ? '#FF836C' : '#FFD3C9', pB ? '#FF836C' : '#4A2A2F'], progText: pA ? 'PASO 1 DE 2' : 'PASO 2 DE 2',
       sitLabel: pA ? 'SITUACIÓN · INFORME DEL ENTORNO' : 'SITUACIÓN · LA JUNTA PIDE UNA ESTRATEGIA',
       sitText: pA ? CONSIGNA : DATA.consignaB,
       listen: () => this.speak(pA ? CONSIGNA : DATA.consignaB),

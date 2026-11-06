@@ -1,0 +1,24 @@
+Videos de GADMI (carpeta frontend/public/assets/video/)
+
+VIDEO DE BIENVENIDA (pantalla /video)
+- Archivo: IMG_7890.MOV (o bienvenida.mp4, que se usa primero si existe).
+- Subtítulos y transcripción: bienvenida.vtt
+
+VIDEO DEL MÓDULO 1 (intro del módulo, «modo cine»)
+- Archivo: YouCut_20261106_001829818.mp4 (o modulo-1.mp4).
+- Subtítulos y transcripción: modulo-1.vtt
+
+MÓDULOS 2, 3 y 4: modulo-2.mp4 / modulo-2.vtt, etc.
+
+CÓMO GENERAR LOS SUBTÍTULOS (.vtt) CON GEMINI
+Desde la carpeta backend/ (usa GEMINI_API_KEY de backend/.env):
+  npm run subtitulos -- ../frontend/public/assets/video/IMG_7890.MOV ../frontend/public/assets/video/bienvenida.vtt
+  npm run subtitulos -- ../frontend/public/assets/video/YouCut_20261106_001829818.mp4 ../frontend/public/assets/video/modulo-1.vtt
+Revisa el .vtt generado (es un borrador): corrige palabras y tiempos si hace falta.
+Formato de cada subtítulo:
+    00:00:00.000 --> 00:00:04.500
+    Teo: Texto que se dice.
+El botón «Transcripción» se arma solo con el mismo .vtt.
+
+Si un .MOV no se ve en Chrome/Firefox (formato HEVC del iPhone), conviértelo a MP4 (H.264 + AAC):
+  ffmpeg -i IMG_7890.MOV -c:v libx264 -pix_fmt yuv420p -c:a aac -movflags +faststart bienvenida.mp4

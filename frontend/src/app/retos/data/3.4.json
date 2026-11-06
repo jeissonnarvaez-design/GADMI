@@ -1,0 +1,118 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m3-tablero-clima",
+  "code": "3.4",
+  "title": "Tablero de clima",
+  "max": 50,
+  "CONSIGNA": "Arma el tablero de clima: elige cuatro indicadores, define cuándo están en verde y lee lo que muestran.",
+  "CAT": [
+    [
+      "clima",
+      "Índice de clima organizacional (encuesta)",
+      true,
+      75,
+      "min",
+      "%",
+      40,
+      100,
+      1
+    ],
+    [
+      "rot",
+      "Rotación del personal",
+      true,
+      15,
+      "max",
+      "% anual",
+      0,
+      40,
+      1
+    ],
+    [
+      "aus",
+      "Ausentismo",
+      true,
+      3,
+      "max",
+      "% de días",
+      0,
+      10,
+      0.5
+    ],
+    [
+      "prod",
+      "Productividad (kg procesados por hora-hombre)",
+      true,
+      100,
+      "min",
+      "% de la meta",
+      50,
+      150,
+      5
+    ],
+    [
+      "cap",
+      "Horas de capacitación por trabajador al año",
+      true,
+      20,
+      "min",
+      "h",
+      0,
+      60,
+      1
+    ],
+    [
+      "enps",
+      "Satisfacción del personal (eNPS)",
+      true,
+      20,
+      "min",
+      "",
+      -40,
+      60,
+      1
+    ],
+    [
+      "mail",
+      "Número de correos enviados por la gerencia",
+      false
+    ],
+    [
+      "m2",
+      "Metros cuadrados de oficina",
+      false
+    ]
+  ],
+  "ORDER": [
+    0,
+    6,
+    3,
+    1,
+    7,
+    4,
+    2,
+    5
+  ],
+  "NOW": {
+    "clima": 70,
+    "rot": 22,
+    "aus": 4,
+    "prod": 95,
+    "cap": 12,
+    "enps": 10
+  },
+  "READ": [
+    [
+      "El clima mejora, pero la rotación sigue alta: hay que actuar sobre las causas de salida.",
+      true
+    ],
+    [
+      "Todo está en verde: no hay nada que hacer.",
+      false
+    ],
+    [
+      "Solo importa la productividad; el clima no afecta la operación.",
+      false
+    ]
+  ]
+}

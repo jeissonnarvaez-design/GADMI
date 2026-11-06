@@ -26,7 +26,7 @@ import { Accesibilidad } from './accesibilidad';
       <ng-content select="[centro]" />
       <div style="display: flex; align-items: center; gap: 10px">
         @if (granos(); as g) {
-          <span class="px" [attr.aria-label]="g + ' granos'" style="height: 44px; box-sizing: border-box; margin-right: 10px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border: 2px solid #FFD3C9; border-radius: 6px; font-size: 10px; background-color: #FFD3C9"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="7" ry="9" fill="#9A5B2E" transform="rotate(-20 12 12)"></ellipse><path d="M13 4c-2 5-2 11-3 16" stroke="#FF836C" stroke-width="1.5" fill="none"></path></svg><span style="color: #231417">{{ g }}</span></span>
+          <span class="px" [attr.aria-label]="granosAria(g)" style="height: 44px; box-sizing: border-box; margin-right: 10px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border: 2px solid #FFD3C9; border-radius: 6px; font-size: 16px; background-color: #FFD3C9"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="7" ry="9" fill="#9A5B2E" transform="rotate(-20 12 12)"></ellipse><path d="M13 4c-2 5-2 11-3 16" stroke="#FF836C" stroke-width="1.5" fill="none"></path></svg><span style="color: #231417; font-size: 16px; line-height: 1">{{ g }}</span></span>
         }
         <ng-content />
         <app-accesibilidad tone="dark" />
@@ -79,5 +79,10 @@ export class Hud {
   salir() {
     this.preguntar.set(false);
     this.router.navigateByUrl(this.mapa());
+  }
+  /** «17 / 70» → «17 de 70 granos» para lectores de pantalla. */
+  granosAria(g: string) {
+    const m = String(g).match(/^\s*(\d+)\s*\/\s*(\d+)\s*$/);
+    return m ? `${m[1]} de ${m[2]} granos` : g + ' granos';
   }
 }

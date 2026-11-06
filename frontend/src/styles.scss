@@ -431,11 +431,11 @@ details.why > div {
 /* ===================================================================
  * Estilo videojuego (rediseño GADMI aprobado): globales obligatorios
  * =================================================================== */
-/* Rótulos tipo videojuego: Pixelify Sans (sí tiene mayúsculas con tilde). */
+/* Rótulos tipo videojuego: Baloo 2 (Google Fonts, 500–800) en todo el aplicativo. */
 .px {
-  font-family: 'Pixelify Sans', monospace;
-  font-size-adjust: 0.62;
-  font-weight: 600;
+  font-family: 'Baloo 2', sans-serif;
+  font-size-adjust: 0.56;
+  font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1.5;
 }
@@ -523,6 +523,9 @@ html.alto-contraste .small {
 /* Teo (con traje y sin traje): el guía tranquilo. Flota, parpadea, mira a los lados y saluda con la mano. */
 .pj-teo .pj-cuerpo, .pj-teo-casual .pj-cuerpo { animation: pj-flotar 3s ease-in-out infinite; }
 .pj-teo .pj-ojo, .pj-teo-casual .pj-ojo { animation: pj-parpadeo 4.2s infinite; }
+/* Conectando: sin parpadeo; las pupilas siguen al mouse (ver conectando.ts). */
+.sigue-mouse .pj-ojo, .sigue-mouse .pj-pupila { animation: none !important; }
+.sigue-mouse .pj-pupila { transition: transform .12s ease-out; }
 .pj-teo .pj-pupila, .pj-teo-casual .pj-pupila { animation: pj-mirar 4.2s infinite; }
 .pj-teo .pj-ceja, .pj-teo-casual .pj-ceja { animation: pj-cejas-arriba 6s ease-in-out infinite; }
 .pj-teo .pj-brazo-der, .pj-teo-casual .pj-brazo-der { animation: pj-saludar 5s ease-in-out infinite; }
@@ -537,12 +540,6 @@ html.alto-contraste .small {
 .pj-nibi .pj-brazo-izq { animation: pj-brazo-suave 4s ease-in-out infinite; }
 .pj-nibi .pj-brazo-der { animation: pj-brazo-suave-der 4s ease-in-out infinite; }
 
-/* Brillo (greenwashing): las púas giran, late, mira de reojo y arquea las cejas. */
-.pj-brillo .pj-cuerpo { animation: pj-latir 1.8s ease-in-out infinite; }
-.pj-brillo .pj-puas { animation: pj-girar 14s linear infinite; }
-.pj-brillo .pj-ojo { animation: pj-parpadeo 3.6s infinite; }
-.pj-brillo .pj-pupila { animation: pj-mirar-rapido 1.4s ease-in-out infinite; }
-.pj-brillo .pj-ceja { animation: pj-cejas-malas 1.4s ease-in-out infinite; }
 
 /* Chispa: un bombillo con ideas. Rebota y su luz titila. */
 .pj-chispa .pj-cuerpo { animation: pj-rebote 1.3s ease-in-out infinite; transform-origin: 50% 100%; }

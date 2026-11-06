@@ -1,4 +1,4 @@
-import { Component, ElementRef, Injector, afterNextRender, computed, inject, input, signal, viewChild } from '@angular/core';
+import { effect, Component, ElementRef, Injector, afterNextRender, computed, inject, input, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getModule } from '../../core/data/modules';
 import { PreferencesService } from '../../core/services/preferences.service';
@@ -12,11 +12,21 @@ const TRANSCRIPCION: Record<number, string> = {
   1: 'Teo: Gerente, la junta quiere saber hacia dónde vamos. En este módulo vas a definir la misión y la visión, elegir valores reales, leer el entorno con un FODA y ponerle metas medibles a cada objetivo. ¡Empecemos!',
 };
 const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
+/**
+ * Video de cada módulo en public/assets/video/ (se prueba en orden; el primero que exista se usa).
+ * Subtítulos: modulo-N.vtt (de ahí sale también la transcripción).
+ */
+const VIDEOS: Record<number, string[]> = {
+  1: ['YouCut_20261106_001829818.mp4', 'modulo-1.mp4'],
+  2: ['modulo-2.mp4'],
+  3: ['modulo-3.mp4'],
+  4: ['modulo-4.mp4'],
+};
 
 /**
  * Intro de módulo (IntroModulo.dc.html, rediseño): encargo, retos del año y video en «modo cine».
- * Video: public/assets/video/modulo-N.mp4 con subtítulos modulo-N.vtt (aún no están listos:
- * el reproductor ya los recibe). «COMENZAR» aparece después de ver el video.
+ * Video: ver VIDEOS (módulo 1: YouCut_20261106_001829818.mp4) con subtítulos modulo-N.vtt; la
+ * transcripción se arma con el mismo .vtt. «COMENZAR» aparece después de ver el video.
  */
 @Component({
   selector: 'app-intro-modulo',
@@ -59,7 +69,13 @@ const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
               <button type="button" (click)="toggleCc()" [attr.aria-pressed]="cc() ? 'true' : 'false'" aria-label="Subtítulos" [style.background]="cc() ? '#FF836C' : 'transparent'" [style.color]="cc() ? '#1A0609' : '#FBF5EC'" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 2px solid #FF836C; font-weight: 800; font-size: 13px; cursor: pointer">CC</button>
               <button type="button" (click)="tr.set(!tr())" [attr.aria-expanded]="tr() ? 'true' : 'false'" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 2px solid #FF836C; background: transparent; color: #FBF5EC; font-weight: 800; font-size: 13px; cursor: pointer">Transcripción</button>
             </div>
-            @if (tr() && !playing()) { <p class="up" style="margin: 0; padding: 12px 14px; border-radius: 6px; background: #2A0B12; color: #E9DCCF; font-size: 14px; line-height: 1.5">{{ transcript() }}</p> }
+            @if (tr() && !playing()) {
+              <section class="up" aria-label="Transcripción del video" style="margin: 0; padding: 12px 14px; border-radius: 6px; background: #2A0B12; color: #E9DCCF; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px">
+                @if (lineasVtt().length) {
+                  @for (l of lineasVtt(); track $index) { <span>@if (l[0]) {<strong style="color: #FBF5EC">{{ l[0] }}:&nbsp;</strong>}{{ l[1] }}</span> }
+                } @else { <span>{{ transcript() }}</span> }
+              </section>
+            }
           </section>
         </main>
       </div>
@@ -68,10 +84,13 @@ const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
       @if (playing()) {
         <div role="dialog" aria-modal="true" [attr.aria-label]="'Video del módulo ' + m.id" class="cine" (keydown.escape)="close()">
           <div style="position: relative; width: min(92vw, 150vh); aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #7A3242, #2A0B12 75%); box-shadow: 0 30px 80px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center">
-            <video #vid [hidden]="!hasVideo()" [src]="'/assets/video/modulo-' + m.id + '.mp4'" playsinline autoplay
-              (loadedmetadata)="onReady()" (error)="hasVideo.set(false)" (ended)="markSeen()" (timeupdate)="onTime()"
+            <video #vid [hidden]="!hasVideo()" playsinline autoplay preload="auto"
+              (loadedmetadata)="onReady()" (ended)="markSeen()" (timeupdate)="onTime()"
               style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #1A0609">
-              <track kind="captions" [src]="'/assets/video/modulo-' + m.id + '.vtt'" srclang="es" label="Español" default>
+              @for (f of fuentes(); track f; let last = $last) {
+                <source [src]="'/assets/video/' + f" (error)="last && hasVideo.set(false)">
+              }
+              <track kind="captions" [src]="'/assets/video/modulo-' + m.id + '.vtt'" srclang="es" label="Español" default (load)="leerVtt()">
             </video>
             @if (!hasVideo()) {
               <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 20px">
@@ -87,7 +106,13 @@ const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
             <button type="button" (click)="tr.set(!tr())" [attr.aria-expanded]="tr() ? 'true' : 'false'" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 2px solid #FF836C; background: transparent; color: #FBF5EC; font-weight: 800; font-size: 14px; cursor: pointer">Transcripción</button>
             <button type="button" (click)="close()" aria-label="Cerrar video" class="cerrar" style="min-height: 40px; padding: 0 16px; border-radius: 6px; border: none; background: #FFFFFF; color: #8A1428; font-weight: 800; font-size: 14px; cursor: pointer">✕ Cerrar</button>
           </div>
-          @if (tr()) { <p style="margin: 0; width: min(92vw, 150vh); box-sizing: border-box; padding: 12px 16px; border-radius: 8px; background: #2A0B12; color: #E9DCCF; font-size: 15px; line-height: 1.5">{{ transcript() }}</p> }
+          @if (tr()) {
+            <section aria-label="Transcripción del video" style="margin: 0; width: min(92vw, 150vh); box-sizing: border-box; padding: 12px 16px; border-radius: 8px; background: #2A0B12; color: #E9DCCF; font-size: 15px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px">
+              @if (lineasVtt().length) {
+                @for (l of lineasVtt(); track $index) { <span>@if (l[0]) {<strong style="color: #FBF5EC">{{ l[0] }}:&nbsp;</strong>}{{ l[1] }}</span> }
+              } @else { <span>{{ transcript() }}</span> }
+            </section>
+          }
         </div>
       }
     }
@@ -97,6 +122,7 @@ const SEEN_KEY = 'gadmi-sost-empresarial:video-modulo-visto:';
     @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
     .up{animation:up .7s cubic-bezier(.2,.7,.2,1) both}
     .d1{animation-delay:.3s}.d2{animation-delay:.6s}.d3{animation-delay:.9s}.d4{animation-delay:1.2s}.d5{animation-delay:1.5s}
+    video::cue{background:rgba(20,10,12,.9);color:#FFFFFF;font-family:'DM Sans',Arial,sans-serif;font-size:22px;line-height:1.4}
     .cine{position:fixed;inset:0;z-index:50;background:rgba(26,6,9,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;box-sizing:border-box;overflow:auto;animation:up .35s cubic-bezier(.2,.7,.2,1) both}
     @media (prefers-reduced-motion: reduce){.up,.cine{animation:none}}
   `,
@@ -136,6 +162,42 @@ export class IntroModuloPage {
     const m = this.module()!;
     return TRANSCRIPCION[m.id] ?? `${m.intro.character}: ${m.intro.text} ${m.intro.goal}`;
   });
+  fuentes = computed(() => VIDEOS[this.module()!.id] ?? ['modulo-' + this.module()!.id + '.mp4']);
+  /** Transcripción leída del .vtt (quién: texto). Si no hay .vtt, se usa el texto del módulo. */
+  lineasVtt = signal<[string, string][]>([]);
+  private vttCargado = effect(() => {
+    const id = this.module()?.id;
+    if (!id) return;
+    fetch('/assets/video/modulo-' + id + '.vtt', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.text() : ''))
+      .then((t) => {
+        if (!t.startsWith('WEBVTT')) return;
+        const out: [string, string][] = [];
+        for (const bloque of t.split(/\r?\n\r?\n/)) {
+          const lineas = bloque.split(/\r?\n/);
+          const k = lineas.findIndex((l) => l.includes('-->'));
+          if (k < 0) continue;
+          const txt = lineas.slice(k + 1).join(' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+          if (!txt) continue;
+          const m = txt.match(/^([A-ZÁÉÍÓÚÑ][\wáéíóúñ]{1,15}):\s*(.+)$/);
+          out.push(m ? [m[1], m[2]] : ['', txt]);
+        }
+        if (out.length) this.lineasVtt.set(out);
+      })
+      .catch(() => {});
+  });
+  leerVtt() {
+    const cues = this.vid()?.nativeElement.textTracks?.[0]?.cues;
+    if (!cues?.length) return;
+    const out: [string, string][] = [];
+    for (const c of Array.from(cues) as VTTCue[]) {
+      const t = String(c.text ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (!t) continue;
+      const m = t.match(/^([A-ZÁÉÍÓÚÑ][\wáéíóúñ]{1,15}):\s*(.+)$/);
+      out.push(m ? [m[1], m[2]] : ['', t]);
+    }
+    this.lineasVtt.set(out);
+  }
   ccLine = computed(() => this.transcript().replace(/^[^:]+:\s*/, '').split(/(?<=[.!?])\s/)[0]);
 
   play() {
@@ -153,6 +215,7 @@ export class IntroModuloPage {
   onReady() {
     const track = this.vid()?.nativeElement.textTracks?.[0];
     if (track) track.mode = this.cc() ? 'showing' : 'hidden';
+    this.leerVtt();
   }
   onTime() {
     const v = this.vid()?.nativeElement;

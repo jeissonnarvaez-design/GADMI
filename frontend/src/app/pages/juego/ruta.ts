@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Injector, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, afterNextRender, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MODULES } from '../../core/data/modules';
 import { ApiService, BoardMessage } from '../../core/services/api.service';
@@ -9,12 +9,12 @@ import { RETOS_JSON } from '../../retos/registry';
 import { Accesibilidad } from '../../shared/accesibilidad';
 import { LogoUao } from '../../shared/logo-uao';
 import { Tour, TourStep } from '../../shared/tour';
-import { MapLayers, MapaIlustracion, SceneLayers, ZoneId, ZoneState } from './mapa/mapa-ilustracion';
+import { MapLayers, menosMovimiento, MapaIlustracion, SceneLayers, ZoneId, ZoneState } from './mapa/mapa-ilustracion';
 
 const YEARS = [2026, 2027, 2028, 2029, 2030];
 const PHASE = ['Diagnóstico', 'Planeación', 'Organización', 'Dirección', 'Control'];
 type Dim = 'Ambiental' | 'Social' | 'Gobernanza' | 'Económico';
-const DIMS: [Dim, 'ambiental' | 'social' | 'gobernanza' | 'economico'][] = [['Ambiental', 'ambiental'], ['Social', 'social'], ['Gobernanza', 'gobernanza'], ['Económico', 'economico']];
+const DIMS: [Dim, 'ambiental' | 'social' | 'gobernanza' | 'economico'][] = [['Ambiental', 'ambiental'], ['Social', 'social'], ['Económico', 'economico'], ['Gobernanza', 'gobernanza']];
 const MCOL: Record<Dim, string> = { Ambiental: '#3F7E44', Social: '#FF836C', Gobernanza: '#8A1428', 'Económico': '#9A5B2E' };
 const MICON: Record<Dim, string> = { Ambiental: 'M12 21v-8M12 13c-4 0-6-3-6-7 4 0 6 3 6 7zM12 13c4 0 6-3 6-7-4 0-6 3-6 7z', Social: 'M9 7a3 3 0 1 0 0 .1M3 20v-1a6 6 0 0 1 12 0v1M17 11a2.5 2.5 0 1 0 0-.1M15 20v-1a4 4 0 0 1 6-3.5', Gobernanza: 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z', 'Económico': 'M4 17l6-6 4 4 6-8M14 7h6v6' };
 const MTIP: Record<Dim, string> = {
@@ -25,8 +25,9 @@ const MTIP: Record<Dim, string> = {
 };
 /** ODS: número, reto que lo logra (con nota ≥ 3) y nombre. */
 /** Colores oficiales de cada ODS (cuando ya se logró). */
-const ODS_COL: Record<number, string> = { 7: '#FCC30B', 8: '#A21942', 12: '#BF8B2E', 13: '#3F7E44', 15: '#56C02B' };
-const ODS: [number, string, string][] = [[7, 'm2-presupuesto-verde', 'Energía asequible y no contaminante'], [8, 'm3-crisis', 'Trabajo decente'], [12, 'm1-valores', 'Producción y consumo responsables'], [13, 'm4-cuellos-botella', 'Acción por el clima'], [15, 'm1-foda', 'Vida de ecosistemas terrestres']];
+/** ODS por año (como en el prototipo): se logran al cerrar el módulo correspondiente.
+ *  [ODS, índice del año en YEARS desde el que se logra, nombre] → 7 y 12 desde 2028, 8 y 13 desde 2029, 15 en 2030. */
+const ODS: [number, number, string][] = [[7, 2, 'Energía asequible y no contaminante'], [8, 3, 'Trabajo decente'], [12, 2, 'Producción y consumo responsables'], [13, 3, 'Acción por el clima'], [15, 4, 'Vida de ecosistemas terrestres']];
 
 /** Un reto suelto (módulo 1) o un módulo completo (2–4) dentro del menú de una zona. */
 type Item = { kind: 'reto'; code: string } | { kind: 'modulo'; module: number };
@@ -40,12 +41,14 @@ const TOOLS = [
   ['Mis logros', 'logros', 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z'],
   ['Bitácora', 'bitacora', 'M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4zM8 9h8M8 13h6'],
 ];
+/** Recorrido guiado: textos cortos y sin ambigüedad, como un tutorial (uno por elemento). */
 const TOUR: TourStep[] = [
-  { target: 'tiempo', text: 'Tus años como gerente. Los pasados se pueden revivir.' },
-  { target: 'mapa', text: 'Toca una zona con borde rojo para ver sus retos.' },
+  { target: 'mapa', text: 'Cada zona es un área de tu empresa. Toca la que dice AHORA para ver tu siguiente reto.' },
   { target: 'tablero', text: 'Así va tu empresa. Toca un medidor para saber qué mide.' },
-  { target: 'mision', text: 'Aquí sigues donde quedaste.' },
-  { target: 'accesibilidad', text: 'Ajusta subtítulos, voz y texto cuando quieras.' },
+  { target: 'ods', text: 'Estos son los ODS. Brillan cuando los logras al cerrar un módulo.' },
+  { target: 'tiempo', text: 'Cada módulo que cierras suma un año. Toca un año pasado para ver cómo estaba tu empresa.' },
+  { target: 'mision', text: 'Aquí está tu siguiente reto. Toca CONTINUAR para ir directo.' },
+  { target: 'accesibilidad', text: 'Aquí activas subtítulos, voz, texto grande o menos movimiento. También cierras sesión.' },
 ];
 type RetoState = 'open' | 'done' | 'locked';
 
@@ -61,6 +64,11 @@ type RetoState = 'open' | 'done' | 'locked';
     @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
     .pulse{animation:pulse 1.6s ease-out infinite}
     .float{animation:float 5s ease-in-out infinite}
+    @keyframes odsBrillo{0%,100%{box-shadow:0 0 0 3px rgba(255,211,201,.85),0 0 10px 2px rgba(255,211,201,.45)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 0 22px 6px rgba(255,211,201,.8)}}
+    .ods-on{animation:odsBrillo 2.4s ease-in-out infinite}
+    @keyframes odsNuevo{0%{transform:translateY(0) scale(1);box-shadow:0 0 0 0 rgba(255,255,255,0)}35%{transform:translateY(-14px) scale(1.18);box-shadow:0 0 0 6px rgba(255,255,255,.95),0 0 30px 10px rgba(255,211,201,.9)}70%{transform:translateY(0) scale(.96)}100%{transform:none}}
+    .ods-nuevo{animation:odsNuevo .9s cubic-bezier(.2,.7,.2,1.2) both !important}
+    .bloqueo{position:fixed;inset:0;z-index:60;cursor:wait;background:transparent}
     .up{animation:up .35s cubic-bezier(.2,.7,.2,1) both}
     .bar{transition:width .8s cubic-bezier(.2,.7,.2,1)}
     .pin{transition:transform .18s}.pin:hover{transform:scale(1.07)}
@@ -87,7 +95,7 @@ type RetoState = 'open' | 'done' | 'locked';
       .chip{display:none}
       [role=menu],[role=tooltip]{max-width:calc(100vw - 48px)}
     }
-    @media (prefers-reduced-motion: reduce){.pulse,.float,.up,.bounce{animation:none}.bar,.pin,.node{transition:none}}
+    @media (prefers-reduced-motion: reduce){.pulse,.float,.up,.bounce,.ods-on,.ods-nuevo{animation:none !important}.bar,.pin,.node{transition:none}}
   `,
 })
 export class RutaPage {
@@ -258,11 +266,13 @@ export class RutaPage {
   ods = computed(() => {
     this.stats();
     const v = this.v();
-    return ODS.map(([n, ex, name], i) => {
-      const on = Number(ex.charAt(1)) <= v && (this.progress.best(ex)?.grade ?? 0) >= 3;
+    const a = this.anim();
+    return ODS.map(([n, at, name], i) => {
+      const on = a ? a.odsOn.includes(n) : v >= at;
+      const nuevo = !!a && a.odsNuevo === n;
       return {
         n, delay: i * -0.9 + 's', aria: 'ODS ' + n + ': ' + name + (on ? ' (logrado)' : ' (aún no)'),
-        bg: on ? ODS_COL[n] : '#FFFFFF', bd: on ? '#FFFFFF' : '#B5A9A6', fg: on ? (n === 7 ? '#231417' : '#FFFFFF') : '#6E5458',
+        on, nuevo, bg: '#FFFFFF', bd: '#B5A9A6', fg: '#6E5458', /* ODS siempre neutros: los logrados brillan, no cambian de color */
       };
     });
   });
@@ -295,20 +305,68 @@ export class RutaPage {
     const s = this.stats()[m - 1];
     return s.max ? s.points / s.max : 0;
   }
-  mapLayers = computed<MapLayers>(() => {
-    const v = this.v();
+  mapLayers = computed<MapLayers>(() => this.anim()?.layers ?? this.layersFor(this.v()));
+
+  /** Capas del mapa para un año (índice de YEARS). */
+  private layersFor(v: number): MapLayers {
     const good = (m: number, desde: number) => v >= desde && this.progress.seasonDone(m) && this.pctModulo(m) >= 0.6;
     const frase = this.progress.lastAnswers<{ text?: Record<string, string> }>('m1-valores')?.text?.['C'] ?? '';
     return {
       sala: good(1, 2), mercado: good(1, 2), planta: good(2, 3), finca: good(3, 4),
-      composta: v >= 2, arboles: v >= 4, humo: v < 2 ? 2 : v === 2 ? 1 : 0, frase: frase.trim().slice(0, 40),
+      composta: v >= 2, arboles: v >= 4, humo: v < 2 ? 2 : v === 2 ? 1 : 0, frase: frase.trim().slice(0, 26),
     };
-  });
+  }
+
+  // ---------- Animación al volver de un módulo cerrado
+  /** Mientras no es null, la Ruta está bloqueada y muestra los cambios uno por uno. */
+  anim = signal<{ layers: MapLayers; odsOn: number[]; odsNuevo: number | null; texto: string } | null>(null);
+  private animKey() {
+    return 'gadmi-sost-empresarial:ruta-anio:' + (this.auth.student()?.codigo ?? 'local');
+  }
+  private revisarCambios(c: number) {
+    if (this.anim()) return;
+    let prev = NaN;
+    try { prev = Number(localStorage.getItem(this.animKey()) ?? NaN); } catch { /* sin almacenamiento */ }
+    const guardar = () => { try { localStorage.setItem(this.animKey(), String(c)); } catch { /* nada */ } };
+    if (Number.isNaN(prev) || prev >= c || menosMovimiento()) return guardar();
+    void this.reproducir(prev, c).then(guardar);
+  }
+  private async reproducir(prev: number, c: number) {
+    const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const L0 = this.layersFor(prev), L1 = this.layersFor(c);
+    const odsOn = ODS.filter(([, at]) => at <= prev).map(([n]) => n);
+    const nuevos = ODS.filter(([, at]) => at > prev && at <= c).map(([n]) => n);
+    let layers = { ...L0 };
+    this.anim.set({ layers, odsOn, odsNuevo: null, texto: 'Tu empresa cambia con lo que decidiste…' });
+    await espera(700);
+    const NOMBRE: Record<string, string> = { sala: 'La sala de juntas', mercado: 'El mercado', planta: 'La planta', finca: 'La finca', composta: 'Llega el compost', arboles: 'Crecen los árboles' };
+    // 1) zonas mala → buena; 2) piezas nuevas (compost, árboles; paneles y pancarta van en las zonas buenas)
+    for (const k of ['sala', 'mercado', 'planta', 'finca', 'composta', 'arboles'] as const) {
+      if (L0[k] === L1[k]) continue;
+      layers = { ...layers, [k]: L1[k], humo: L1.humo, frase: L1.frase };
+      const zona = ['sala', 'mercado', 'planta', 'finca'].includes(k);
+      this.anim.update((a) => a && { ...a, layers, texto: zona ? NOMBRE[k] + ' mejora' : NOMBRE[k] });
+      await espera(1250);
+    }
+    if (layers.humo !== L1.humo) { layers = { ...layers, humo: L1.humo }; this.anim.update((a) => a && { ...a, layers }); await espera(600); }
+    // 3) ODS que se logran, uno por uno (brillo y salto, sin cambiar de color)
+    for (const n of nuevos) {
+      odsOn.push(n);
+      this.anim.update((a) => a && { ...a, odsOn: [...odsOn], odsNuevo: n, texto: 'Logras el ODS ' + n });
+      await espera(950);
+    }
+    this.anim.set(null);
+  }
 
   private host = inject(ElementRef);
 
   constructor() {
     this.api.mensajes().subscribe((m) => m && this.messages.set(m));
+    // Al volver de un módulo cerrado: animación de los cambios (se bloquea la Ruta mientras tanto).
+    effect(() => {
+      const c = this.cur();
+      untracked(() => this.revisarCambios(c));
+    });
     // La primera vez que entra a la Ruta se muestra el recorrido guiado.
     afterNextRender(() => {
       const s = this.auth.student();

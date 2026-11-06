@@ -1,0 +1,62 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m2-presupuesto-verde",
+  "code": "2.5",
+  "title": "Presupuesto verde",
+  "max": 50,
+  "CONSIGNA": "La junta aprobó COP 400 millones. Se sugiere que logres evitar al menos 150 t de CO₂ al año e incluir al menos una inversión con beneficio social directo.",
+  "INV": [
+    [
+      "a",
+      "Sistema solar fotovoltaico en la planta",
+      180,
+      60,
+      45,
+      ""
+    ],
+    [
+      "b",
+      "Tostadora eficiente que reemplaza la antigua",
+      150,
+      40,
+      30,
+      ""
+    ],
+    [
+      "c",
+      "Compostaje de la cascarilla de cacao",
+      40,
+      30,
+      8,
+      ""
+    ],
+    [
+      "d",
+      "Programa agroforestal con las familias productoras",
+      90,
+      80,
+      0,
+      "Sí (120 familias)"
+    ],
+    [
+      "e",
+      "Dos vehículos eléctricos de reparto",
+      220,
+      30,
+      20,
+      ""
+    ],
+    [
+      "f",
+      "Campaña publicitaria «Somos verdes»",
+      60,
+      0,
+      0,
+      ""
+    ]
+  ],
+  "TOPE": 400,
+  "META": 150,
+  "GW": "Comunicar sin haber cambiado nada es la puerta de entrada al greenwashing: la comunicación llega después, con resultados.",
+  "SOL": "Combinaciones válidas: a + c + d (310 M, 170 t, ahorro 53 M: puntaje completo) y b + c + d (280 M, 150 t, ahorro 38 M: 45 de 50)."
+}

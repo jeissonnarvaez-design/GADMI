@@ -30,7 +30,6 @@ export interface PItem { id: string; text: string; answer: string | null; accept
 export interface PChoicePart {
   key: string; type: 'choice'; layout: 'cards' | 'rows'; optionStyle?: 'circle' | 'stack';
   prompt: string; hint: string; options?: POption[]; optionFeedback?: Record<string, string>;
-  brillo?: { item: string; answer: string; text: string };
   fromPart?: { part: string; answer: string };
   items: PItem[];
 }
@@ -54,7 +53,7 @@ export interface MetasReto extends Base {
 }
 
 // ---- Escenario · cartas de crisis (3.2)
-export interface COption { label: string; delta: number[]; points: number; title: string; text: string; brillo?: boolean }
+export interface COption { label: string; delta: number[]; points: number; title: string; text: string }
 export interface CScenario { id: string; who: Who; whoName: string; text: string; options: COption[] }
 export interface CartasReto extends Base { template: 'cartas'; meters: { label: string; color: string }[]; start: number[]; scenarios: CScenario[] }
 

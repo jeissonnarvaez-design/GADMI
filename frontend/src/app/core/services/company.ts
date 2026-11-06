@@ -102,7 +102,7 @@ export function mapZones(p: ProgressService): MapZone[] {
       name: 'Mercado',
       layers: [
         { label: 'Ruta de exportación a Europa', on: foda?.strategy === 'a', source: '1.3' },
-        { label: 'Brillo (greenwashing) descubierto', on: p.flag('m1-valores', 'greenwashing'), source: '1.2' },
+        { label: 'Greenwashing detectado', on: p.flag('m1-valores', 'greenwashing'), source: '1.2' },
         { label: 'Trazabilidad demostrada al cliente europeo', on: crisis['C'] === '1', source: '3.2' },
         { label: 'Comunicación honesta con la comunidad', on: pass('m3-comunicacion'), source: '3.3' },
       ],

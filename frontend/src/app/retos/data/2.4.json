@@ -1,0 +1,94 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m2-stakeholders",
+  "code": "2.4",
+  "title": "Grupos de interés",
+  "max": 50,
+  "CONSIGNA": "Toda empresa tiene grupos de interés. Ubica a cada uno según su poder e interés, y luego decide con qué proveedores de cacao trabajar.",
+  "Q": {
+    "cerca": [
+      "Gestionar de cerca",
+      "Mucho poder y mucho interés",
+      "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21v-1a8 8 0 0 1 16 0v1"
+    ],
+    "satis": [
+      "Mantener satisfecho",
+      "Mucho poder, poco interés",
+      "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"
+    ],
+    "info": [
+      "Mantener informado",
+      "Poco poder, mucho interés",
+      "M4 5h16v11H8l-4 4z"
+    ],
+    "moni": [
+      "Monitorear",
+      "Poco poder y poco interés",
+      "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+    ]
+  },
+  "G": [
+    [
+      "Cliente europeo (35 % de las ventas)",
+      "cerca",
+      "Puede dejar de comprar y le importa cómo produces."
+    ],
+    [
+      "Familias productoras de cacao",
+      "cerca",
+      "Sin ellas no hay cacao, y su sustento depende de ti."
+    ],
+    [
+      "Autoridad ambiental regional",
+      "satis",
+      "Puede sancionar, pero solo actúa si incumples."
+    ],
+    [
+      "Banco que financia la planta",
+      "satis",
+      "Pesa mucho en tus decisiones, pero solo sigue los pagos."
+    ],
+    [
+      "Comunidad vecina de la planta",
+      "info",
+      "Vive los efectos de la planta, aunque no decide."
+    ],
+    [
+      "Competidores con producto importado",
+      "moni",
+      "Conviene vigilarlos, pero no dependes de ellos."
+    ]
+  ],
+  "ORD": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3
+  ],
+  "SUP": [
+    [
+      "A",
+      "Asociación de familias del Pacífico",
+      "Entrega cacao con trazabilidad por lote y certificado de origen libre de deforestación.",
+      "ok",
+      "✓ Trazable y verificable."
+    ],
+    [
+      "B",
+      "Cooperativa del norte del Cauca",
+      "Cuesta un poco más, pero georreferencia sus fincas y comparte los registros.",
+      "ok",
+      "✓ Más caro, pero demuestra el origen."
+    ],
+    [
+      "C",
+      "Intermediario «Cacao 100 % sostenible»",
+      "Es el más barato. Usa su propio sello verde, pero no tiene certificación ni informa el origen.",
+      "no",
+      "✓ Bien rechazado: es greenwashing."
+    ]
+  ],
+  "HINT": "¿Cuánto poder tiene y cuánto le interesa la empresa?"
+}

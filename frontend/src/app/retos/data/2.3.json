@@ -1,0 +1,63 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m2-presupuesto-th",
+  "code": "2.3",
+  "title": "Presupuesto de talento humano",
+  "max": 40,
+  "CONSIGNA": "Tienes 46 millones (COP) mensuales para los salarios de seis cargos clave. Considera que si otorgas más a uno, otro recibe menos. Decide según lo que la empresa necesita para cumplir sus objetivos.",
+  "CAR": [
+    [
+      "Gerencia general",
+      14,
+      18
+    ],
+    [
+      "Jefatura de producción",
+      7,
+      9
+    ],
+    [
+      "Coordinación de sostenibilidad",
+      5,
+      7
+    ],
+    [
+      "Jefatura comercial",
+      7,
+      9
+    ],
+    [
+      "Jefatura de talento humano",
+      5,
+      7
+    ],
+    [
+      "Analista financiero",
+      4,
+      5
+    ]
+  ],
+  "TOPE": 46,
+  "FACTOR": 1.52,
+  "PAD": 3,
+  "JUST": [
+    [
+      "Reforcé producción y talento humano porque la energía y la rotación son los problemas más urgentes.",
+      true
+    ],
+    [
+      "Reforcé abastecimiento y sostenibilidad porque el mercado europeo exige trazabilidad.",
+      true
+    ],
+    [
+      "Subí la gerencia porque el líder define todo.",
+      false,
+      "Poco coherente con el diagnóstico."
+    ],
+    [
+      "Repartí igual para que nadie se sienta mal.",
+      false,
+      "No prioriza."
+    ]
+  ]
+}

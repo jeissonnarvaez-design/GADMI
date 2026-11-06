@@ -87,7 +87,7 @@ const fmt = (n: number) => n.toLocaleString('es-CO');
                     <ul aria-label="ODS trabajados" style="list-style: none; margin: 0; padding: 4px 0 0; display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap">
                       @for (o of ods(); track o.n) {
                         <li style="text-align: center">
-                          <span role="img" [attr.aria-label]="o.aria" [title]="o.aria" style="width: 50px; height: 50px; box-sizing: border-box; border-radius: 999px; background: #FFFFFF; border: 2px solid #6E5458; color: #5C4A4D; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1">
+                          <span role="img" [attr.aria-label]="o.aria" [title]="o.aria" style="width: 50px; height: 50px; box-sizing: border-box; border-radius: 999px; background: #FFFFFF; border: 2px solid #B5A9A6; color: #6E5458; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1">
                             <span style="font-size: 9px; font-weight: 800; letter-spacing: 0.12em; opacity: 0.9">ODS</span>
                             <span style="font-size: 20px; font-weight: 800">{{ o.n }}</span>
                           </span>
@@ -344,11 +344,11 @@ export class BarraPage {
       ods.forEach((o, i) => {
         const cx = L + (IW / ods.length) * (i + 0.5);
         pdf.setFillColor('#FFFFFF');
-        pdf.setDrawColor('#6E5458');
+        pdf.setDrawColor('#B5A9A6');
         pdf.setLineWidth(0.5);
         pdf.circle(cx, 163, 8, 'FD');
-        text('ODS', cx, 160.5, 6, '#5C4A4D', { bold: true, align: 'center' });
-        text(String(o.n), cx, 167, 13, '#5C4A4D', { bold: true, align: 'center' });
+        text('ODS', cx, 160.5, 6, '#6E5458', { bold: true, align: 'center' });
+        text(String(o.n), cx, 167, 13, '#6E5458', { bold: true, align: 'center' });
       });
       text('Verifica este certificado en:', L, 184, 8.5, '#5C4A4D');
       pdf.setTextColor('#8A1428');

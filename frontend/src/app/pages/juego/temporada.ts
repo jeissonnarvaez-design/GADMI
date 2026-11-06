@@ -51,8 +51,12 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
                 <span style="font-weight: 800">Ventas y energía por tonelada</span>
                 <svg viewBox="0 0 600 220" style="width: 100%; height: auto" role="img" [attr.aria-label]="'Gráfica: las ventas suben y la energía por tonelada baja durante ' + mod.year">
                   <path d="M0 200 H600 M0 140 H600 M0 80 H600 M0 20 H600" stroke="rgba(255,255,255,0.08)"></path>
-                  <path [attr.d]="sales()" fill="none" stroke="#FF836C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path [attr.d]="energy()" fill="none" stroke="#56C02B" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round"></path>
+                  <!-- Las líneas se dibujan de enero a diciembre (≈0,6 s por mes) -->
+                  <defs><clipPath id="temporada-avance"><rect x="0" y="0" height="220" class="avance" [style.width.px]="avance()" width="600"></rect></clipPath></defs>
+                  <g clip-path="url(#temporada-avance)">
+                    <path [attr.d]="sales()" fill="none" stroke="#FF836C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path [attr.d]="energy()" fill="none" stroke="#56C02B" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round"></path>
+                  </g>
                   <path d="M0 150 H600" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.5"></path>
                   <text x="596" y="141" text-anchor="end" font-size="14" font-weight="700" fill="#FFFFFF" stroke="#2A0B12" stroke-width="6" stroke-linejoin="round" paint-order="stroke">tu meta de energía</text>
                 </svg>
@@ -67,7 +71,7 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
                     </div>
                   }
                 </section>
-                @if (k() >= 6) {
+                @if (k() >= 5) {
                   <section class="up" role="status" style="background: #FFFFFF; color: #231417; border-radius: 18px; padding: 14px 18px 14px 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 14px 30px rgba(0,0,0,0.35)">
                     <app-personaje who="chispa" [size]="60" />
                     <span style="display: flex; flex-direction: column; gap: 4px"><span class="px" style="align-self: flex-start; padding: 3px 8px; border-radius: 999px; background: #FF836C; color: #1A0609; font-size: 10px">NOVEDAD · JUNIO</span><span style="font-size: 15px; font-weight: 700; line-height: 1.35">{{ event().texto }}</span>@if (event().efecto) {<span style="font-size: 13px; font-weight: 800; color: #2C5E31">{{ event().efecto }}</span>}</span>
@@ -93,6 +97,9 @@ const BADGE: Record<number, string> = { 1: 'brujula-clara', 2: 'arquitectura-ver
   styles: `
     a{color:#FFFFFF} a:focus-visible,button:focus-visible{outline:3px solid #FF836C;outline-offset:3px}
     @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    .avance{transition:width .6s linear}
+    .bar{transition:width .6s linear}
+    @media (prefers-reduced-motion: reduce){.avance,.bar{transition:none}}
     @keyframes pop{0%{opacity:0;transform:scale(.5) rotate(-10deg)}70%{transform:scale(1.1)}100%{opacity:1;transform:none}}
     .up{animation:up .5s cubic-bezier(.2,.7,.2,1) both}
     .pop{animation:pop .6s cubic-bezier(.2,.7,.2,1) both}
@@ -115,8 +122,10 @@ export class TemporadaPage implements OnInit, OnDestroy {
   ready = computed(() => this.stat().done);
   start = computed(() => (this.stat(), metersAt(this.progress, this.n() - 1)));
   end = computed(() => (this.stat(), metersAt(this.progress, this.n())));
-  sales = computed(() => path(S, Math.min(this.k(), 11)));
-  energy = computed(() => path(E, Math.min(this.k(), 11)));
+  sales = computed(() => path(S, 11));
+  energy = computed(() => path(E, 11));
+  /** Ancho visible de la gráfica: avanza mes a mes con una transición lineal (se ve el trazo). */
+  avance = computed(() => Math.round((Math.min(this.k(), 11) / 11) * 600));
   meters = computed(() => {
     const f = Math.min(this.k(), 11) / 11;
     const s = this.start();
@@ -135,7 +144,7 @@ export class TemporadaPage implements OnInit, OnDestroy {
   ngOnInit() {
     if (!this.ready()) return;
     if (this.progress.seasonDone(this.n()) || this.prefs.prefs().menosMovimiento) return this.skip();
-    this.timer = setInterval(() => (this.k() < 12 ? this.k.update((v) => v + 1) : this.finish()), 650);
+    this.timer = setInterval(() => (this.k() < 12 ? this.k.update((v) => v + 1) : this.finish()), 600);
   }
   ngOnDestroy() {
     if (this.timer) clearInterval(this.timer);

@@ -2,26 +2,29 @@ import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getExerciseByCode } from '../core/data/modules';
 import { ProgressService } from '../core/services/progress.service';
-import { CuellosBotellaExercise } from '../exercises/modulo4/cuellos-botella';
-import { PlanAccionExercise } from '../exercises/modulo4/plan-accion';
-import { OrganigramaExercise } from '../exercises/modulo2/organigrama';
-import { PresupuestoVerdeExercise } from '../exercises/modulo2/presupuesto-verde';
 import { RETOS_JSON } from './registry';
-import type { CartasReto, CuadrantesReto, MetasReto, PartesReto, TarjetasReto } from './reto.types';
-import { RetoCartas } from './templates/cartas';
-import { RetoCuadrantes } from './templates/cuadrantes';
-import { RetoMetas } from './templates/metas';
-import { RetoPartes } from './templates/partes';
-import { RetoTarjetas } from './templates/tarjetas';
 import { Reto11 } from './dc/reto-11';
 import { Reto12 } from './dc/reto-12';
 import { Reto13 } from './dc/reto-13';
 import { Reto14 } from './dc/reto-14';
+import { Reto21 } from './dc/reto-21';
+import { Reto22 } from './dc/reto-22';
+import { Reto23 } from './dc/reto-23';
+import { Reto24 } from './dc/reto-24';
+import { Reto25 } from './dc/reto-25';
+import { Reto31 } from './dc/reto-31';
+import { Reto32 } from './dc/reto-32';
+import { Reto33 } from './dc/reto-33';
+import { Reto34 } from './dc/reto-34';
+import { Reto41 } from './dc/reto-41';
+import { Reto42 } from './dc/reto-42';
+import { Reto43 } from './dc/reto-43';
+import { Reto44 } from './dc/reto-44';
 
-/** /reto/:code → plantilla según el JSON del reto (o componente propio: organigrama y formularios). */
+/** /reto/:code → plantilla según el JSON del reto (o componente generado del diseño final: retos 2.1–4.4). */
 @Component({
   selector: 'app-reto-page',
-  imports: [RouterLink, Reto11, Reto12, Reto13, Reto14, RetoTarjetas, RetoPartes, RetoCuadrantes, RetoMetas, RetoCartas, OrganigramaExercise, PresupuestoVerdeExercise, CuellosBotellaExercise, PlanAccionExercise],
+  imports: [RouterLink, Reto11, Reto12, Reto13, Reto14, Reto21, Reto22, Reto23, Reto24, Reto25, Reto31, Reto32, Reto33, Reto34, Reto41, Reto42, Reto43, Reto44],
   template: `
     @if (!meta()) {
       <div class="game-bg" style="align-items: center; justify-content: center; color: #FBF5EC"><p>Reto no encontrado. <a routerLink="/ruta" style="color: #FBF5EC">Volver a la ruta</a></p></div>
@@ -39,18 +42,22 @@ import { Reto14 } from './dc/reto-14';
             @case ('valores') { <app-reto-12 /> }
             @case ('foda') { <app-reto-13 /> }
             @case ('metas-v2') { <app-reto-14 /> }
-            @case ('tarjetas') { <app-reto-tarjetas [data]="$any(d)" /> }
-            @case ('partes') { <app-reto-partes [data]="$any(d)" /> }
-            @case ('cuadrantes') { <app-reto-cuadrantes [data]="$any(d)" /> }
-            @case ('metas') { <app-reto-metas [data]="$any(d)" /> }
-            @case ('cartas') { <app-reto-cartas [data]="$any(d)" /> }
           }
         } @else {
           @switch (code()) {
-            @case ('2.1') { <app-organigrama /> }
-            @case ('2.5') { <app-presupuesto-verde /> }
-            @case ('4.2') { <app-cuellos-botella /> }
-            @case ('4.3') { <app-plan-accion /> }
+            @case ('2.1') { <app-reto-21 /> }
+            @case ('2.2') { <app-reto-22 /> }
+            @case ('2.3') { <app-reto-23 /> }
+            @case ('2.4') { <app-reto-24 /> }
+            @case ('2.5') { <app-reto-25 /> }
+            @case ('3.1') { <app-reto-31 /> }
+            @case ('3.2') { <app-reto-32 /> }
+            @case ('3.3') { <app-reto-33 /> }
+            @case ('3.4') { <app-reto-34 /> }
+            @case ('4.1') { <app-reto-41 /> }
+            @case ('4.2') { <app-reto-42 /> }
+            @case ('4.3') { <app-reto-43 /> }
+            @case ('4.4') { <app-reto-44 /> }
           }
         }
       }
@@ -61,6 +68,6 @@ export class RetoPage {
   code = input.required<string>();
   private progress = inject(ProgressService);
   meta = computed(() => getExerciseByCode(this.code()));
-  json = computed(() => RETOS_JSON[this.code()] as TarjetasReto | PartesReto | CuadrantesReto | MetasReto | CartasReto | undefined);
+  json = computed(() => RETOS_JSON[this.code()] as { template?: string } | undefined);
   open = computed(() => (this.progress.moduleStats(), !!this.meta() && this.progress.isModuleOpen(this.meta()!.module)));
 }

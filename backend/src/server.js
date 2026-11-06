@@ -9,13 +9,13 @@ import * as store from './store.js';
 import { HttpError } from './store.js';
 import { sintetizar, vozDisponible } from './voz.js';
 import { dictadoDisponible, transcribir } from './dictado.js';
+import { crearEstudiante, isUaoEmail, limpiarNombre, nombreCompleto, normGrupo, periodoActual } from './cuentas.js';
 
 const app = express();
 app.use(cors({ origin: (process.env.CORS_ORIGIN ?? 'http://localhost:4200').split(',') }));
 app.use(express.json({ limit: '1mb' }));
 
 const wrap = (fn) => (req, res, next) => fn(req, res).catch(next);
-const isUaoEmail = (s) => typeof s === 'string' && /^[^@\s]+@uao\.edu\.co$/i.test(s.trim());
 const estudiante = requireRole('estudiante');
 const docente = requireRole('docente');
 
@@ -27,28 +27,6 @@ function publicStudent(r) {
     tourVisto: r.tourVistoEn ?? null,
     preferencias: r.preferencias ?? null,
   };
-}
-
-/**
- * Periodo académico actual («2026-2»). Se puede fijar con PERIODO_ACADEMICO en backend/.env;
- * si no, se calcula con la fecha (enero–junio = 1, julio–diciembre = 2).
- */
-/** Nombre sin espacios de más: «  laura   gómez » → «laura gómez». */
-const limpiarNombre = (n) => String(n ?? '').trim().replace(/\s+/g, ' ');
-/** Nombre completo = al menos nombre y un apellido (dos palabras de 2 letras o más). */
-const nombreCompleto = (n) => limpiarNombre(n).split(' ').filter((p) => p.length >= 2).length >= 2;
-
-/** Grupo en un formato único: «g 1», «1» o «G1» → «G1». */
-function normGrupo(g) {
-  const t = String(g ?? '').trim().toUpperCase().replace(/\s+/g, '');
-  return /^\d+$/.test(t) ? 'G' + t : t;
-}
-
-function periodoActual() {
-  const env = (process.env.PERIODO_ACADEMICO ?? '').trim();
-  if (env) return env;
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth() < 6 ? 1 : 2}`;
 }
 
 app.get('/api/health', wrap(async (_req, res) => {
@@ -103,43 +81,35 @@ app.post('/api/auth/docente/login', wrap(async (req, res) => {
   res.json({ token: createToken(d.id, 'docente'), docente: { id: d.id, nombre: d.nombre, correo: d.correo } });
 }));
 
-/**
- * Registro de docentes. Exige el código institucional DOCENTE_CODIGO_REGISTRO (backend/.env)
- * para que nadie pueda crear una cuenta docente y ver las notas de los estudiantes.
- * Si el código está vacío, el registro queda deshabilitado.
+/*
+ * Sin auto-registro: las cuentas se crean desde Moodle (LTI) o por un administrador.
+ * - Docentes: script `npm run crear-usuarios -- docentes archivo.csv` (o el docente inicial del .env).
+ * - Estudiantes: el mismo script con la lista exportada de Moodle, o POST /api/docente/estudiantes.
  */
-app.post('/api/auth/docente/registro', wrap(async (req, res) => {
-  const { nombre, correo, password, codigoRegistro } = req.body ?? {};
-  const expected = (process.env.DOCENTE_CODIGO_REGISTRO ?? 'GADMI-DOCENTE-2026').trim();
-  if (!expected) return res.status(403).json({ error: 'El registro de docentes está deshabilitado. Pide la cuenta al administrador.' });
-  if (!nombre || !isUaoEmail(correo) || String(password ?? '').length < 8) {
-    return res.status(400).json({ error: 'Escribe tu nombre, un correo @uao.edu.co y una contraseña de al menos 8 caracteres.' });
-  }
-  if (String(codigoRegistro ?? '').trim() !== expected) {
-    return res.status(403).json({ error: 'El código de registro docente no es válido.' });
-  }
-  const email = correo.trim().toLowerCase();
-  if (await store.studentByEmail(email)) return res.status(409).json({ error: 'Ese correo ya está registrado como estudiante.' });
-  const d = await store.createTeacher({ nombre: nombre.trim(), correo: email, passwordHash: hashPassword(password) });
-  res.status(201).json({ token: createToken(d.id, 'docente'), docente: { id: d.id, nombre: d.nombre, correo: d.correo } });
-}));
 
 /** Lista de docentes (para el panel). */
 app.get('/api/docente/docentes', requireRole('docente'), wrap(async (_req, res) => {
   res.json(await store.listTeachers());
 }));
 
-// ------------------------------------------------------------------ Ingreso estudiante
-app.post('/api/auth/estudiante/registro', wrap(async (req, res) => {
-  const { nombre, codigo, correo, grupo, password } = req.body ?? {};
-  if (!nombre || !codigo || !grupo || !isUaoEmail(correo) || String(password ?? '').length < 6) {
-    return res.status(400).json({ error: 'Datos incompletos, correo no institucional o contraseña de menos de 6 caracteres.' });
+// ------------------------------------------------------------------ Cuentas de estudiantes (solo docentes/administración)
+/**
+ * Crea una o varias cuentas de estudiante (p. ej. la lista del curso exportada de Moodle).
+ * Cuerpo: { estudiantes: [{ nombre, codigo, correo, grupo, password }] }. No hay registro público.
+ */
+app.post('/api/docente/estudiantes', docente, wrap(async (req, res) => {
+  const lista = Array.isArray(req.body?.estudiantes) ? req.body.estudiantes.slice(0, 500) : [];
+  if (!lista.length) return res.status(400).json({ error: 'Envía la lista de estudiantes.' });
+  const creados = [], errores = [];
+  for (const e of lista) {
+    try {
+      const s = await crearEstudiante(e);
+      creados.push({ id: s.id, correo: s.correo });
+    } catch (err) {
+      errores.push({ correo: e?.correo ?? '', error: err.message });
+    }
   }
-  if (!nombreCompleto(nombre)) return res.status(400).json({ error: 'Escribe tu nombre y tus apellidos completos: así aparecerán en el certificado.' });
-  const s = await store.createStudent({
-    nombre: limpiarNombre(nombre), codigo: codigo.trim(), correo: correo.trim().toLowerCase(), grupo: normGrupo(grupo), periodo: periodoActual(), passwordHash: hashPassword(password),
-  });
-  res.status(201).json({ token: createToken(s.id, 'estudiante'), estudiante: publicStudent(s) });
+  res.status(201).json({ creados, errores });
 }));
 
 app.post('/api/auth/estudiante/login', wrap(async (req, res) => {
@@ -153,8 +123,8 @@ app.post('/api/auth/estudiante/login', wrap(async (req, res) => {
 
 // ------------------------------------------------------------------ Estudiante (requiere token)
 app.put('/api/estudiante/onboarding', estudiante, wrap(async (req, res) => {
-  const { aceptaPrivacidad, preferencias, cartaFirmada, tourVisto } = req.body ?? {};
-  await store.updateOnboarding(req.userId, { aceptaPrivacidad, preferencias, cartaFirmada, tourVisto });
+  const { aceptaPrivacidad, avisoVersion, preferencias, cartaFirmada, tourVisto } = req.body ?? {};
+  await store.updateOnboarding(req.userId, { aceptaPrivacidad, avisoVersion, preferencias, cartaFirmada, tourVisto });
   res.json({ ok: true });
 }));
 

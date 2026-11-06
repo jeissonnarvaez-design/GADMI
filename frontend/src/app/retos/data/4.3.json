@@ -1,0 +1,154 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m4-plan-accion",
+  "code": "4.3",
+  "title": "Plan de acción",
+  "max": 60,
+  "CONSIGNA": "Convierte cada estrategia en un plan: qué se hará, quién responde, en qué plazo, con qué indicador y con qué recurso.",
+  "ROWS": [
+    "Energía por tonelada",
+    "Residuos aprovechados",
+    "Accidentalidad"
+  ],
+  "WHAT": [
+    "Medir el consumo por máquina y cambiar la tostadora con mayor gasto",
+    "Convertir la cascarilla en compost o producto con un aliado local",
+    "Investigar cada accidente con el comité de SST y atacar las tres causas"
+  ],
+  "RESP": [
+    "Producción",
+    "Comercial",
+    "Administrativa y financiera",
+    "Talento humano",
+    "Abastecimiento sostenible",
+    "Comité de sostenibilidad"
+  ],
+  "PLAZO": [
+    "Corto (hasta 1 año)",
+    "Mediano (1 a 3 años)",
+    "Largo (más de 3 años)"
+  ],
+  "IND": [
+    "Energía consumida por tonelada procesada",
+    "Porcentaje de residuos aprovechados",
+    "Tasa de accidentalidad",
+    "Margen operativo"
+  ],
+  "REC": [
+    "Presupuesto verde (2.5)",
+    "Presupuesto de talento humano (2.3)",
+    "Alianza con un actor local",
+    "Campaña publicitaria"
+  ],
+  "OK": [
+    {
+      "what": [
+        0
+      ],
+      "resp": [
+        0,
+        5
+      ],
+      "plazo": [
+        0,
+        1
+      ],
+      "ind": [
+        0
+      ],
+      "rec": [
+        0
+      ]
+    },
+    {
+      "what": [
+        1
+      ],
+      "resp": [
+        0,
+        4,
+        5
+      ],
+      "plazo": [
+        0,
+        1
+      ],
+      "ind": [
+        1
+      ],
+      "rec": [
+        0,
+        2
+      ]
+    },
+    {
+      "what": [
+        2
+      ],
+      "resp": [
+        3
+      ],
+      "plazo": [
+        0
+      ],
+      "ind": [
+        2
+      ],
+      "rec": [
+        1
+      ]
+    }
+  ],
+  "FIELDS": [
+    [
+      "what",
+      "Qué se hará",
+      [
+        "Medir el consumo por máquina y cambiar la tostadora con mayor gasto",
+        "Convertir la cascarilla en compost o producto con un aliado local",
+        "Investigar cada accidente con el comité de SST y atacar las tres causas"
+      ]
+    ],
+    [
+      "resp",
+      "Responsable",
+      [
+        "Producción",
+        "Comercial",
+        "Administrativa y financiera",
+        "Talento humano",
+        "Abastecimiento sostenible",
+        "Comité de sostenibilidad"
+      ]
+    ],
+    [
+      "plazo",
+      "Plazo",
+      [
+        "Corto (hasta 1 año)",
+        "Mediano (1 a 3 años)",
+        "Largo (más de 3 años)"
+      ]
+    ],
+    [
+      "ind",
+      "Indicador",
+      [
+        "Energía consumida por tonelada procesada",
+        "Porcentaje de residuos aprovechados",
+        "Tasa de accidentalidad",
+        "Margen operativo"
+      ]
+    ],
+    [
+      "rec",
+      "Recurso",
+      [
+        "Presupuesto verde (2.5)",
+        "Presupuesto de talento humano (2.3)",
+        "Alianza con un actor local",
+        "Campaña publicitaria"
+      ]
+    ]
+  ]
+}

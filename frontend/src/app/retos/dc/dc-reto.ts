@@ -1,4 +1,4 @@
-import { computed, inject, signal } from '@angular/core';
+import { computed, effect, inject, signal, untracked } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { afterExercise, getExercise } from '../../core/data/modules';
 import { EvalResult, FeedbackItem } from '../../core/models/models';
@@ -21,6 +21,47 @@ export abstract class DcReto<S extends Record<string, any> = Record<string, any>
   protected voice = inject(SpeechService);
   private auth = inject(AuthService);
   abstract readonly ejercicioId: string;
+  /**
+   * Retos generados del diseño final (2.1–4.4): al terminar (`v().done`) se registran solos
+   * con `v().score` y la insignia `v().badge`; mientras se juega, el avance se guarda por paso.
+   */
+  protected autoRegistro = false;
+  private inicial: string | null = null;
+
+  constructor() {
+    effect(() => {
+      const vals = this.v();
+      if (!this.autoRegistro) return;
+      untracked(() => this.autoTick(vals));
+    });
+  }
+
+  private autoTick(vals: any) {
+    const actual = JSON.stringify(this.state);
+    if (this.inicial === null) {
+      this.inicial = actual;
+      return;
+    }
+    if (vals?.done) {
+      const pts = Math.max(0, Math.round(Number(vals.score) || 0));
+      const antes = this.progress.best(this.ejercicioId)?.points;
+      // Se registra al terminar; si el reto permite reintentar y mejora, cuenta el mejor.
+      if (antes == null || pts > antes) {
+        const max = this.meta().maxPoints;
+        this.registrar(pts, [], {}, `Ganaste ${pts} de ${max} granos.`, { aLaPrimera: !!vals.badge, segundoIntento: (this.state as any).att === 2 }, true);
+      }
+      return;
+    }
+    if (actual !== this.inicial && !this.yaRegistrado()) this.guardarPaso(this.pasoActual());
+  }
+
+  /** Paso en curso: parte (A, B, C…), ronda o escenario; 1 si el reto es de un solo paso. */
+  protected pasoActual(): number {
+    const st = this.state as any;
+    if (typeof st.part === 'string' && /^[A-Z]$/.test(st.part)) return st.part.charCodeAt(0) - 64;
+    for (const k of ['round', 'sc', 'step', 'paso']) if (typeof st[k] === 'number') return st[k] + 1;
+    return 1;
+  }
 
   private _s = signal<S>({} as S);
   get state(): S {
@@ -91,8 +132,8 @@ export abstract class DcReto<S extends Record<string, any> = Record<string, any>
   yaRegistrado = computed(() => (this.progress.moduleStats(), this.progress.attempts(this.ejercicioId).length > 0));
 
   /** Registra el resultado del reto (una sola vez): los granos cuentan al terminar. */
-  protected registrar(points: number, items: FeedbackItem[], answers: Record<string, unknown>, summary: string, flags: Record<string, boolean> = {}) {
-    if (this.yaRegistrado()) return;
+  protected registrar(points: number, items: FeedbackItem[], answers: Record<string, unknown>, summary: string, flags: Record<string, boolean> = {}, mejora = false) {
+    if (this.yaRegistrado() && !mejora) return;
     const meta = this.meta();
     const result: EvalResult = { points: Math.max(0, points), max: meta.maxPoints, items, summary, flags };
     this.progress.submit(meta, result, { ...answers, estado: this.state });

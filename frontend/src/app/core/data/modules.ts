@@ -102,7 +102,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm2-organigrama',
         module: 2,
         code: '2.1',
-        title: 'Lienzo del organigrama',
+        title: 'Organigrama',
         route: 'organigrama',
         maxPoints: 70,
         fundamento:
@@ -116,13 +116,41 @@ export const MODULES: ModuleMeta[] = [
         id: 'm2-funciones',
         module: 2,
         code: '2.2',
-        title: 'Perfiles y funciones',
+        title: 'Funciones',
         route: 'funciones',
         maxPoints: 40,
         fundamento: 'Asignar perfiles y funciones a cada área representada en el organigrama.',
         interaccion: 'Ubica diez tarjetas de función sobre las áreas del organigrama que diseñaste.',
         consigna:
           'Cada área existe para algo. Asigna cada función al área del organigrama que debe responder por ella.',
+      },
+      {
+        id: 'm2-presupuesto-th',
+        module: 2,
+        code: '2.3',
+        title: 'Presupuesto de talento humano',
+        route: 'presupuesto-th',
+        maxPoints: 40,
+        fundamento:
+          'Distribuir el presupuesto de talento humano entre los cargos clave según lo que la empresa necesita.',
+        interaccion:
+          'Seis deslizadores con rango salarial, tope de COP 46 M mensuales, factor prestacional de 1,52 y una justificación.',
+        consigna:
+          'Tienes 46 millones (COP) mensuales para los salarios de seis cargos clave. Considera que si otorgas más a uno, otro recibe menos. Decide según lo que la empresa necesita para cumplir sus objetivos.',
+      },
+      {
+        id: 'm2-stakeholders',
+        module: 2,
+        code: '2.4',
+        title: 'Grupos de interés',
+        route: 'grupos-interes',
+        maxPoints: 50,
+        fundamento:
+          'Identificar los grupos de interés y su poder e interés, y elegir proveedores responsables.',
+        interaccion:
+          'Ubica cada grupo en la matriz poder/interés y decide con qué proveedores de cacao trabajar.',
+        consigna:
+          'Toda empresa tiene grupos de interés. Ubica a cada uno según su poder e interés, y luego decide con qué proveedores de cacao trabajar.',
       },
       {
         id: 'm2-presupuesto-verde',
@@ -138,20 +166,7 @@ export const MODULES: ModuleMeta[] = [
           'La junta aprobó COP 400 millones. Logra evitar al menos 150 t de CO₂ al año e incluye al menos una inversión con beneficio social directo.',
       },
     ],
-    omitted: [
-      {
-        code: '2.3',
-        title: 'Presupuesto de talento humano',
-        points: 40,
-        reason: 'Fuera del alcance de este prototipo (deslizadores salariales con tope de COP 46 M).',
-      },
-      {
-        code: '2.4',
-        title: 'Stakeholders',
-        points: 50,
-        reason: 'Aparece en la tabla de granos, pero el documento aún no tiene su descripción.',
-      },
-    ],
+    omitted: [],
     reflections: [
       '¿Qué cargo o área te parece indispensable para que la sostenibilidad no quede en el papel?',
       'En el presupuesto verde, ¿qué dejaste por fuera y qué perdiste con esa decisión?',
@@ -178,7 +193,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm3-dilemas',
         module: 3,
         code: '3.1',
-        title: 'Prácticas sostenibles y dilemas',
+        title: 'Dilemas',
         route: 'dilemas',
         maxPoints: 80,
         fundamento:
@@ -191,7 +206,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm3-crisis',
         module: 3,
         code: '3.2',
-        title: 'Liderar desde la crisis',
+        title: 'Liderar en crisis',
         route: 'crisis',
         maxPoints: 90,
         fundamento:
@@ -204,7 +219,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm3-comunicacion',
         module: 3,
         code: '3.3',
-        title: 'Comunicación efectiva y responsable',
+        title: 'Comunicación',
         route: 'comunicacion',
         maxPoints: 30,
         fundamento:
@@ -212,15 +227,22 @@ export const MODULES: ModuleMeta[] = [
         interaccion: 'Tres situaciones. Para cada una elige el mensaje (entre tres) y el canal (entre tres).',
         consigna: 'Lo que se comunica y cómo se comunica también es gestión sostenible. Elige el mensaje y el canal para cada caso.',
       },
-    ],
-    omitted: [
       {
+        id: 'm3-tablero-clima',
+        module: 3,
         code: '3.4',
-        title: 'Tablero de clima organizacional',
-        points: 50,
-        reason: 'Fuera del alcance de este prototipo (indicadores, umbrales de semáforo e interpretación).',
+        title: 'Tablero de clima',
+        route: 'tablero-clima',
+        maxPoints: 50,
+        fundamento:
+          'Construir un tablero de clima organizacional con indicadores, umbrales de semáforo e interpretación.',
+        interaccion:
+          'Elige cuatro indicadores, define sus umbrales (±20 %) y elige la lectura correcta del tablero.',
+        consigna:
+          'Arma el tablero de clima: elige cuatro indicadores, define cuándo están en verde y lee lo que muestran.',
       },
     ],
+    omitted: [],
     reflections: [
       '¿Cuál de las crisis te pareció más difícil y qué tipo de líder quisiste ser en ella?',
       '¿Recuerdas un caso real (una empresa o tu entorno) parecido a alguno de los dilemas?',
@@ -259,7 +281,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm4-cuellos-botella',
         module: 4,
         code: '4.2',
-        title: 'Reporte GRI y cuellos de botella',
+        title: 'Cuellos de botella',
         route: 'cuellos-botella',
         maxPoints: 60,
         fundamento:
@@ -272,7 +294,7 @@ export const MODULES: ModuleMeta[] = [
         id: 'm4-plan-accion',
         module: 4,
         code: '4.3',
-        title: 'Plan de acción y correctivos (PHVA)',
+        title: 'Plan de acción',
         route: 'plan-accion',
         maxPoints: 60,
         fundamento: 'Convertir la estrategia en un plan de acción y correctivos para atender las debilidades de sostenibilidad.',
@@ -280,15 +302,22 @@ export const MODULES: ModuleMeta[] = [
           'Una fila del plan por cada cuello de botella: lo que se hará (viene de 4.2), responsable (área del organigrama de 2.1), plazo, indicador de seguimiento, recurso y una frase sobre cómo saber que funcionó.',
         consigna: 'Estás en la etapa «Actuar» del ciclo PHVA. Tu plan permite reiniciar el ciclo con mejores datos.',
       },
-    ],
-    omitted: [
       {
+        id: 'm4-cerrar-circulo',
+        module: 4,
         code: '4.4',
         title: 'Cerrar el círculo',
-        points: 60,
-        reason: 'Incluye la descarga del informe final en PDF, que se omite en este prototipo.',
+        route: 'cerrar-circulo',
+        maxPoints: 60,
+        fundamento:
+          'Revisar los objetivos del Módulo 1 con sus resultados y decidir si se mantienen, se ajustan o se cambian.',
+        interaccion:
+          'Para cada uno de los cuatro objetivos elige mantener, ajustar o cambiar, y descarga el informe final en PDF.',
+        consigna:
+          'Vuelves a los cuatro objetivos del Módulo 1. Con su resultado, decide para cada uno: mantener la meta, ajustarla o cambiar la estrategia.',
       },
     ],
+    omitted: [],
     reflections: [
       '¿Qué decisión tomada en un módulo anterior cambió lo que viste en el módulo 4?',
       'Si tuvieras que explicar a la junta directiva en un minuto cómo va CACAO Raíz S.A.S., ¿qué dirías?',

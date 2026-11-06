@@ -5,7 +5,7 @@
       <span style="background: #FFFFFF; border-radius: 6px; padding: 6px 10px; display: inline-flex"><app-logo-uao /></span>
     </div>
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-      <span class="px" [attr.aria-label]="overall().points + ' granos'" style="height: 44px; box-sizing: border-box; margin-right: 10px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border: 2px solid #FFD3C9; border-radius: 6px; font-size: 10px; background-color: #FFD3C9"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 25px; height: 25px"><ellipse cx="12" cy="12" rx="7" ry="9" fill="#9A5B2E" transform="rotate(-20 12 12)"></ellipse><path d="M13 4c-2 5-2 11-3 16" stroke="#FF836C" stroke-width="1.5" fill="none"></path></svg><span style="color: #231417">{{ overall().points }}</span></span>
+      <span class="px" [attr.aria-label]="overall().points + ' granos'" style="height: 44px; box-sizing: border-box; margin-right: 10px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border: 2px solid #FFD3C9; border-radius: 6px; font-size: 16px; background-color: #FFD3C9"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><ellipse cx="12" cy="12" rx="7" ry="9" fill="#9A5B2E" transform="rotate(-20 12 12)"></ellipse><path d="M13 4c-2 5-2 11-3 16" stroke="#FF836C" stroke-width="1.5" fill="none"></path></svg><span style="color: #231417">{{ overall().points }}</span></span>
       @for (t of tools(); track t.key) {
         <div style="position: relative" data-keep>
           @if (t.href) {
@@ -56,12 +56,12 @@
       <!-- MAPA -->
       <section class="gpanel mapa" aria-label="Mapa de tu empresa" style="flex: 1 1 100%; min-width: 0; background: #FFFFFF; padding: 10px; position: relative; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
         <div data-tour="mapa" style="position: relative; flex: 1; min-height: 0">
-          <app-mapa-ilustracion [anio]="viewYear()" [zonas]="zoneStates()" [capas]="scene()" [capasMapa]="mapLayers()" [recuerdo]="memory()" />
+          <app-mapa-ilustracion [anio]="viewYear()" [zonas]="zoneStates()" [capas]="scene()" [capasMapa]="mapLayers()" [animar]="!!anim()" [recuerdo]="memory()" />
           @if (memory()) {
             <div style="position: absolute; inset: 0; border-radius: 16px; box-shadow: inset 0 0 0 6px #9A5B2E; pointer-events: none"></div>
-            <div class="up" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 14px; border-radius: 6px; background: #231417; color: #FBF5EC; box-shadow: 4px 4px 0 #9A5B2E; white-space: nowrap">
-              <span class="px" style="font-size: 10px; color: #FFD3C9">RECUERDO · {{ viewYear() }}</span>
-              <button type="button" (click)="view.set(null)" style="min-height: 34px; padding: 0 12px; border-radius: 4px; border: none; background: #FF836C; color: #1A0609; font-weight: 800; font-size: 13px; cursor: pointer">Volver a hoy</button>
+            <div class="up hoy" style="position: absolute; z-index: 7; bottom: 24px; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 24px); box-sizing: border-box; display: flex; align-items: center; gap: 16px; padding: 10px 10px 10px 22px; border-radius: 999px; background: #FFFFFF; color: #231417; box-shadow: 0 6px 0 #9A5B2E, 0 18px 40px rgba(0,0,0,0.45)">
+              <span style="display: flex; flex-direction: column; line-height: 1.15"><span class="px" style="font-size: 11px; color: #9A5B2E">RECUERDO</span><strong style="font-size: 18px">Estás viendo {{ viewYear() }}</strong></span>
+              <button type="button" (click)="view.set(null)" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: none; background: #AC0B32; color: #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"></path></svg>Volver a hoy</button>
             </div>
           } @else {
             @for (z of zones(); track z.id) {
@@ -126,14 +126,19 @@
             </button>
           }
         </section>
-        <ul aria-label="ODS que vas logrando" class="ods" style="pointer-events: auto; position: absolute; right: 0; top: 92px; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
+        <ul aria-label="ODS que vas logrando" class="ods" data-tour="ods" style="pointer-events: auto; position: absolute; right: 0; top: 92px; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
           @for (o of ods(); track o.n) {
-            <li class="float" [style.animation-delay]="o.delay"><span role="img" [attr.aria-label]="o.aria" [title]="o.aria" [style.background]="o.bg" [style.border]="'3px solid ' + o.bd" [style.color]="o.fg" style="width: 56px; height: 56px; box-sizing: border-box; border-radius: 999px; box-shadow: 0 3px 0 rgba(35,20,23,0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1"><span style="font-size: 9px; font-weight: 800; letter-spacing: 0.12em; opacity: 0.9">ODS</span><span style="font-size: 20px; font-weight: 800">{{ o.n }}</span></span></li>
+            <li class="float" [style.animation-delay]="o.delay"><span role="img" [class.ods-on]="o.on" [class.ods-nuevo]="o.nuevo" [attr.aria-label]="o.aria" [title]="o.aria" [style.background]="o.bg" [style.border]="'3px solid ' + o.bd" [style.color]="o.fg" style="width: 56px; height: 56px; box-sizing: border-box; border-radius: 999px; box-shadow: 0 3px 0 rgba(35,20,23,0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1"><span style="font-size: 9px; font-weight: 800; letter-spacing: 0.12em; opacity: 0.9">ODS</span><span style="font-size: 20px; font-weight: 800">{{ o.n }}</span></span></li>
           }
         </ul>
       </aside>
     </div>
   </main>
+  @if (anim(); as a) {
+    <div class="bloqueo" aria-busy="true">
+      <div class="up" role="status" aria-live="polite" style="position: absolute; bottom: 132px; left: 50%; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: #2A0B12; color: #FBF5EC; border: 3px solid #FF836C; box-shadow: 4px 4px 0 #8A1428; font-weight: 800; font-size: 16px; white-space: nowrap">{{ a.texto }}</div>
+    </div>
+  }
 </div>
 
 <app-tour [steps]="tourSteps" (closed)="tourClosed()" />

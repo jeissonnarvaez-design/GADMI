@@ -26,8 +26,13 @@ export interface MapLayers {
   arboles: boolean;
   /** Humo de la planta: 2 = fuerte, 1 = suave, 0 = nada. */
   humo: 0 | 1 | 2;
-  /** Frase bandera del reto 1.2 (máx. 40 caracteres) para la pancarta de la sala. */
+  /** Frase bandera del reto 1.2 (máx. 26 caracteres) para la pancarta de la sala. */
   frase: string;
+}
+
+/** «Menos movimiento» (preferencia del sistema o del menú de accesibilidad). */
+export function menosMovimiento(): boolean {
+  return (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) || document.documentElement.classList.contains('menos-movimiento');
 }
 
 const MAP_URL = '/assets/mapa/mapa-ruta.svg';
@@ -94,9 +99,16 @@ function loadMap() {
     .puff{transform-box:fill-box;animation:puff 2.4s ease-out infinite}.p2{animation-delay:.8s}.p3{animation-delay:1.6s}
     @media (prefers-reduced-motion: reduce){.pop,.puff{animation:none}}
     :host ::ng-deep .mapa-host svg{display:block;width:100%;height:100%}
-    :host ::ng-deep .m-sala-0 #sala-buena, :host ::ng-deep .m-sala-1 #sala-mala, :host ::ng-deep .m-mercado-0 #mercado-buena, :host ::ng-deep .m-mercado-1 #mercado-mala,
-    :host ::ng-deep .m-planta-0 #planta-buena, :host ::ng-deep .m-planta-1 #planta-mala, :host ::ng-deep .m-finca-0 #finca-buena, :host ::ng-deep .m-finca-1 #finca-mala,
-    :host ::ng-deep .no-composta #Composta, :host ::ng-deep .no-arboles #Arboles{display:none}
+    /* Cambio de capa con efecto de videojuego (al volver de un módulo): la mala se desvanece,
+       la buena aparece con destello, chispas y un pequeño rebote (~1,2 s). */
+    @keyframes aparece{0%{opacity:0;transform:scale(.6) translateY(18px)}55%{opacity:1;transform:scale(1.08) translateY(-6px)}78%{transform:scale(.97) translateY(0)}100%{opacity:1;transform:scale(1)}}
+    @keyframes seVa{0%{opacity:1;filter:none}40%{filter:brightness(2.2)}100%{opacity:0;transform:scale(.94);filter:brightness(2.2)}}
+    @keyframes destello{0%{opacity:.95;transform:scale(.2)}100%{opacity:0;transform:scale(1.6)}}
+    @keyframes chispa{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}}
+    :host ::ng-deep .aparece{transform-box:fill-box;transform-origin:center bottom;animation:aparece .95s cubic-bezier(.2,.7,.2,1.2) both}
+    :host ::ng-deep .se-va{transform-box:fill-box;transform-origin:center bottom;animation:seVa .55s ease-in both}
+    :host ::ng-deep .destello{transform-box:fill-box;transform-origin:center;fill:#FFF6D8;animation:destello .8s ease-out both}
+    :host ::ng-deep .chispa{transform-box:fill-box;transform-origin:center;animation:chispa .9s cubic-bezier(.2,.7,.3,1) both}
     @keyframes smk{0%{opacity:0;transform:translateY(10px) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translateY(-110px) scale(1.6)}}
     :host ::ng-deep .humo circle{fill:#B9B1AE;transform-box:fill-box;transform-origin:center;animation:smk 3.3s ease-out infinite}
     :host ::ng-deep .humo circle:nth-child(2){animation-delay:1.1s} :host ::ng-deep .humo circle:nth-child(3){animation-delay:2.2s}
@@ -115,6 +127,8 @@ export class MapaIlustracion {
   recuerdo = input(false);
   /** Capas del SVG ilustrado (si existe). */
   capasMapa = input<MapLayers | null>(null);
+  /** true mientras la Ruta reproduce los cambios de un módulo recién cerrado. */
+  animar = input(false);
 
   ready = signal(false);
   private el = inject(ElementRef<HTMLElement>);
@@ -122,7 +136,8 @@ export class MapaIlustracion {
     const c = this.capasMapa();
     if (!c) return 'mapa-host';
     const b = (x: boolean) => (x ? 1 : 0);
-    return ['mapa-host', 'humo-' + c.humo, 'm-sala-' + b(c.sala), 'm-mercado-' + b(c.mercado), 'm-planta-' + b(c.planta), 'm-finca-' + b(c.finca), c.composta ? '' : 'no-composta', c.arboles ? '' : 'no-arboles'].join(' ');
+    void b;
+    return 'mapa-host humo-' + c.humo;
   });
 
   constructor() {
@@ -140,12 +155,79 @@ export class MapaIlustracion {
       }
       this.addHumo(host);
       this.ready.set(true);
+      this.aplicarCapas(false);
       this.setFrase();
     });
     effect(() => {
       this.capasMapa();
+      this.aplicarCapas(this.animar());
       this.setFrase();
     });
+  }
+
+  /** Último estado aplicado de cada capa (para saber qué cambió). */
+  private aplicadas: Record<string, boolean> | null = null;
+
+  /**
+   * Muestra u oculta las capas del SVG. Con `animar` (al volver de un módulo), cada cambio
+   * se ve con el efecto de videojuego; sin él (o con «menos movimiento»), es directo.
+   */
+  private aplicarCapas(animar: boolean) {
+    const c = this.capasMapa();
+    const host = this.el.nativeElement.querySelector('.mapa-host') as HTMLElement | null;
+    if (!c || !host?.querySelector('svg')) return;
+    const quiero: Record<string, boolean> = {
+      'sala-buena': c.sala, 'sala-mala': !c.sala, 'mercado-buena': c.mercado, 'mercado-mala': !c.mercado,
+      'planta-buena': c.planta, 'planta-mala': !c.planta, 'finca-buena': c.finca, 'finca-mala': !c.finca,
+      Composta: c.composta, Arboles: c.arboles,
+    };
+    const antes = this.aplicadas;
+    const mover = animar && !!antes && !menosMovimiento();
+    for (const [id, on] of Object.entries(quiero)) {
+      const g = host.querySelector('#' + id) as SVGGElement | null;
+      if (!g) continue;
+      const cambio = antes ? antes[id] !== on : true;
+      if (!mover || !cambio) {
+        g.style.display = on ? '' : 'none';
+        continue;
+      }
+      if (on) {
+        g.style.display = '';
+        g.classList.remove('se-va');
+        g.classList.add('aparece');
+        this.chispas(g);
+        setTimeout(() => g.classList.remove('aparece'), 1100);
+      } else {
+        g.classList.add('se-va');
+        setTimeout(() => { g.classList.remove('se-va'); if (this.aplicadas?.[id] === false) g.style.display = 'none'; }, 560);
+      }
+    }
+    this.aplicadas = quiero;
+  }
+
+  /** Destello y polvo de partículas sobre una capa que aparece. */
+  private chispas(g: SVGGElement) {
+    const root = g.ownerSVGElement?.querySelector('svg > g') ?? g.ownerSVGElement;
+    if (!root) return;
+    let bb: DOMRect;
+    try { bb = g.getBBox(); } catch { return; }
+    const NS = 'http://www.w3.org/2000/svg';
+    const cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2, r = Math.max(bb.width, bb.height) / 2;
+    const fx = document.createElementNS(NS, 'g');
+    const flash = document.createElementNS(NS, 'circle');
+    flash.setAttribute('class', 'destello'); flash.setAttribute('cx', String(cx)); flash.setAttribute('cy', String(cy)); flash.setAttribute('r', String(r * 0.7));
+    fx.appendChild(flash);
+    const colores = ['#FFD3C9', '#FCC30B', '#FFFFFF', '#FF836C', '#56C02B'];
+    for (let k = 0; k < 16; k++) {
+      const a = (k / 16) * Math.PI * 2, d = r * (0.7 + (k % 3) * 0.25);
+      const p = document.createElementNS(NS, 'circle');
+      p.setAttribute('class', 'chispa'); p.setAttribute('cx', String(cx)); p.setAttribute('cy', String(cy)); p.setAttribute('r', String(6 + (k % 3) * 3));
+      p.setAttribute('fill', colores[k % colores.length]);
+      p.setAttribute('style', `--dx:${Math.round(Math.cos(a) * d)}px;--dy:${Math.round(Math.sin(a) * d)}px;animation-delay:${(k % 4) * 0.04}s`);
+      fx.appendChild(p);
+    }
+    root.appendChild(fx);
+    setTimeout(() => fx.remove(), 1200);
   }
 
   /** Humo por código: 3 bocanadas sobre las dos chimeneas altas de la planta. */
@@ -180,10 +262,10 @@ export class MapaIlustracion {
       t.setAttribute('x', '1225');
       t.setAttribute('y', '684');
       t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('style', "font-family:'Pixelify Sans',monospace;font-weight:700;font-size:42px;fill:#2C5E31");
+      t.setAttribute('style', "font-family:'Baloo 2',sans-serif;font-weight:800;font-size:44px;fill:#2C5E31");
       g.appendChild(t);
     }
-    t.textContent = (this.capasMapa()?.frase ?? '').slice(0, 40);
+    t.textContent = (this.capasMapa()?.frase ?? '').slice(0, 26);
   }
 
   label = computed(() => (this.recuerdo() ? 'Recuerdo: ' : '') + 'Ilustración de CACAO Raíz en ' + this.anio());

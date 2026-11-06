@@ -137,18 +137,12 @@ export class ApiService {
   loginDocente(correo: string, password: string) {
     return this.loud(this.http.post<{ token: string; docente: Teacher }>(`${API_URL}/auth/docente/login`, { correo, password }));
   }
-  registroDocente(data: { nombre: string; correo: string; password: string; codigoRegistro: string }) {
-    return this.loud(this.http.post<{ token: string; docente: Teacher }>(`${API_URL}/auth/docente/registro`, data));
-  }
   loginEstudiante(correo: string, password: string) {
     return this.loud(this.http.post<{ token: string; estudiante: Student }>(`${API_URL}/auth/estudiante/login`, { correo, password }));
   }
-  registroEstudiante(data: { nombre: string; codigo: string; correo: string; grupo: string; password: string }) {
-    return this.loud(this.http.post<{ token: string; estudiante: Student }>(`${API_URL}/auth/estudiante/registro`, data));
-  }
 
   // ---------- Estudiante
-  saveOnboarding(data: { aceptaPrivacidad?: string; preferencias?: Preferences; cartaFirmada?: string; tourVisto?: string }) {
+  saveOnboarding(data: { aceptaPrivacidad?: string; avisoVersion?: string; preferencias?: Preferences; cartaFirmada?: string; tourVisto?: string }) {
     return this.quiet(this.http.put(`${API_URL}/estudiante/onboarding`, data));
   }
   /** Dictado: audio grabado (base64) → texto con Gemini en el servidor. */

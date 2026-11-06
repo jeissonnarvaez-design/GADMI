@@ -1,0 +1,69 @@
+{
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m4-cerrar-circulo",
+  "code": "4.4",
+  "title": "Cerrar el círculo",
+  "max": 60,
+  "CONSIGNA": "Vuelves a los cuatro objetivos del Módulo 1. Con su resultado, decide para cada uno: mantener la meta, ajustarla o cambiar la estrategia.",
+  "O": [
+    [
+      "Energía",
+      "#3F7E44",
+      "−3 % (505 kWh/t)",
+      "−20 % por tonelada",
+      "Lejos de la meta",
+      [
+        "cambiar"
+      ],
+      "El resultado está lejos: hay que cambiar la estrategia."
+    ],
+    [
+      "Familias",
+      "#FF836C",
+      "95 %",
+      "100 % capacitadas",
+      "Muy cerca de la meta",
+      [
+        "mantener"
+      ],
+      "Va bien: se mantiene."
+    ],
+    [
+      "Ventas",
+      "#9A5B2E",
+      "+12 %",
+      "+15 % nacional",
+      "Cerca de la meta",
+      [
+        "mantener",
+        "ajustar"
+      ],
+      "Mantener o ajustar son viables."
+    ],
+    [
+      "Gobernanza",
+      "#8A1428",
+      "3 de 3",
+      "3 hitos",
+      "Meta cumplida",
+      [
+        "mantener"
+      ],
+      "Se mantiene y pasa al siguiente hito."
+    ]
+  ],
+  "D": [
+    [
+      "mantener",
+      "Mantener"
+    ],
+    [
+      "ajustar",
+      "Ajustar"
+    ],
+    [
+      "cambiar",
+      "Cambiar"
+    ]
+  ]
+}

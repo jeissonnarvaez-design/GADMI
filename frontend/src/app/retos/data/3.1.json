@@ -1,34 +1,131 @@
 {
-  "id": "m3-dilemas", "code": "3.1", "title": "Prácticas y dilemas", "template": "tarjetas", "max": 80,
-  "who": "nibi",
-  "prompt": "No todo lo que parece buena práctica lo es. ¿Qué es cada una?",
-  "listen": "No todo lo que parece buena práctica lo es. Sostenible, riesgo ético, riesgo ambiental, o ambos.",
-  "endTitles": { "perfect": "¡Ojo de líder!", "first": "Buen comienzo.", "second": "Misión cumplida." },
-  "flags": { "rondaGreenwashing": { "items": ["r1a", "r1b", "r1c"] } },
-  "rounds": [
-    {
-      "zones": [
-        { "id": "positivo", "label": "Sostenible", "sub": "buena práctica", "icon": "M5 12l5 5 9-10" },
-        { "id": "etico", "label": "Riesgo ético", "sub": "personas y confianza", "icon": "M12 3l9 16H3zM12 10v4M12 17v.5" },
-        { "id": "ambiental", "label": "Riesgo ambiental", "sub": "planeta", "icon": "M12 22v-7M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" },
-        { "id": "ambos", "label": "Ético y ambiental", "sub": "los dos", "icon": "M6 6l12 12M18 6L6 18", "plain": true }
-      ],
-      "defaultHint": "¿A quién afecta: a las personas y la confianza, al ambiente, o a ambos?",
-      "zoneHints": { "positivo": "¿Deja evidencia verificable y cuida a las personas y al ambiente?" },
-      "cards": [
-        { "id": "r1a", "group": "Greenwashing", "text": "Imprimir «100 % natural y ecológico» en el empaque sin ninguna certificación.", "answer": "etico", "accept": ["etico", "ambos"], "points": 5, "explanation": "Riesgo ético: engaña al consumidor." },
-        { "id": "r1b", "group": "Greenwashing", "text": "Publicar que la empresa redujo 8 % sus emisiones, indicando cómo se midió y qué incluye la cifra.", "answer": "positivo", "points": 10, "explanation": "Práctica sostenible: comunica con datos verificables." },
-        { "id": "r1c", "group": "Greenwashing", "text": "Poner una imagen de selva en el empaque de un producto cuyo origen no se puede rastrear.", "answer": "ambos", "points": 5, "explanation": "Riesgo ético y ambiental." },
-        { "id": "r2a", "group": "Residuos peligrosos", "text": "Mezclar el aceite usado de las máquinas con la basura común para ahorrar costos.", "answer": "ambos", "points": 5, "explanation": "Riesgo ambiental y ético." },
-        { "id": "r2b", "group": "Residuos peligrosos", "text": "Almacenar temporalmente los residuos peligrosos y entregarlos a un gestor autorizado, dejando registro.", "answer": "positivo", "points": 10, "explanation": "Práctica sostenible con trazabilidad." },
-        { "id": "r2c", "group": "Residuos peligrosos", "text": "Enterrar en el lote trasero los envases de químicos de limpieza.", "answer": "ambiental", "accept": ["ambiental", "ambos"], "points": 5, "explanation": "Riesgo ambiental." },
-        { "id": "r3a", "group": "Condiciones laborales", "text": "Turnos de 12 horas en temporada alta sin pago de horas extra.", "answer": "etico", "accept": ["etico", "ambos"], "points": 5, "explanation": "Riesgo ético: incumple derechos laborales." },
-        { "id": "r3b", "group": "Condiciones laborales", "text": "Contratar por prestación de servicios a quienes cumplen funciones permanentes.", "answer": "etico", "accept": ["etico", "ambos"], "points": 5, "explanation": "Riesgo ético." },
-        { "id": "r3c", "group": "Condiciones laborales", "text": "Acordar con el personal la rotación de turnos en temporada alta y pagar las horas extra de ley.", "answer": "positivo", "points": 10, "explanation": "Práctica sostenible." },
-        { "id": "r4a", "group": "Proveedores", "text": "Comprar a un intermediario que no informa el origen del cacao porque es 10 % más barato.", "answer": "ambos", "points": 5, "explanation": "Riesgo ético y ambiental: rompe la trazabilidad." },
-        { "id": "r4b", "group": "Proveedores", "text": "Pagar a las familias productoras a 120 días.", "answer": "etico", "accept": ["etico", "ambos"], "points": 5, "explanation": "Riesgo ético." },
-        { "id": "r4c", "group": "Proveedores", "text": "Firmar con las familias contratos a dos años con precio mínimo garantizado y asistencia técnica.", "answer": "positivo", "points": 10, "explanation": "Práctica sostenible." }
+  "_nota": "Contenido oficial del documento de la profesora (y propuestas aprobadas por el equipo). No modificar textos, respuestas ni granos.",
+  "id": "m3-dilemas",
+  "code": "3.1",
+  "title": "Dilemas",
+  "max": 80,
+  "CONSIGNA": "En cada ronda hay una práctica sostenible y dos riesgos. Clasifica cada tarjeta.",
+  "CH": [
+    [
+      "pos",
+      "✔ Sostenible",
+      "#4E9A4A",
+      "#EAF6E7",
+      "#A9D8A4",
+      "#2C5E31"
+    ],
+    [
+      "e",
+      "Riesgo ético",
+      "#8A1428",
+      "#FFFFFF",
+      "#EFE6E6",
+      "#231417"
+    ],
+    [
+      "a",
+      "Riesgo ambiental",
+      "#8A1428",
+      "#FFFFFF",
+      "#EFE6E6",
+      "#231417"
+    ],
+    [
+      "ea",
+      "Ético y ambiental",
+      "#8A1428",
+      "#FFFFFF",
+      "#EFE6E6",
+      "#231417"
+    ]
+  ],
+  "R": [
+    [
+      "GREENWASHING",
+      [
+        [
+          "Imprimir «100 % natural y ecológico» en el empaque sin ninguna certificación.",
+          "e"
+        ],
+        [
+          "Publicar que la empresa redujo 8 % sus emisiones, indicando cómo se midió y qué incluye la cifra.",
+          "pos"
+        ],
+        [
+          "Poner una imagen de selva en el empaque de un producto cuyo origen no se puede rastrear.",
+          "ea"
+        ]
       ]
-    }
-  ]
+    ],
+    [
+      "RESIDUOS PELIGROSOS",
+      [
+        [
+          "Mezclar el aceite usado de las máquinas con la basura común para ahorrar costos.",
+          "ea"
+        ],
+        [
+          "Almacenar temporalmente los residuos peligrosos y entregarlos a un gestor autorizado, dejando registro.",
+          "pos"
+        ],
+        [
+          "Enterrar en el lote trasero los envases de químicos de limpieza.",
+          "a"
+        ]
+      ]
+    ],
+    [
+      "CONDICIONES LABORALES",
+      [
+        [
+          "Turnos de 12 horas en temporada alta sin pago de horas extra.",
+          "e"
+        ],
+        [
+          "Contratar por prestación de servicios a quienes cumplen funciones permanentes.",
+          "e"
+        ],
+        [
+          "Acordar con el personal la rotación de turnos en temporada alta y pagar las horas extra de ley.",
+          "pos"
+        ]
+      ]
+    ],
+    [
+      "PROVEEDORES",
+      [
+        [
+          "Comprar a un intermediario que no informa el origen del cacao porque es 10 % más barato.",
+          "ea"
+        ],
+        [
+          "Pagar a las familias productoras a 120 días.",
+          "e"
+        ],
+        [
+          "Firmar con las familias contratos a dos años con precio mínimo garantizado y asistencia técnica.",
+          "pos"
+        ]
+      ]
+    ]
+  ],
+  "LAB": [
+    [
+      "e",
+      "Ético"
+    ],
+    [
+      "a",
+      "Ambiental"
+    ],
+    [
+      "ea",
+      "Ambos"
+    ]
+  ],
+  "LNAME": {
+    "e": "riesgo ético",
+    "a": "riesgo ambiental",
+    "ea": "riesgo ético y ambiental"
+  }
 }
