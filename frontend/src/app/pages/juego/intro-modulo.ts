@@ -20,7 +20,7 @@ const VIDEOS: Record<number, string[]> = {
   1: ['YouCut_20261106_001829818.mp4', 'modulo-1.mp4'],
   2: ['YouCut_20261106_010031608.mp4', 'modulo-2.mp4'],
   3: ['YouCut_20261106_012542973.mp4', 'modulo-3.mp4'],
-  4: ['modulo-4.mp4'],
+  4: ['YouCut_20261106_014951445.mp4', 'modulo-4.mp4'],
 };
 
 /**
