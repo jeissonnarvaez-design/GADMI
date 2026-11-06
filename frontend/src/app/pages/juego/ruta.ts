@@ -186,7 +186,9 @@ export class RutaPage {
   private itemInfo(it: Item) {
     if (it.kind === 'reto') {
       const e = this.exercise(it.code);
-      return { module: e.module, state: this.retoState(it.code), name: it.code + ' ' + (RETOS_JSON[it.code]?.title ?? e.title), pts: e.maxPoints + ' pts', link: '/reto/' + it.code };
+      // Si el módulo aún no empieza, el reto lleva primero a la intro del módulo (video y «COMENZAR»).
+      const empezado = MODULES[e.module - 1].exercises.some((x) => this.progress.isCompleted(x.id));
+      return { module: e.module, state: this.retoState(it.code), name: it.code + ' ' + (RETOS_JSON[it.code]?.title ?? e.title), pts: e.maxPoints + ' pts', link: empezado ? '/reto/' + it.code : '/modulo/' + e.module };
     }
     const m = MODULES[it.module - 1];
     const s = this.stats()[it.module - 1];
@@ -198,9 +200,9 @@ export class RutaPage {
   /** Zona donde está el siguiente reto pendiente. */
   missionZone = computed(() => {
     const link = this.mission().link;
-    const code = link.startsWith('/reto/') ? link.slice(6) : null;
+    const code = link.startsWith('/reto/') ? link.slice(6) : ((this.mission() as { code?: string }).code ?? null);
     const mod = link.startsWith('/modulo/') ? Number(link.slice(8)) : null;
-    return ZONES.findIndex((z) => z.items.some((it) => (it.kind === 'reto' ? it.code === code : it.module === mod)));
+    return ZONES.findIndex((z) => z.items.some((it) => (it.kind === 'reto' ? it.code === code : it.module === mod && !(code && z.items.some((x) => x.kind === 'reto' && x.code === code)))));
   });
 
   zones = computed(() => {
@@ -285,7 +287,8 @@ export class RutaPage {
       const pending = m.exercises.find((e) => !this.progress.isCompleted(e.id));
       if (pending) {
         const started = m.exercises.some((e) => this.progress.isCompleted(e.id));
-        if (m.id > 1 && !started) return { text: 'Intro del módulo ' + m.id + ' · ' + m.phase, link: '/modulo/' + m.id };
+        // Todo módulo (también el 1) empieza por su intro: video y «COMENZAR».
+        if (!started) return { text: 'Intro del módulo ' + m.id + ' · ' + m.phase, link: '/modulo/' + m.id, code: pending.code };
         const zone = ZONES.find((z) => z.items.some((it) => (it.kind === 'reto' ? it.code === pending.code : it.module === m.id)));
         return { text: pending.code + ' ' + (RETOS_JSON[pending.code]?.title ?? pending.title) + ' · ' + (zone?.name ?? m.phase), link: '/reto/' + pending.code };
       }
