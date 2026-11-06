@@ -7,11 +7,14 @@
 
   <main style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; justify-content: center">
     <section #stage aria-label="Video de bienvenida" class="stage" [style.height.px]="560 * k()" style="position: relative; height: 560px; border-radius: 22px; overflow: hidden; background: #FBF5EC">
-      <!-- Video real: /assets/video/bienvenida.mp4 con subtítulos .vtt. Si aún no existe, se ve la versión animada. -->
-      <video #vid [hidden]="!videoReady()" src="/assets/video/bienvenida.mp4" preload="metadata" playsinline
-        (loadedmetadata)="onVideoReady()" (error)="videoReady.set(false)" (timeupdate)="onTime()" (seeking)="onSeeking()" (play)="playing.set(true)" (pause)="playing.set(false)" (ended)="onEnded()"
-        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #231417">
-        <track kind="captions" src="/assets/video/bienvenida.vtt" srclang="es" label="Español" default>
+      <!-- Video real de bienvenida (ya trae su propia voz: aquí nunca se usa la voz del navegador ni la de IA).
+           Se prueba primero bienvenida.mp4 (si lo conviertes) y luego IMG_7890.MOV. Subtítulos: bienvenida.vtt -->
+      <video #vid [hidden]="!videoReady()" preload="auto" playsinline
+        (loadedmetadata)="onVideoReady()" (timeupdate)="onTime()" (seeking)="onSeeking()" (play)="playing.set(true)" (pause)="playing.set(false)" (ended)="onEnded()"
+        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #231417">
+        <source src="/assets/video/bienvenida.mp4" type="video/mp4">
+        <source src="/assets/video/IMG_7890.MOV" (error)="sinVideo()">
+        <track #pista kind="captions" src="/assets/video/bienvenida.vtt" srclang="es" label="Español" default (load)="leerSubtitulos()">
       </video>
       @if (videoReady()) {
         @if (ended()) {
@@ -112,7 +115,8 @@
     </div>
     @if (tr()) {
       <section id="transcripcion" aria-label="Transcripción del video" style="background: #2A1A1D; border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; color: #FBF5EC; font-size: 15px">
-        @for (l of transcript; track $index) { <span><strong style="color: #FBF5EC">{{ l[0] }}:</strong> {{ l[1] }}</span> }
+        @for (l of transcripcion(); track $index) { <span>@if (l[0]) {<strong style="color: #FBF5EC">{{ l[0] }}:&nbsp;</strong> }{{ l[1] }}</span> }
+        @if (!transcripcion().length) { <span>La transcripción aparecerá cuando se agregue el archivo de subtítulos del video.</span> }
       </section>
     }
   </main>

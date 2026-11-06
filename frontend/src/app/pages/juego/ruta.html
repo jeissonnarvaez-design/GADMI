@@ -51,11 +51,11 @@
     </ol>
   </nav>
 
-  <main class="ruta-main" style="flex: 1; width: 100%; padding: 0 28px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+  <main style="flex: 1; width: 100%; padding: 0 28px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
     <div style="position: relative; display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; flex: 1">
       <!-- MAPA -->
       <section class="gpanel mapa" aria-label="Mapa de tu empresa" style="flex: 1 1 100%; min-width: 0; background: #FFFFFF; padding: 10px; position: relative; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
-        <div data-tour="mapa" class="marco" style="position: relative">
+        <div data-tour="mapa" style="position: relative; flex: 1; min-height: 0">
           <app-mapa-ilustracion [anio]="viewYear()" [zonas]="zoneStates()" [capas]="scene()" [capasMapa]="mapLayers()" [recuerdo]="memory()" />
           @if (memory()) {
             <div style="position: absolute; inset: 0; border-radius: 16px; box-shadow: inset 0 0 0 6px #9A5B2E; pointer-events: none"></div>
@@ -65,15 +65,15 @@
             </div>
           } @else {
             @for (z of zones(); track z.id) {
-              <div data-keep [style.left]="z.x" [style.top]="z.y" [style.z-index]="z.zi" style="position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center">
+              <div data-keep [style.left]="'clamp(70px, ' + z.x + ', calc(100% - 70px))'" [style.top]="z.y" [style.z-index]="z.zi" style="position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center">
                 @if (z.mission && !z.sel) {
-                  <span class="bounce px mision-tag" aria-hidden="true" style="position: absolute; bottom: calc(100% + 4px); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #AC0B32; white-space: nowrap"><span style="padding: 4px 6px; border-radius: 4px; background: #AC0B32; color: #FFFFFF">MISIÓN</span><svg width="16" height="10" viewBox="0 0 16 10"><path d="M0 0h16L8 10z" fill="#AC0B32"></path></svg></span>
+                  <span class="bounce px" aria-hidden="true" style="position: absolute; bottom: calc(100% + 4px); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #AC0B32; white-space: nowrap"><span style="padding: 4px 6px; border-radius: 4px; background: #AC0B32; color: #FFFFFF">MISIÓN</span><svg width="16" height="10" viewBox="0 0 16 10"><path d="M0 0h16L8 10z" fill="#AC0B32"></path></svg></span>
                 }
                 <button type="button" class="pin" (click)="pickZone(z.i)" (mouseenter)="tip.set('z' + z.i)" (mouseleave)="unhover()" (focus)="tip.set('z' + z.i)" (blur)="unhover()" [attr.aria-pressed]="z.sel ? 'true' : 'false'" [attr.aria-expanded]="z.st !== 'locked' || z.inOrder ? (z.menu ? 'true' : 'false') : null" [attr.aria-haspopup]="z.st !== 'locked' || z.inOrder ? 'menu' : null" [attr.aria-label]="z.aria"
                   [style.border]="'3px solid ' + z.bd" [style.background]="z.bg" [style.color]="z.fg" [style.opacity]="z.op"
                   style="display: flex; align-items: center; gap: 8px; padding: 7px 16px 7px 7px; border-radius: 999px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 rgba(35,20,23,0.45), 0 14px 28px rgba(0,0,0,0.35); white-space: nowrap">
                   <span [class.pulse]="z.pulse" [style.background]="z.dot" style="width: 30px; height: 30px; border-radius: 999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="z.pinIcon"></path></svg></span>
-                  <span class="pin-nombre">{{ z.name }}</span>
+                  {{ z.name }}
                   <span class="px chip" [style.background]="z.stBg" style="font-size: 10px; padding: 4px 6px; border-radius: 4px; color: #FFFFFF">{{ z.stT }}</span>
                 </button>
                 <span aria-hidden="true" [style.border-top]="'13px solid ' + z.bd" style="width: 0; height: 0; margin-top: 3px; border-left: 11px solid transparent; border-right: 11px solid transparent; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.35))"></span>
@@ -92,7 +92,7 @@
               </div>
             }
             @if (boardMessage(); as msg) {
-              <button type="button" data-keep class="pin bounce evento" (click)="toggleEvent()" [attr.aria-expanded]="event() ? 'true' : 'false'" [attr.aria-label]="'Novedad: ' + msg.titulo" style="position: absolute; left: 44%; top: 30%; z-index: 3; width: 46px; height: 46px; border-radius: 10px; border: 3px solid #FBF5EC; background: #FF836C; color: #1A0609; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #8A1428; padding: 0"><span class="px" style="font-size: 16px">!</span></button>
+              <button type="button" data-keep class="pin bounce" (click)="toggleEvent()" [attr.aria-expanded]="event() ? 'true' : 'false'" [attr.aria-label]="'Novedad: ' + msg.titulo" style="position: absolute; left: 44%; top: 30%; z-index: 3; width: 46px; height: 46px; border-radius: 10px; border: 3px solid #FBF5EC; background: #FF836C; color: #1A0609; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #8A1428; padding: 0"><span class="px" style="font-size: 16px">!</span></button>
               @if (event()) {
                 <div class="up" role="status" data-keep style="position: absolute; left: 44%; top: calc(30% + 58px); transform: translateX(-50%); z-index: 6; width: 260px; padding: 10px 12px; border-radius: 6px; background: #231417; color: #FBF5EC; box-shadow: 4px 4px 0 #8A1428; display: flex; flex-direction: column; gap: 6px"><span class="px" style="font-size: 10px; color: #FF836C; margin-bottom: 2px">{{ msg.titulo }}</span><span style="font-size: 14px; line-height: 1.35">{{ msg.texto }}</span></div>
               }

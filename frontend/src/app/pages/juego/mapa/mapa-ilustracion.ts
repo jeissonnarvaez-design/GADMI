@@ -135,7 +135,7 @@ export class MapaIlustracion {
       if (root) {
         root.removeAttribute('width');
         root.removeAttribute('height');
-        root.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        root.setAttribute('preserveAspectRatio', 'xMidYMid slice');
         root.setAttribute('aria-hidden', 'true');
       }
       this.addHumo(host);

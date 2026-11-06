@@ -16,9 +16,10 @@ const TOTAL = DUR.reduce((a, b) => a + b, 0);
 const fmt = (s: number) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 
 /**
- * Video de bienvenida de 30 s (Intro.dc.html).
- * Usa <video> con <track kind="captions"> (public/assets/video/bienvenida.mp4 + .vtt).
- * Mientras no exista el mp4, muestra la versión animada con la misma narración.
+ * Video de bienvenida (Intro.dc.html).
+ * Usa el video real public/assets/video/IMG_7890.MOV (o bienvenida.mp4 si existe) con subtítulos
+ * public/assets/video/bienvenida.vtt. El video ya trae su voz: no se usa voz del navegador ni de IA.
+ * Solo si no hay video se muestra la versión animada (esa sí con la voz de los personajes).
  * Adelantar solo funciona sobre lo ya visto; no hay botón «Saltar».
  */
 @Component({
@@ -47,6 +48,7 @@ button{font-family:inherit}
   .ctrls > div:last-child{justify-content:center !important}
   .stage p[aria-live]{font-size:15px !important;padding:8px 12px !important;bottom:10px !important;width:92% !important}
 }
+video::cue{background:rgba(20,10,12,.9);color:#FFFFFF;font-family:'DM Sans',Arial,sans-serif;font-size:20px;line-height:1.4}
 @media (prefers-reduced-motion: reduce){.up,.pop,.grow,.draw,.flash,.dot{animation:none}}
   `,
 })
@@ -67,12 +69,18 @@ export class VideoPage implements OnInit, OnDestroy {
   /** Escena más lejana ya vista (versión animada) / segundo más lejano visto (video real). */
   seen = signal(0);
   videoReady = signal(false);
+  /** Mientras se averigua si hay video real, la versión animada espera (y no habla). */
+  private probando = signal(true);
+  private sinVideoTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Líneas de la transcripción del video real, leídas del .vtt («Quién: texto» o solo texto). */
+  private lineasVtt = signal<[string, string][]>([]);
   ended = signal(false);
   vTime = signal(0);
   vDur = signal(TOTAL);
   private maxWatched = 0;
   private timer: ReturnType<typeof setInterval> | null = null;
-  readonly transcript = SC.map(([who, text]) => [who, text]);
+  readonly transcript: [string, string][] = SC.map(([who, text]) => [who, text]);
+  transcripcion = computed(() => (this.videoReady() ? this.lineasVtt() : this.transcript));
 
   readonly meters = [['Ambiental', '22%'], ['Social', '28%'], ['Gobernanza', '10%'], ['Económico', '55%']];
   readonly stages = [
@@ -99,7 +107,7 @@ export class VideoPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.timer = setInterval(() => {
-      if (this.videoReady() || !this.playing()) return;
+      if (this.videoReady() || this.probando() || !this.playing()) return;
       const t = this.t() + 0.2;
       if (t < DUR[this.scene()]) return this.t.set(t);
       if (this.scene() < DUR.length - 1) this.go(this.scene() + 1);
@@ -109,19 +117,33 @@ export class VideoPage implements OnInit, OnDestroy {
         this.seen.set(DUR.length - 1);
       }
     }, 200);
-    this.speak(0);
+    // Si en 8 s el video no ha cargado ni fallado, se muestra la versión animada.
+    // (Si el video llega después, se cambia a él y se calla la voz).
+    this.sinVideoTimer = setTimeout(() => this.sinVideo(), 8000);
   }
   ngOnDestroy() {
     this.ro?.disconnect();
+    if (this.sinVideoTimer) clearTimeout(this.sinVideoTimer);
     if (this.timer) clearInterval(this.timer);
     this.voice.cancel();
   }
 
   // ---------- Video real
+  /** No hay video real (o el navegador no puede reproducirlo): versión animada con voz. */
+  sinVideo() {
+    if (!this.probando() || this.videoReady()) return;
+    this.probando.set(false);
+    if (this.sinVideoTimer) clearTimeout(this.sinVideoTimer);
+    if (this.playing()) this.speak(this.scene());
+  }
   onVideoReady() {
     const v = this.vid()?.nativeElement;
     if (!v) return;
+    this.probando.set(false);
+    if (this.sinVideoTimer) clearTimeout(this.sinVideoTimer);
     this.voice.cancel();
+    this.scene.set(0);
+    this.t.set(0);
     this.videoReady.set(true);
     this.vDur.set(v.duration || TOTAL);
     this.applyCaptions();
@@ -145,11 +167,26 @@ export class VideoPage implements OnInit, OnDestroy {
   private applyCaptions() {
     const track = this.vid()?.nativeElement.textTracks?.[0];
     if (track) track.mode = this.captions() ? 'showing' : 'hidden';
+    this.leerSubtitulos();
+  }
+  /** Arma la transcripción con los textos del .vtt. */
+  leerSubtitulos() {
+    const cues = this.vid()?.nativeElement.textTracks?.[0]?.cues;
+    if (!cues?.length) return;
+    const out: [string, string][] = [];
+    for (const c of Array.from(cues) as VTTCue[]) {
+      const txt = String(c.text ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (!txt) continue;
+      const m = txt.match(/^([A-ZÁÉÍÓÚÑ][\wáéíóúñ]{1,15}):\s*(.+)$/);
+      out.push(m ? [m[1], m[2]] : ['', txt]);
+    }
+    this.lineasVtt.set(out);
   }
 
   // ---------- Versión animada (provisional)
   private speak(i: number) {
-    if (this.videoReady()) return;
+    // Nunca se habla encima del video real (ya trae su voz) ni mientras se averigua si existe.
+    if (this.videoReady() || this.probando()) return;
     this.voice.speak(SC[i][1], SC[i][0].toLowerCase());
   }
   go(i: number) {
