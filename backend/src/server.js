@@ -142,6 +142,12 @@ app.put('/api/estudiante/onboarding', estudiante, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
+/** PROVISIONAL (botón «Reiniciar progreso»): borra todo el avance del estudiante. */
+app.delete('/api/estudiante/progreso', estudiante, wrap(async (req, res) => {
+  await store.resetStudent(req.userId);
+  res.json({ ok: true });
+}));
+
 app.get('/api/estudiante/progreso', estudiante, wrap(async (req, res) => {
   res.json(await store.studentProgress(req.userId));
 }));

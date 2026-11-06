@@ -21,7 +21,8 @@ const E = () => db.collection('estudiantes');
 const C = () => db.collection('certificados');
 const est = (id) => E().doc(String(id));
 /** Solo cuentan los certificados con el formato nuevo (periodo-grupo-iniciales-XXXXXX); los GADMI-XXXX-XXXX de pruebas anteriores se ignoran. */
-const formatoNuevo = (c) => !!c?.periodo;
+/** Certificados del formato actual; los anulados por un reinicio de progreso ya no cuentan. */
+const formatoNuevo = (c) => !!c?.periodo && !c?.reiniciado;
 
 /** Error con código HTTP para responder directamente. */
 export class HttpError extends Error {
@@ -121,6 +122,38 @@ export async function updateOnboarding(id, { aceptaPrivacidad, preferencias, car
   if (cartaFirmada && !s.cartaFirmadaEn) patch.cartaFirmadaEn = new Date(cartaFirmada).toISOString();
   if (tourVisto && !s.tourVistoEn) patch.tourVistoEn = new Date(tourVisto).toISOString();
   if (Object.keys(patch).length) await est(id).update(patch);
+}
+
+/**
+ * PROVISIONAL: deja al estudiante como recién registrado (sin intentos, bitácoras, insignias,
+ * certificado ni bienvenida). Conserva nombre, código, correo, grupo y contraseña.
+ * Un certificado ya emitido queda anulado (la verificación pública lo muestra como anulado).
+ */
+export async function resetStudent(id) {
+  const s = await getStudent(id);
+  if (!s) throw new HttpError(404, 'Estudiante no encontrado.');
+  const ref = est(id);
+  for (const sub of ['intentos', 'decisiones', 'bitacoras', 'insignias']) {
+    const docs = (await ref.collection(sub).get()).docs;
+    for (let i = 0; i < docs.length; i += 400) {
+      const batch = db.batch();
+      docs.slice(i, i + 400).forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+    }
+  }
+  const fecha = now();
+  const certs = (await C().where('estudianteId', '==', id).get()).docs;
+  const batch = db.batch();
+  certs.forEach((d) => {
+    const c = d.data();
+    batch.update(d.ref, { reiniciado: true, ...(c.estado === 'valido' ? { estado: 'anulado', fechaAnulacion: fecha, anuladoPor: 'reinicio de progreso' } : {}) });
+  });
+  batch.delete(db.collection('unicos').doc(`certificado:${id}`));
+  batch.update(ref, {
+    progreso: {}, bitacoras: {}, primerIntento: {},
+    aceptaPrivacidadEn: null, preferencias: null, cartaFirmadaEn: null, tourVistoEn: null, reiniciadoEn: fecha,
+  });
+  await batch.commit();
 }
 
 /** Guarda un intento, la decisión y recalcula el progreso del módulo. */

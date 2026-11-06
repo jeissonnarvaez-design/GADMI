@@ -1,6 +1,11 @@
 import { Component, ElementRef, HostListener, computed, inject, input, signal } from '@angular/core';
 import { Preferences } from '../core/models/models';
 import { PreferencesService } from '../core/services/preferences.service';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../core/services/auth.service';
+import { ApiService, apiError } from '../core/services/api.service';
+import { ProgressService } from '../core/services/progress.service';
 
 const DEFS: [keyof Preferences, string, string][] = [
   ['subtitulos', 'Subtítulos', 'M3 6h18v12H3zM7 11h4M13 11h4M7 14h6'],
@@ -34,19 +39,37 @@ const DEFS: [keyof Preferences, string, string][] = [
           }
           <!-- Opciones extra de la pantalla (p. ej. «Repetir recorrido guiado» en la Ruta) -->
           <ng-content />
+          @if (auth.session()) {
+            <div aria-hidden="true" style="height: 1px; background: rgba(255,131,108,0.35); margin: 6px 8px"></div>
+            <button type="button" class="opt" (click)="salir()" style="display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 8px; border: none; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 700; text-align: left">
+              <span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 6px; background: #4A2A2F; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBF5EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"></path></svg></span>
+              <span style="flex: 1">Cerrar sesión</span>
+            </button>
+          }
         </div>
       }
     </div>
+    @if (auth.student()) {
+      <!-- PROVISIONAL: reiniciar el progreso del juego (se eliminará más adelante) -->
+      <button type="button" class="reset" (click)="reiniciar()" [disabled]="busy()" title="Reiniciar progreso (provisional)" aria-label="Reiniciar progreso del juego (provisional)"
+        [style.border]="'1.5px solid ' + bd()" [style.background]="bg()" [style.color]="fg()"
+        style="height: 44px; padding: 0 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; font-weight: 700">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" [attr.stroke]="fg()" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"></path></svg>
+        <span class="reset-txt">{{ busy() ? 'Reiniciando…' : 'Reiniciar' }}</span>
+      </button>
+    }
   `,
   styles: `
     .opt:hover { background: rgba(255,131,108,0.12) !important; }
-    .opt:focus-visible { outline: 3px solid #FF836C; outline-offset: 2px; }
+    .opt:focus-visible, .reset:focus-visible { outline: 3px solid #FF836C; outline-offset: 2px; }
+    .reset:disabled { opacity: .6; cursor: wait; }
+    @media (max-width: 600px) { .reset-txt { display: none; } .reset { padding: 0 12px !important; } }
     .knob { transition: transform .18s; }
     @keyframes drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
     .drop { animation: drop .18s ease both; }
     @media (prefers-reduced-motion: reduce) { .knob { transition: none; } .drop { animation: none; } }
   `,
-  host: { style: 'display: inline-block' },
+  host: { style: 'display: inline-flex; align-items: center; gap: 8px' },
 })
 export class Accesibilidad {
   tone = input<'light' | 'dark'>('light');
@@ -69,5 +92,40 @@ export class Accesibilidad {
   }
   close() {
     this.open.set(false);
+  }
+
+  auth = inject(AuthService);
+  private api = inject(ApiService);
+  private progress = inject(ProgressService);
+  private router = inject(Router);
+  busy = signal(false);
+
+  salir() {
+    const docente = this.auth.rol() === 'docente';
+    this.open.set(false);
+    this.auth.logout();
+    this.router.navigateByUrl(docente ? '/ingreso/docente' : '/ingreso');
+  }
+
+  /** PROVISIONAL: deja al estudiante como recién registrado. */
+  reiniciar() {
+    if (this.busy()) return;
+    if (!confirm('¿Reiniciar todo tu progreso del juego?\n\nSe borran tus retos, granos, bitácoras, logros y certificado. Empezarás como un usuario nuevo. Esto no se puede deshacer.')) return;
+    const limpiar = () => {
+      this.progress.resetLocal();
+      this.auth.updateStudent({ aceptaPrivacidad: null, cartaFirmada: null, tourVisto: null, preferencias: null });
+      this.busy.set(false);
+      this.open.set(false);
+      this.router.navigateByUrl('/conectando');
+    };
+    if (!this.auth.token() || this.auth.offline()) return limpiar();
+    this.busy.set(true);
+    this.api.resetProgress().subscribe({
+      next: limpiar,
+      error: (e: HttpErrorResponse) => {
+        this.busy.set(false);
+        alert('No se pudo reiniciar el progreso: ' + apiError(e).message);
+      },
+    });
   }
 }

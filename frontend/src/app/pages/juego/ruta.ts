@@ -71,20 +71,32 @@ type RetoState = 'open' | 'done' | 'locked';
     .menu-x{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:0 8px;margin-top:4px;border:none;border-top:1px solid #4A2A2F;border-radius:6px;background:transparent;color:#FBF5EC;font-size:15px;font-weight:700;cursor:pointer;text-align:left}
     .menu-x:hover{background:rgba(255,131,108,.12)}
     .mx-ic{width:32px;height:32px;flex-shrink:0;border-radius:6px;background:#4A2A2F;display:flex;align-items:center;justify-content:center}
-    .mapa{height:calc(100vh - 160px);min-height:620px}
+    /* Mapa completo en cualquier pantalla: marco 3:2 (como el SVG 1800×1200) que cabe a lo alto de la ventana. */
+    /* El recuadro blanco se ajusta al ancho del mapa: sin franjas vacías a los lados. */
+    .mapa{height:auto;flex:0 1 auto !important;width:min(100%, calc(max(520px, (100vh - 330px) * 1.5) + 26px));margin:0 auto}
+    .marco{width:100%;aspect-ratio:3/2}
+    .lado{position:static !important;order:-1;flex:1 1 100%}
+    .ods{position:static !important;flex-direction:row !important;gap:8px !important;flex-shrink:0}
+    .ods span[role=img]{width:46px !important;height:46px !important}
     @media (max-width: 900px){
-      .mapa{height:auto;min-height:640px}
-      .lado{position:static !important;flex-direction:column;align-items:stretch !important;order:-1}
+      .lado{flex-direction:column;align-items:stretch !important}
       .tablero{flex-wrap:wrap;gap:12px 20px !important}
       .tablero > button{flex:1 1 40% !important}
-      .ods{position:static !important;flex-direction:row !important;justify-content:space-between}
+      .ods{justify-content:space-between}
+      .mapa{width:100%}
     }
     @media (max-width: 560px){
-      .mapa{min-height:520px}
       .linea{width:14px !important}
-      .pin{font-size:12px !important;padding:4px 8px 4px 4px !important;gap:5px !important}
-      .pin > span:first-child{width:22px !important;height:22px !important}
-      .chip{display:none}
+      .pin{font-size:11px !important;padding:3px 7px 3px 3px !important;gap:4px !important}
+      .pin > span:first-child{width:20px !important;height:20px !important}
+      .chip,.pin-nombre{display:none}
+      .ruta-main{padding:0 12px 16px !important}
+      .mapa{padding:6px !important}
+      .tablero{padding:10px 12px !important}
+      .tablero > button{flex:1 1 100% !important}
+      .ods span[role=img]{width:40px !important;height:40px !important}
+      .evento{width:30px !important;height:30px !important;font-size:16px !important;padding:0 !important}
+      .mision-tag{font-size:8px !important}
       [role=menu],[role=tooltip]{max-width:calc(100vw - 48px)}
     }
     @media (prefers-reduced-motion: reduce){.pulse,.float,.up,.bounce{animation:none}.bar,.pin,.node{transition:none}}

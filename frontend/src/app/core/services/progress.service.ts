@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
-import { MAX_ATTEMPTS, SEQUENTIAL_MODULES, STORAGE_KEY } from '../config';
+import { MAX_ATTEMPTS, PREFS_KEY, SEQUENTIAL_MODULES, SESSION_KEY, STORAGE_KEY } from '../config';
 import { ALL_EXERCISES, MODULES } from '../data/modules';
 import { AppState, Attempt, EvalResult, ExerciseMeta } from '../models/models';
 import { ApiService } from './api.service';
@@ -52,6 +52,21 @@ export class ProgressService {
       });
     });
     this.api.health().subscribe();
+  }
+
+  /**
+   * PROVISIONAL: deja el progreso local en cero (intentos, bitácoras, temporadas, pasos guardados,
+   * videos vistos, insignias vistas). Conserva la sesión y las preferencias de accesibilidad.
+   */
+  resetLocal() {
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('gadmi-sost-empresarial:') && k !== SESSION_KEY && k !== PREFS_KEY)
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      /* sin almacenamiento */
+    }
+    this.state.set({ ...EMPTY, owner: this.auth.student()?.codigo ?? null });
   }
 
   private online() {

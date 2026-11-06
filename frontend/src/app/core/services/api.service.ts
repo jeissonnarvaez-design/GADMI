@@ -151,6 +151,10 @@ export class ApiService {
   saveOnboarding(data: { aceptaPrivacidad?: string; preferencias?: Preferences; cartaFirmada?: string; tourVisto?: string }) {
     return this.quiet(this.http.put(`${API_URL}/estudiante/onboarding`, data));
   }
+  /** PROVISIONAL: borra todo el avance del estudiante en el servidor. */
+  resetProgress() {
+    return this.loud(this.http.delete<{ ok: boolean }>(`${API_URL}/estudiante/progreso`));
+  }
   getProgress() {
     return this.quiet(this.http.get<ServerProgress>(`${API_URL}/estudiante/progreso`));
   }
