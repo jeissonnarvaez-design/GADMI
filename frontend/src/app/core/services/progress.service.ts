@@ -101,6 +101,25 @@ export class ProgressService {
     return this.attempts(exerciseId).reduce<Attempt | undefined>((b, a) => (!b || a.points > b.points ? a : b), undefined);
   }
 
+  /**
+   * Inversiones elegidas en el presupuesto verde (2.5) como letras ['a', 'c', …].
+   * Entiende el formato viejo (lista de letras) y el del reto rediseñado (estado.on por posición).
+   */
+  greenInvestments(): string[] {
+    const ans = this.lastAnswers<unknown>('m2-presupuesto-verde');
+    if (Array.isArray(ans)) return ans.filter((x): x is string => typeof x === 'string');
+    const on = (ans as { estado?: { on?: Record<string, boolean> } } | undefined)?.estado?.on;
+    if (!on || typeof on !== 'object') return [];
+    return Object.keys(on).filter((k) => on[k]).map((k) => (/^\d+$/.test(k) ? 'abcdef'.charAt(Number(k)) : k)).filter(Boolean);
+  }
+
+  /** Decisiones del 3.2 en el formato viejo ({ A: '1', … }); con el reto rediseñado, vacío. */
+  crisisAnswers(): Record<string, string> {
+    const ans = this.lastAnswers<unknown>('m3-crisis');
+    if (!ans || typeof ans !== 'object' || Array.isArray(ans)) return {};
+    return Object.fromEntries(Object.entries(ans as Record<string, unknown>).filter(([, v]) => typeof v === 'string')) as Record<string, string>;
+  }
+
   lastAnswers<T>(exerciseId: string): T | undefined {
     return this.attempts(exerciseId).at(-1)?.answers as T | undefined;
   }

@@ -64,8 +64,8 @@ export interface MapZone {
 
 /** Escena viva por capas: lo que el estudiante decide aparece sobre el mapa. */
 export function mapZones(p: ProgressService): MapZone[] {
-  const verde = p.lastAnswers<string[]>('m2-presupuesto-verde') ?? [];
-  const crisis = p.lastAnswers<Record<string, string>>('m3-crisis') ?? {};
+  const verde = p.greenInvestments();
+  const crisis = p.crisisAnswers();
   const foda = p.lastAnswers<{ strategy?: string }>('m1-foda');
   const pass = (id: string) => (p.best(id)?.grade ?? 0) >= 3;
   return [

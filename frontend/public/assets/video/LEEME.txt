@@ -12,13 +12,18 @@ VIDEO DEL MÓDULO 2
 - Archivo: YouCut_20261106_010031608.mp4 (o modulo-2.mp4).
 - Subtítulos y transcripción: modulo-2.vtt
 
-MÓDULOS 3 y 4: modulo-3.mp4 / modulo-3.vtt, etc.
+VIDEO DEL MÓDULO 3
+- Archivo: YouCut_20261106_012542973.mp4 (o modulo-3.mp4).
+- Subtítulos y transcripción: modulo-3.vtt
+
+MÓDULO 4: modulo-4.mp4 / modulo-4.vtt
 
 CÓMO GENERAR LOS SUBTÍTULOS (.vtt) CON GEMINI
 Desde la carpeta backend/ (usa GEMINI_API_KEY de backend/.env):
   npm run subtitulos -- ../frontend/public/assets/video/IMG_7890.MOV ../frontend/public/assets/video/bienvenida.vtt
   npm run subtitulos -- ../frontend/public/assets/video/YouCut_20261106_001829818.mp4 ../frontend/public/assets/video/modulo-1.vtt
   npm run subtitulos -- ../frontend/public/assets/video/YouCut_20261106_010031608.mp4 ../frontend/public/assets/video/modulo-2.vtt
+  npm run subtitulos -- ../frontend/public/assets/video/YouCut_20261106_012542973.mp4 ../frontend/public/assets/video/modulo-3.vtt
 Revisa el .vtt generado (es un borrador): corrige palabras y tiempos si hace falta.
 Formato de cada subtítulo:
     00:00:00.000 --> 00:00:04.500

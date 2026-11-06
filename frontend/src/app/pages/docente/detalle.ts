@@ -130,10 +130,13 @@ export class DetalleDocentePage {
       out.push(['Greenwashing:', val.picks?.['A']?.['v7'] === 'a' ? 'detectó la etiqueta sin datos.' : 'no detectó la etiqueta sin datos.']);
       if (val.text?.['C']) out.push(['Frase bandera:', `«${val.text['C']}».`]);
     }
-    const verde = get<string[]>('m2-presupuesto-verde');
+    // 2.5: lista de letras (formato viejo) o estado.on por posición (reto rediseñado)
+    const v25 = get<unknown>('m2-presupuesto-verde');
+    const on25 = (v25 as { estado?: { on?: Record<string, boolean> } } | undefined)?.estado?.on;
+    const verde = Array.isArray(v25) ? (v25 as string[]) : on25 ? Object.keys(on25).filter((k) => on25[k]).map((k) => 'abcdef'.charAt(Number(k))) : null;
     if (verde) out.push(['Presupuesto verde:', verde.length ? 'eligió ' + verde.join(', ') + (verde.includes('f') ? ' (incluye la campaña).' : '.') : 'sin inversiones.']);
     const crisis = get<Record<string, string>>('m3-crisis');
-    if (crisis) out.push(['Crisis:', `${['A', 'B', 'C'].filter((k) => crisis[k] === '1').length} de 3 resueltas de forma óptima.`]);
+    if (crisis && ['A', 'B', 'C'].some((k) => typeof crisis[k] === 'string')) out.push(['Crisis:', `${['A', 'B', 'C'].filter((k) => crisis[k] === '1').length} de 3 resueltas de forma óptima.`]);
     return out;
   });
 

@@ -157,8 +157,9 @@ export class RutaPage {
     const has = (id: string) => Number(id.charAt(1)) <= v;
     const ans = <T>(id: string) => (has(id) ? this.progress.lastAnswers<T>(id) : undefined);
     const pass = (id: string) => has(id) && (this.progress.best(id)?.grade ?? 0) >= 3;
-    const verde = ans<string[]>('m2-presupuesto-verde') ?? [];
-    const crisis = ans<Record<string, string>>('m3-crisis') ?? {};
+    void ans;
+    const verde = has('m2-presupuesto-verde') ? this.progress.greenInvestments() : [];
+    const crisis = has('m3-crisis') ? this.progress.crisisAnswers() : {};
     const cleaner = (verde.includes('a') ? 1 : 0) + (verde.includes('b') ? 1 : 0);
     return {
       flag: pass('m1-brujula'), solar: verde.includes('a'), compost: verde.includes('c'), forest: verde.includes('d'),
