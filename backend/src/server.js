@@ -8,6 +8,7 @@ import { toGrade } from './grading.js';
 import * as store from './store.js';
 import { HttpError } from './store.js';
 import { sintetizar, vozDisponible } from './voz.js';
+import { dictadoDisponible, transcribir } from './dictado.js';
 
 const app = express();
 app.use(cors({ origin: (process.env.CORS_ORIGIN ?? 'http://localhost:4200').split(',') }));
@@ -56,6 +57,21 @@ app.get('/api/health', wrap(async (_req, res) => {
 }));
 
 // ------------------------------------------------------------------ Voz de personajes (Gemini TTS)
+/**
+ * Dictado: audio (base64, máx. ~1 minuto) → texto. Lo usa el botón «Dictar con voz»
+ * cuando el navegador no tiene reconocimiento de voz propio o este falla.
+ */
+app.post('/api/voz/transcribir', requireSession, wrap(async (req, res) => {
+  if (!dictadoDisponible()) return res.status(404).json({ error: 'El dictado no está configurado en el servidor (falta GEMINI_API_KEY).' });
+  const { audio, tipo } = req.body ?? {};
+  if (typeof audio !== 'string' || !audio || audio.length > 900_000) return res.status(400).json({ error: 'Audio vacío o demasiado largo (máx. 1 minuto).' });
+  try {
+    res.json({ texto: await transcribir(audio, tipo) });
+  } catch (e) {
+    res.status(e.status === 400 ? 400 : 503).json({ error: e.status === 400 ? e.message : 'No se pudo convertir tu voz en texto. Intenta de nuevo.' });
+  }
+}));
+
 /** ¿Hay voz de Gemini para este personaje? (si no, el navegador usa su voz). */
 app.get('/api/voz/:personaje', (req, res) => res.json({ disponible: vozDisponible(req.params.personaje) }));
 

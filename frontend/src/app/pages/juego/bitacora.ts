@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { getModule } from '../../core/data/modules';
 import { ProgressService } from '../../core/services/progress.service';
+import { Dictar } from '../../shared/dictar';
 import { Escuchar } from '../../shared/escuchar';
 import { Hud } from '../../shared/hud';
 import { Personaje } from '../../shared/personaje';
@@ -9,7 +10,7 @@ import { Personaje } from '../../shared/personaje';
 /** Bitácora (Bitacora.dc.html): 3 preguntas de reflexión. No suma puntos. */
 @Component({
   selector: 'app-bitacora-page',
-  imports: [Hud, Personaje, Escuchar],
+  imports: [Hud, Personaje, Escuchar, Dictar],
   template: `
     <div class="game-bg" style="color: #231417">
       <app-hud [kicker]="'CIERRE · MÓDULO ' + id()" title="Bitácora del gerente" variant="modulo" [mini]="false" />
@@ -29,7 +30,7 @@ import { Personaje } from '../../shared/personaje';
               <textarea rows="5" placeholder="Escribe aquí…" [value]="a()[i()]" (input)="setAnswer($any($event.target).value)" style="border-radius: 16px; border: 1.5px solid #D9CBBB; padding: 14px 16px; font-size: 17px; line-height: 1.5; resize: vertical; background: #FBF5EC"></textarea>
             </label>
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap">
-              <button type="button" (click)="dictar()" [disabled]="!canDictate" [title]="canDictate ? 'Dictar con voz' : 'Tu navegador no permite dictado'" style="min-height: 46px; padding: 0 16px; border-radius: 999px; border: 1px solid #EADFD0; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; cursor: pointer; color: #231417"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#231417" stroke-width="2" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>{{ listening() ? 'Escuchando…' : 'Dictar con voz' }}</button>
+              <app-dictar (texto)="agregar($event)" />
               <div style="display: flex; gap: 10px">
                 @if (i() > 0) { <button type="button" (click)="i.set(i() - 1)" style="min-height: 50px; padding: 0 20px; border-radius: 999px; border: 2px solid #231417; background: transparent; font-weight: 800; font-size: 16px; cursor: pointer; color: #231417">Atrás</button> }
                 @if (i() < 2) {
@@ -59,8 +60,6 @@ export class BitacoraPage {
   private router = inject(Router);
   i = signal(0);
   a = signal<string[]>(['', '', '']);
-  listening = signal(false);
-  readonly canDictate = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
   questions = computed(() => getModule(Number(this.id()))?.reflections ?? []);
   complete = computed(() => this.a().every((t) => t.trim().length >= 10));
 
@@ -72,17 +71,10 @@ export class BitacoraPage {
     this.a.update((arr) => arr.map((x, j) => (j === this.i() ? v : x)));
   }
 
-  /** Dictado con el reconocimiento de voz del navegador (si existe). */
-  dictar() {
-    const W = window as unknown as { SpeechRecognition?: new () => any; webkitSpeechRecognition?: new () => any };
-    const R = W.SpeechRecognition ?? W.webkitSpeechRecognition;
-    if (!R) return;
-    const rec = new R();
-    rec.lang = 'es-CO';
-    rec.onresult = (e: any) => this.setAnswer((this.a()[this.i()] + ' ' + e.results[0][0].transcript).trim());
-    rec.onend = () => this.listening.set(false);
-    this.listening.set(true);
-    rec.start();
+  /** Agrega lo dictado al final de la respuesta actual. */
+  agregar(t: string) {
+    const prev = this.a()[this.i()].trimEnd();
+    this.setAnswer(prev ? prev + ' ' + t : t);
   }
 
   close() {

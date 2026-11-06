@@ -151,6 +151,10 @@ export class ApiService {
   saveOnboarding(data: { aceptaPrivacidad?: string; preferencias?: Preferences; cartaFirmada?: string; tourVisto?: string }) {
     return this.quiet(this.http.put(`${API_URL}/estudiante/onboarding`, data));
   }
+  /** Dictado: audio grabado (base64) → texto con Gemini en el servidor. */
+  transcribir(audio: string, tipo: string) {
+    return this.loud(this.http.post<{ texto: string }>(`${API_URL}/voz/transcribir`, { audio, tipo }));
+  }
   /** PROVISIONAL: borra todo el avance del estudiante en el servidor. */
   resetProgress() {
     return this.loud(this.http.delete<{ ok: boolean }>(`${API_URL}/estudiante/progreso`));
